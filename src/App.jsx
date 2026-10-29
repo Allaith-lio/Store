@@ -1,14 +1,18 @@
 
 import './App.css'
-import StoreHeroDemo from './components/StoreHeroDemo'
+import { Routes, Route } from "react-router-dom";
+import { Home } from './pages/Home';
+import { MainLayout } from './layouts/MainLayout';
+import Products from './pages/Products';
 
 function App() {
-
-
   return (
-    <>
-      <StoreHeroDemo />
-    </>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+        </Route>
+      </Routes>
   )
 }
 

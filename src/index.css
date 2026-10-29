@@ -17,7 +17,7 @@
   /* Fonts */
   --font-heading: "Fraunces", Georgia, serif;
   --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
-
+  --font-logo: 'Water Brush', cursive;
   /* Typography */
   --text-h1: clamp(2.25rem, 1.8rem + 2vw, 3.5rem);
   --text-h1--line-height: 1.1;
@@ -52,13 +52,17 @@
   --color-page: #111827;
   --color-surface: #1f2937;
   --color-ink: #f3f4f6;
-  --color-muted: #a3aec0;
+  --color-muted: #dadbdd;
   --color-line: #374151;
 
   --shadow-card: 0 1px 3px rgb(0 0 0 / 0.2), 0 4px 12px rgb(0 0 0 / 0.15);
   --shadow-raised: 0 4px 8px rgb(0 0 0 / 0.25), 0 12px 28px rgb(0 0 0 / 0.2);
 }
-
+@layer utilities {
+  .logo-gradient {
+    @apply bg-linear-to-r from-primary via-blue-600 to-secondary bg-clip-text text-transparent;
+  }
+}
 @layer base {
   body {
     @apply min-h-dvh bg-page font-body text-ink antialiased;
@@ -109,7 +113,9 @@
   .btn-outline {
     @apply border-line bg-surface text-ink shadow-xs hover:border-primary hover:bg-primary/5 hover:text-primary;
   }
-
+  .icon-link{
+    @apply flex min-w-14 flex-col items-center gap-1 rounded-control px-2 py-2 text-muted transition-colors hover:bg-page hover:text-primary focus-visible:outline-2 focus-visible:outline-primary;
+  }
   
   [data-theme="dark"] .btn-primary,
   [data-theme="dark"] .btn-secondary {
