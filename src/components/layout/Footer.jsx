@@ -10,6 +10,7 @@ const shopLinks = [
 ];
 
 const supportLinks = [
+  { label: "About Us", to: "/help/about" },
   { label: "FAQs", to: "/help/faq" },
   { label: "Contact Us", to: "/help/contact" },
 ];

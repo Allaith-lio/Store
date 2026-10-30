@@ -1,9 +1,10 @@
 
 import { useEffect, useState } from "react";
-import { Link, NavLink} from "react-router-dom";
-import { Menu, House, Heart, UserRound, UserRoundPlus, MessageSquareText, ShoppingCart, Info} from "lucide-react";
+import { Link} from "react-router-dom";
+import { Menu, UserRound, UserRoundPlus, ShoppingCart} from "lucide-react";
 import HeaderDrawers from "./HeaderDrawers";
 import Button from "../common/Button";
+import NavbarLinks from "../common/NavbarLinks";
 
 export default function Header() {
 
@@ -132,72 +133,19 @@ export default function Header() {
           {/* Desktop navigation */}
           {!isMobile && (
             <>
-            <div className="hidden lg:flex flex-1 items-center px-6">
-              <p className="max-w-xs text-sm leading-relaxed text-slate-500">
-                Everything you need, all in one place.
-              </p>
-            </div>
-              <nav
-                aria-label="Main navigation"
-                className="ml-auto flex shrink-0 items-center gap-1 xl:gap-3"
-              >
-                <NavLink to="/" className={"icon-link"}>
-                  <House size={21} />
-                  <span className="text-xs">Home</span>
-                </NavLink>
-
-                <NavLink
-                  to={isLoggedIn ? "/user/profile" : "/user/signUp"}
-                  className={"icon-link"}
-                >
-                  {isLoggedIn ? (
-                    <UserRound size={22} />
-                  ) : (
-                    <UserRoundPlus size={22} />
-                  )}
-
-                  <span className="text-xs">
-                    {isLoggedIn ? "Profile" : "Register"}
-                  </span>
-                </NavLink>
-
-                <NavLink to="/messageUs" className={"icon-link"}>
-                  <MessageSquareText size={21} />
-                  <span className="text-xs">Contact Us</span>
-                </NavLink>
-                <NavLink to="/messageUs" className={"icon-link"}>
-                  <Info size={21} />
-                  <span className="text-xs">About Us</span>
-                </NavLink>
-
-                <NavLink
-                  to="/wishlist"
-                  className={`${"icon-link"} relative`}
-                >
-                  <Heart size={21} />
-                  <span className="text-xs">Wishlist</span>
-
-                  {wishlistCount > 0 && (
-                    <span className="absolute right-1 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-white">
-                      {wishlistCount}
-                    </span>
-                  )}
-                </NavLink>
-                <Button
-                type={"button"}
-                className={`${"icon-link"} relative`}
-                ariaLabel={`Open cart, ${cartCount} items`}
-                onClick={() => setShowCart(true)}>
-                  <ShoppingCart size={22} />
-                  <span className="text-xs">My Cart</span>
-
-                  {cartCount > 0 && (
-                    <span className="absolute right-1 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-white">
-                      {cartCount}
-                    </span>
-                  )}
-                </Button>
-              </nav>
+              <div className="hidden lg:flex flex-1 items-center px-6">
+                <p className="max-w-xs text-sm leading-relaxed text-slate-500">
+                  Everything you need, all in one place.
+                </p>
+              </div>
+              <NavbarLinks
+                variant="desktop"
+                isLoggedIn={isLoggedIn}
+                wishlistCount={wishlistCount}
+                cartCount={cartCount}
+                onOpenCart={() => setShowCart(true)}
+              />
+              
             </>
             
           )}
@@ -243,6 +191,7 @@ export default function Header() {
         subTotal={subTotal}
         onQtyChange={handleQtyChange}
         onRemoveItem={handleRemoveItem}
+        wishlistCount={wishlistCount}
       />
     </>
   );
