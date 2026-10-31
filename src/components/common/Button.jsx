@@ -1,13 +1,13 @@
-const Button = ({children, className, onClick, disabled, ariaLabel, type}, ref) => {
-  
+const Button = ({ children, className, onClick, disabled, ariaLabel, type }, ref) => {
+
   return (
     <button
-    ref={ref} 
-    type = {type}
-    className={className}
-    onClick={onClick} 
-    disabled={disabled}
-    aria-label= {ariaLabel}>
+      ref={ref}
+      type={type}
+      className={className}
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}>
       {children}
     </button>
   )
