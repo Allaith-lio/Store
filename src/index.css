@@ -1,143 +1,133 @@
 @import "tailwindcss";
+@theme {
+  /* Colors */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-secondary: #243b64;
+  --color-secondary-hover: #192b49;
+  --color-accent: #e9b949;
 
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --color-page: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-ink: #202938;
+  --color-muted: #667085;
+  --color-line: #dce2ea;
 
-  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
-  --heading: system-ui, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* Fonts */
+  --font-heading: "Fraunces", Georgia, serif;
+  --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-logo: "Water Brush", cursive;
+  
+  /* Typography */
+  --text-h1: clamp(2.25rem, 1.8rem + 2vw, 3.5rem);
+  --text-h1--line-height: 1.1;
+  --text-h2: clamp(1.75rem, 1.5rem + 1.2vw, 2.5rem);
+  --text-h2--line-height: 1.15;
+  --text-h3: 1.375rem;
+  --text-h3--line-height: 1.3;
 
-  @theme {
-    /* Colors */
-    --color-primary: #2563eb;
-    --color-primary-hover: #1d4ed8;
-    --color-secondary: #243b64;
-    --color-secondary-hover: #192b49;
-    --color-accent: #e9b949;
+  /* Radius */
+  --radius-control: 0.625rem;
+  --radius-card: 1rem;
 
-    --color-page: #f5f7fa;
-    --color-surface: #ffffff;
-    --color-ink: #202938;
-    --color-muted: #667085;
-    --color-line: #dce2ea;
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgb(30 35 33 / 0.05), 0 2px 8px rgb(30 35 33 / 0.06);
+  --shadow-raised: 0 2px 4px rgb(30 35 33 / 0.06), 0 12px 28px -6px rgb(30 35 33 / 0.16);
 
-    /* Fonts */
-    --font-heading: "Fraunces", Georgia, serif;
-    --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
-    --font-logo: "Water Brush", cursive;
-    /* Typography */
-    --text-h1: clamp(2.25rem, 1.8rem + 2vw, 3.5rem);
-    --text-h1--line-height: 1.1;
-    --text-h2: clamp(1.75rem, 1.5rem + 1.2vw, 2.5rem);
-    --text-h2--line-height: 1.15;
-    --text-h3: 1.375rem;
-    --text-h3--line-height: 1.3;
+  /* Transitions */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
 
-    /* Radius */
-    --radius-control: 0.625rem;
-    --radius-card: 1rem;
+/* الثيم الداكن خارج الـ root وفي النطاق الصحيح */
+[data-theme="dark"] {
+  color-scheme: dark;
 
-    /* Shadows */
-    --shadow-card:
-      0 1px 2px rgb(30 35 33 / 0.05), 0 2px 8px rgb(30 35 33 / 0.06);
-    --shadow-raised:
-      0 2px 4px rgb(30 35 33 / 0.06), 0 12px 28px -6px rgb(30 35 33 / 0.16);
+  --color-primary: #60a5fa;
+  --color-primary-hover: #93c5fd;
+  --color-secondary: #a9c5f8;
+  --color-secondary-hover: #c7d9fc;
+  --color-accent: #f2c45e;
 
-    /* Transitions */
-    --default-transition-duration: 200ms;
-    --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  --color-page: #111827;
+  --color-surface: #1f2937;
+  --color-ink: #f3f4f6;
+  --color-muted: #dadbdd;
+  --color-line: #374151;
+
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.2), 0 4px 12px rgb(0 0 0 / 0.15);
+  --shadow-raised: 0 4px 8px rgb(0 0 0 / 0.25), 0 12px 28px rgb(0 0 0 / 0.2);
+}
+
+@layer utilities {
+  .logo-gradient {
+    @apply bg-linear-to-r from-primary via-blue-600 to-secondary bg-clip-text text-transparent;
+  }
+}
+
+@layer base {
+  body {
+    @apply min-h-dvh bg-page font-body text-ink antialiased;
   }
 
-  /* Dark mode: <html data-theme="dark"> */
-  [data-theme="dark"] {
-    color-scheme: dark;
-
-    --color-primary: #60a5fa;
-    --color-primary-hover: #93c5fd;
-    --color-secondary: #a9c5f8;
-    --color-secondary-hover: #c7d9fc;
-    --color-accent: #f2c45e;
-
-    --color-page: #111827;
-    --color-surface: #1f2937;
-    --color-ink: #f3f4f6;
-    --color-muted: #dadbdd;
-    --color-line: #374151;
-
-    --shadow-card: 0 1px 3px rgb(0 0 0 / 0.2), 0 4px 12px rgb(0 0 0 / 0.15);
-    --shadow-raised: 0 4px 8px rgb(0 0 0 / 0.25), 0 12px 28px rgb(0 0 0 / 0.2);
+  h1, h2, h3 {
+    @apply font-heading font-semibold tracking-tight;
   }
-  @layer utilities {
-    .logo-gradient {
-      @apply bg-linear-to-r from-primary via-blue-600 to-secondary bg-clip-text text-transparent;
-    }
-  }
-  @layer base {
-    body {
-      @apply min-h-dvh bg-page font-body text-ink antialiased;
-    }
+  h1 { @apply text-h1; }
+  h2 { @apply text-h2; }
+  h3 { @apply text-h3; }
 
-    h1,
-    h2,
-    h3 {
-      @apply font-heading font-semibold tracking-tight;
-    }
-    h1 {
-      @apply text-h1;
-    }
-    h2 {
-      @apply text-h2;
-    }
-    h3 {
-      @apply text-h3;
-    }
-
-    a:not([class]) {
-      @apply text-primary underline underline-offset-4 transition-colors hover:text-primary-hover;
-    }
-
-    :focus-visible {
-      @apply outline-2 outline-offset-2 outline-primary;
-    }
+  a:not([class]) {
+    @apply text-primary underline underline-offset-4 transition-colors hover:text-primary-hover;
   }
 
-  @layer components {
-    .section {
-      @apply py-16 md:py-24;
-    }
-
-    .btn {
-      @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-control border border-transparent px-5 py-2.5 text-sm font-semibold transition active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
-    }
-
-    .btn-primary {
-      @apply bg-linear-to-b from-primary to-primary-hover text-white shadow-md shadow-primary/30 inset-shadow-xs inset-shadow-white/25 hover:shadow-lg hover:shadow-primary/40 hover:brightness-110;
-    }
-
-    .btn-secondary {
-      @apply bg-linear-to-b from-secondary to-secondary-hover text-white shadow-md shadow-secondary/25 inset-shadow-xs inset-shadow-white/15 hover:shadow-lg hover:brightness-110;
-    }
-
-    .btn-outline {
-      @apply border-line bg-surface text-ink shadow-xs hover:border-primary hover:bg-primary/5 hover:text-primary;
-    }
-    .icon-link {
-      @apply flex min-w-14 flex-col items-center gap-1 rounded-control px-2 py-2 text-muted transition-colors hover:bg-page hover:text-primary focus-visible:outline-2 focus-visible:outline-primary;
-    }
-
-    [data-theme="dark"] .btn-primary,
-    [data-theme="dark"] .btn-secondary {
-      @apply text-gray-950;
-    }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
   }
+}
+
+@layer components {
+  .section {
+    @apply py-16 md:py-24;
+  }
+
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-control border border-transparent px-5 py-2.5 text-sm font-semibold transition active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-linear-to-b from-primary to-primary-hover text-white shadow-md shadow-primary/30 inset-shadow-xs inset-shadow-white/25 hover:shadow-lg hover:shadow-primary/40 hover:brightness-110;
+  }
+
+  .btn-secondary {
+    @apply bg-linear-to-b from-secondary to-secondary-hover text-white shadow-md shadow-secondary/25 inset-shadow-xs inset-shadow-white/15 hover:shadow-lg hover:brightness-110;
+  }
+
+  .btn-outline {
+    @apply border-line bg-surface text-ink shadow-xs hover:border-primary hover:bg-primary/5 hover:text-primary;
+  }
+  
+  .icon-link {
+    @apply flex min-w-14 flex-col items-center gap-1 rounded-control px-2 py-2 text-muted transition-colors hover:bg-page hover:text-primary focus-visible:outline-2 focus-visible:outline-primary;
+  }
+
+  [data-theme="dark"] .btn-primary,
+  [data-theme="dark"] .btn-secondary {
+    @apply text-gray-950;
+  }
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

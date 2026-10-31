@@ -1,13 +1,14 @@
 
 import { useEffect, useState } from "react";
 import { Link} from "react-router-dom";
-import { Menu, UserRound, UserRoundPlus, ShoppingCart} from "lucide-react";
+import { Menu, UserRound, UserRoundPlus, ShoppingCart, Moon, Sun} from "lucide-react";
 import HeaderDrawers from "./HeaderDrawers";
 import Button from "../common/Button";
 import NavbarLinks from "../common/NavbarLinks";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Header() {
-
+  const {isDarkMode, toggleTheme} = useTheme()
   const [isMobile, setIsMobile] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -41,7 +42,29 @@ export default function Header() {
   ]);
   const isLoggedIn = false;
   const wishlistCount = 0;
+  const cartCount = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+  const subTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+  const handleQtyChange = (id, quantity) => {
+    if (quantity < 1) return;
 
+    setCartItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      )
+    );
+  };
+
+  const handleRemoveItem = (id) => {
+    setCartItems((currentItems) =>
+      currentItems.filter((item) => item.id !== id)
+    );
+  };
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 991px)");
 
@@ -59,32 +82,6 @@ export default function Header() {
       mediaQuery.removeEventListener("change", handleScreenChange);
     };
   }, []);
-
-  const cartCount = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
-
-  const subTotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
-  const handleQtyChange = (id, quantity) => {
-    if (quantity < 1) return;
-
-    setCartItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const handleRemoveItem = (id) => {
-    setCartItems((currentItems) =>
-      currentItems.filter((item) => item.id !== id)
-    );
-  };
 
   return (
     <>
@@ -133,11 +130,6 @@ export default function Header() {
           {/* Desktop navigation */}
           {!isMobile && (
             <>
-              <div className="hidden lg:flex flex-1 items-center px-6">
-                <p className="max-w-xs text-sm leading-relaxed text-slate-500">
-                  Everything you need, all in one place.
-                </p>
-              </div>
               <NavbarLinks
                 variant="desktop"
                 isLoggedIn={isLoggedIn}
@@ -153,6 +145,17 @@ export default function Header() {
           {/* Mobile profile and cart */}
           {isMobile && (
             <div className="ml-auto flex shrink-0 items-center gap-2">
+              <Button 
+                type="button"
+                className="icon-link relative"
+                aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+                onClick={toggleTheme}>
+                {isDarkMode ? (
+                  <Sun size={22} className="text-amber-400" />
+                ) : (
+                  <Moon size={22} />
+                )}
+              </Button>
               <Link
                 to={isLoggedIn ? "/user/profile" : "/user/signUp"}
                 aria-label={isLoggedIn ? "Profile" : "Register"}

@@ -10,7 +10,7 @@ function App() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/product" element={<Products />} />
+        <Route path="/products" element={<Products />} />
       </Route>
 
       <Route element={<AuthLayout />}>

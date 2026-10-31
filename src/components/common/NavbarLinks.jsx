@@ -2,7 +2,6 @@ import { Link, NavLink } from "react-router-dom";
 import {
   House,
   Info,
-  MessageSquareText,
   UserRound,
   UserRoundPlus,
   Heart,
@@ -11,16 +10,20 @@ import {
   Package,
   CircleHelp,
   Headphones,
+  Moon,
+  Sun,
 } from "lucide-react";
 import Button from "./Button";
+import { useTheme } from "../../context/ThemeContext";
 
 const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 // Desktop navigation links
 const desktopLinks = [
-  { to: "/", label: "Home", Icon: House },
-  { to: "/messageUs", label: "About Us", Icon: Info },
-  { to: "/messageUs", label: "Contact Us", Icon: MessageSquareText },
+  { to: "/", label: "Home"},
+  { to: "/products", label: "Shop"},
+  { to: "/aboutUs", label: "About Us"},
+  { to: "/messageUs", label: "Contact Us"},
 ];
 
 // Mobile shopping links
@@ -36,7 +39,7 @@ const menuLinks = [
 const helpLinks = [
   { to: "/help/faq", label: "FAQ", Icon: CircleHelp },
   { to: "/help/contact", label: "Contact us", Icon: Headphones },
-  { to: "/about", label: "About", Icon: Info },
+  { to: "/aboutUS", label: "About", Icon: Info },
 ];
 
 // Mobile legal links
@@ -63,38 +66,35 @@ function IconNavLink({ to, children, onClick }) {
 }
 
 const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount = 0,  onOpenCart, onClose, userAvatar}) => {
+  const {isDarkMode, toggleTheme} = useTheme()
   // Desktop navigation
   if (variant === "desktop") {
     return (
-      <nav
+      <div className="flex w-full items-center justify-between">
+        <nav
         aria-label="Main navigation"
-        className="ml-auto flex shrink-0 items-center gap-1 xl:gap-3"
-      >
-        {desktopLinks.map(({ to, label, Icon }) => (
+        className="mx-auto flex shrink-0 items-center gap-1 xl:gap-3">
+          {desktopLinks.map(({ to, label }) => (
           <NavLink key={label} to={to} className="icon-link">
-            <Icon size={21} />
-            <span className="text-xs">{label}</span>
+            <span className="text-sm">{label}</span>
           </NavLink>
-        ))}
+          ))}
+        </nav>
+        <nav aria-label="User actions" className="flex shrink-0 items-center gap-1 xl:gap-3">
 
-        <NavLink
-          to={isLoggedIn ? "/user/profile" : "/user/signUp"}
-          className="icon-link"
-        >
-          {isLoggedIn ? (
-            <UserRound size={22} />
+        <Button 
+          type="button"
+          className="icon-link relative"
+          aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          onClick={toggleTheme}>
+          {isDarkMode ? (
+            <Sun size={22} className="text-amber-400" />
           ) : (
-            <UserRoundPlus size={22} />
+            <Moon size={22} />
           )}
-
-          <span className="text-xs">
-            {isLoggedIn ? "Profile" : "Register"}
-          </span>
-        </NavLink>
-
+        </Button>
         <NavLink to="/wishlist" className="icon-link relative">
           <Heart size={21} />
-          <span className="text-xs">Wishlist</span>
 
           {wishlistCount > 0 && (
             <span className="absolute right-1 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-white">
@@ -110,7 +110,6 @@ const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount 
           onClick={onOpenCart}
         >
           <ShoppingCart size={22} />
-          <span className="text-xs">My Cart</span>
 
           {cartCount > 0 && (
             <span className="absolute right-1 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-white">
@@ -118,7 +117,18 @@ const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount 
             </span>
           )}
         </Button>
-      </nav>
+        <NavLink
+          to={isLoggedIn ? "/user/profile" : "/login"}
+          className="icon-link"
+        >
+          {isLoggedIn ? (
+            <UserRound size={22} />
+          ) : (
+            <UserRoundPlus size={22} />
+          )}
+        </NavLink>
+        </nav>
+      </div>
     );
   }
 
@@ -158,7 +168,7 @@ const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount 
             <span className="text-muted">|</span>
 
             <Link
-              to="/user/signUp"
+              to="/login"
               onClick={onClose}
               className="text-primary hover:underline"
             >
