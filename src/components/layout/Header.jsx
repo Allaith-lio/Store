@@ -1,42 +1,52 @@
-
 import { useEffect, useState } from "react";
-import { Link, NavLink} from "react-router-dom";
-import { Menu, House, Heart, UserRound, UserRoundPlus, MessageSquareText, ShoppingCart, Info} from "lucide-react";
+import { Link, NavLink } from "react-router-dom";
+import {
+  Menu,
+  House,
+  Heart,
+  UserRound,
+  UserRoundPlus,
+  MessageSquareText,
+  ShoppingCart,
+  Info,
+} from "lucide-react";
 import HeaderDrawers from "./HeaderDrawers";
 import Button from "../common/Button";
 
 export default function Header() {
-
   const [isMobile, setIsMobile] = useState(
     () =>
       typeof window !== "undefined" &&
-      window.matchMedia("(max-width: 991px)").matches
+      window.matchMedia("(max-width: 991px)").matches,
   );
 
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [cartItems, setCartItems] = useState([
     {
-    id: 1,
-    name: "Wireless Bluetooth Headphones",
-    price: 59.99,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80"
-  },
-  {
-    id: 2,
-    name: "Minimalist Leather Watch",
-    price: 129.50,
-    quantity: 2,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80"
-  },
-  {
-    id: 3,
-    name: "Ergonomic Coffee Mug",
-    price: 24.99,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80"
-  }
+      id: 1,
+      name: "Wireless Bluetooth Headphones",
+      price: 59.99,
+      quantity: 1,
+      image:
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80",
+    },
+    {
+      id: 2,
+      name: "Minimalist Leather Watch",
+      price: 129.5,
+      quantity: 2,
+      image:
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80",
+    },
+    {
+      id: 3,
+      name: "Ergonomic Coffee Mug",
+      price: 24.99,
+      quantity: 1,
+      image:
+        "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80",
+    },
   ]);
   const isLoggedIn = false;
   const wishlistCount = 0;
@@ -59,14 +69,11 @@ export default function Header() {
     };
   }, []);
 
-  const cartCount = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const subTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
-    0
+    0,
   );
 
   const handleQtyChange = (id, quantity) => {
@@ -74,14 +81,14 @@ export default function Header() {
 
     setCartItems((currentItems) =>
       currentItems.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      )
+        item.id === id ? { ...item, quantity } : item,
+      ),
     );
   };
 
   const handleRemoveItem = (id) => {
     setCartItems((currentItems) =>
-      currentItems.filter((item) => item.id !== id)
+      currentItems.filter((item) => item.id !== id),
     );
   };
 
@@ -110,14 +117,18 @@ export default function Header() {
             className="group flex items-center gap-2.5 py-2 transition-transform duration-300 hover:scale-[1.02]"
           >
             <div className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
-              <svg 
-                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor" 
+              <svg
+                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
                 strokeWidth="2"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
             </div>
             <div className="flex flex-col">
@@ -132,11 +143,11 @@ export default function Header() {
           {/* Desktop navigation */}
           {!isMobile && (
             <>
-            <div className="hidden lg:flex flex-1 items-center px-6">
-              <p className="max-w-xs text-sm leading-relaxed text-slate-500">
-                Everything you need, all in one place.
-              </p>
-            </div>
+              <div className="hidden lg:flex flex-1 items-center px-6">
+                <p className="max-w-xs text-sm leading-relaxed text-slate-500">
+                  Everything you need, all in one place.
+                </p>
+              </div>
               <nav
                 aria-label="Main navigation"
                 className="ml-auto flex shrink-0 items-center gap-1 xl:gap-3"
@@ -145,21 +156,22 @@ export default function Header() {
                   <House size={21} />
                   <span className="text-xs">Home</span>
                 </NavLink>
+      
+                  <NavLink
+                    to={isLoggedIn ? "/user/profile" : "/user/signUp"}
+                    className={"icon-link"}
+                  >
+                    {isLoggedIn ? (
+                      <UserRound size={22} />
+                    ) : (
+                      <UserRoundPlus size={22} />
+                    )}
 
-                <NavLink
-                  to={isLoggedIn ? "/user/profile" : "/user/signUp"}
-                  className={"icon-link"}
-                >
-                  {isLoggedIn ? (
-                    <UserRound size={22} />
-                  ) : (
-                    <UserRoundPlus size={22} />
-                  )}
-
-                  <span className="text-xs">
-                    {isLoggedIn ? "Profile" : "Register"}
-                  </span>
-                </NavLink>
+                    <span className="text-xs">
+                      {isLoggedIn ? "Profile" : "Register"}
+                    </span>
+                  </NavLink>
+            
 
                 <NavLink to="/messageUs" className={"icon-link"}>
                   <MessageSquareText size={21} />
@@ -170,10 +182,7 @@ export default function Header() {
                   <span className="text-xs">About Us</span>
                 </NavLink>
 
-                <NavLink
-                  to="/wishlist"
-                  className={`${"icon-link"} relative`}
-                >
+                <NavLink to="/wishlist" className={`${"icon-link"} relative`}>
                   <Heart size={21} />
                   <span className="text-xs">Wishlist</span>
 
@@ -184,10 +193,11 @@ export default function Header() {
                   )}
                 </NavLink>
                 <Button
-                type={"button"}
-                className={`${"icon-link"} relative`}
-                ariaLabel={`Open cart, ${cartCount} items`}
-                onClick={() => setShowCart(true)}>
+                  type={"button"}
+                  className={`${"icon-link"} relative`}
+                  ariaLabel={`Open cart, ${cartCount} items`}
+                  onClick={() => setShowCart(true)}
+                >
                   <ShoppingCart size={22} />
                   <span className="text-xs">My Cart</span>
 
@@ -199,7 +209,6 @@ export default function Header() {
                 </Button>
               </nav>
             </>
-            
           )}
 
           {/* Mobile profile and cart */}
@@ -217,10 +226,11 @@ export default function Header() {
                 )}
               </Link>
               <Button
-              type={"button"}
-              className={`relative rounded-control p-2 text-primary hover:bg-page`}
-              ariaLabel={`Open cart, ${cartCount} items`}
-              onClick={() => setShowCart(true)}>
+                type={"button"}
+                className={`relative rounded-control p-2 text-primary hover:bg-page`}
+                ariaLabel={`Open cart, ${cartCount} items`}
+                onClick={() => setShowCart(true)}
+              >
                 <ShoppingCart size={24} />
 
                 {cartCount > 0 && (
@@ -234,7 +244,7 @@ export default function Header() {
         </div>
       </header>
 
-      <HeaderDrawers 
+      <HeaderDrawers
         showMenu={showMenu}
         onCloseMenu={() => setShowMenu(false)}
         showCart={showCart}
