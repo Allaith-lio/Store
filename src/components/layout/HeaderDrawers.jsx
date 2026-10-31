@@ -1,38 +1,17 @@
 
 import { useEffect, useRef } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   X,
-  House,
-  List,
-  Heart,
-  Package,
-  CircleHelp,
-  Headphones,
   ShoppingCart,
   Trash2,
   Plus,
   Minus,
-  Info,
 } from "lucide-react";
 import Button from "../common/Button";
+import NavbarLinks from "../common/NavbarLinks";
+const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
-const defaultAvatar =
-  "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
-const menuLinks = [
-  { to: "/", label: "Home", Icon: House },
-  { to: "/products", label: "Products", Icon: List },
-  { to: "/wishlist", label: "Wishlist", Icon: Heart },
-  { to: "/myCart", label: "My Cart", Icon: ShoppingCart },
-  { to: "/user/profile#orders", label: "My orders", Icon: Package },
-];
-
-const helpLinks = [
-  { to: "/help/faq", label: "FAQ", Icon: CircleHelp },
-  { to: "/help/contact", label: "Contact us", Icon: Headphones },
-  { to: "/about", label: "About", Icon: Info },
-];
 
 function Drawer({ open, onClose, title, side, children }) {
   const closeButtonRef = useRef(null);
@@ -145,116 +124,6 @@ function Drawer({ open, onClose, title, side, children }) {
 
         {children}
       </aside>
-    </div>
-  );
-}
-
-function IconNavLink({ to, children, onClick }) {
-  return (
-    <NavLink
-      to={to}
-      onClick={onClick}
-      className={({ isActive }) =>
-        `flex items-center gap-3 rounded-control px-3 py-3 transition-colors ${
-          isActive
-            ? "bg-primary/10 font-semibold text-primary"
-            : "text-ink hover:bg-page"
-        }`
-      }
-    >
-      {children}
-    </NavLink>
-  );
-}
-
-function MobileNavigation({onClose}) {
-  return (
-    <div className="flex-1 overflow-y-auto">
-      {/* Temporary profile section */}
-      <div className="border-b border-line bg-page p-4">
-        <div className="mb-3 flex items-center gap-3">
-          <img
-            src={defaultAvatar}
-            alt="Default profile"
-            className="h-12 w-12 rounded-full border-2 border-primary object-cover"
-          />
-
-          <div>
-            <p className="font-heading font-semibold text-ink">
-              Welcome!
-            </p>
-            <p className="text-sm text-muted">
-              Sign in to your account
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm font-semibold">
-          <Link
-            to="/user/login"
-            onClick={onClose}
-            className="text-primary hover:underline"
-          >
-            Sign in
-          </Link>
-
-          <span className="text-muted">|</span>
-
-          <Link
-            to="/user/signUp"
-            onClick={onClose}
-            className="text-primary hover:underline"
-          >
-            Register
-          </Link>
-        </div>
-      </div>
-
-      {/* Shopping navigation */}
-      <nav
-        aria-label="Mobile shopping navigation"
-        className="flex flex-col gap-1 border-b border-line p-3"
-      >
-        {menuLinks.map(({ to, label, Icon }) => (
-          <IconNavLink key={to} to={to} onClick={onClose}>
-            <Icon size={20} className="shrink-0 text-muted" />
-            <span>{label}</span>
-          </IconNavLink>
-        ))}
-      </nav>
-
-      {/* Help links */}
-      <nav
-        aria-label="Help and information"
-        className="flex flex-col gap-1 border-b border-line p-3"
-      >
-        {helpLinks.map(({ to, label, Icon }) => (
-          <IconNavLink key={to} to={to} onClick={onClose}>
-            <Icon size={19} className="shrink-0 text-muted" />
-            <span>{label}</span>
-          </IconNavLink>
-        ))}
-      </nav>
-
-      {/* Additional links */}
-      <nav
-        aria-label="Legal and administration"
-        className="flex flex-col gap-1 p-3"
-      >
-        {[
-          { to: "/help/terms", label: "Terms & Conditions" },
-          { to: "/help/privacy", label: "Privacy policy" },
-        ].map(({ to, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            onClick={onClose}
-            className="rounded-control px-3 py-3 text-sm text-muted transition-colors hover:bg-page hover:text-primary"
-          >
-            {label}
-          </NavLink>
-        ))}
-      </nav>
     </div>
   );
 }
@@ -409,7 +278,7 @@ function CartContent({
   );
 }
 
-export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseCart, cartItems, subTotal, onQtyChange, onRemoveItem,}) {
+export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseCart, cartItems, subTotal, onQtyChange, onRemoveItem, wishlistCount}) {
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   return (
     <>
@@ -444,7 +313,12 @@ export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseC
           </Link>}
         side="left"
       >
-        <MobileNavigation onClose={onCloseMenu}/>
+        <NavbarLinks
+          variant="mobile"
+          onClose={onCloseMenu}
+          wishlistCount={wishlistCount}
+          avatar={defaultAvatar}
+        />
       </Drawer>
 
       <Drawer
