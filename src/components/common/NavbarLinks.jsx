@@ -20,16 +20,16 @@ const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 // Desktop navigation links
 const desktopLinks = [
-  { to: "/", label: "Home"},
-  { to: "/products", label: "Shop"},
-  { to: "/aboutUs", label: "About Us"},
-  { to: "/messageUs", label: "Contact Us"},
+  { to: "/", label: "Home" },
+  { to: "/products", label: "Shop" },
+  { to: "/aboutUs", label: "About Us" },
+  { to: "/messageUs", label: "Contact Us" },
 ];
 
 // Mobile shopping links
 const menuLinks = [
   { to: "/", label: "Home", Icon: House },
-  { to: "/products", label: "Products", Icon: List },
+  { to: "/products", label: "Shop", Icon: List },
   { to: "/wishlist", label: "Wishlist", Icon: Heart, badge: "wishlist" },
   { to: "/myCart", label: "My Cart", Icon: ShoppingCart },
   { to: "/user/profile#orders", label: "My orders", Icon: Package },
@@ -65,68 +65,78 @@ function IconNavLink({ to, children, onClick }) {
   );
 }
 
-const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount = 0,  onOpenCart, onClose, userAvatar}) => {
-  const {isDarkMode, toggleTheme} = useTheme()
+const NavbarLinks = ({
+  variant,
+  isLoggedIn = false,
+  wishlistCount = 0,
+  cartCount = 0,
+  onOpenCart,
+  onClose,
+  userAvatar,
+}) => {
+  const { isDarkMode, toggleTheme } = useTheme();
   // Desktop navigation
   if (variant === "desktop") {
     return (
       <div className="flex w-full items-center justify-between">
         <nav
-        aria-label="Main navigation"
-        className="mx-auto flex shrink-0 items-center gap-1 xl:gap-3">
+          aria-label="Main navigation"
+          className="mx-auto flex shrink-0 items-center gap-1 xl:gap-3"
+        >
           {desktopLinks.map(({ to, label }) => (
-          <NavLink key={label} to={to} className="icon-link">
-            <span className="text-sm">{label}</span>
-          </NavLink>
+            <NavLink key={label} to={to} className="icon-link">
+              <span className="text-sm">{label}</span>
+            </NavLink>
           ))}
         </nav>
-        <nav aria-label="User actions" className="flex shrink-0 items-center gap-1 xl:gap-3">
-
-        <Button 
-          type="button"
-          className="icon-link relative"
-          aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-          onClick={toggleTheme}>
-          {isDarkMode ? (
-            <Sun size={22} className="text-amber-400" />
-          ) : (
-            <Moon size={22} />
-          )}
-        </Button>
-        <NavLink to="/wishlist" className="icon-link relative">
-          <Heart size={21} />
-
-          {wishlistCount > 0 && (
-            <span className="absolute right-1 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-white">
-              {wishlistCount}
-            </span>
-          )}
-        </NavLink>
-
-        <Button
-          type="button"
-          className="icon-link relative"
-          ariaLabel={`Open cart, ${cartCount} items`}
-          onClick={onOpenCart}
+        <nav
+          aria-label="User actions"
+          className="flex shrink-0 items-center gap-1 xl:gap-3"
         >
-          <ShoppingCart size={22} />
+          <Button
+            type="button"
+            className="icon-link relative"
+            aria-label={
+              isDarkMode ? "Switch to light mode" : "Switch to dark mode"
+            }
+            onClick={toggleTheme}
+          >
+            {isDarkMode ? (
+              <Sun size={22} className="text-amber-400" />
+            ) : (
+              <Moon size={22} />
+            )}
+          </Button>
+          <NavLink to="/wishlist" className="icon-link relative">
+            <Heart size={21} />
 
-          {cartCount > 0 && (
-            <span className="absolute right-1 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-white">
-              {cartCount}
-            </span>
-          )}
-        </Button>
-        <NavLink
-          to={isLoggedIn ? "/user/profile" : "/login"}
-          className="icon-link"
-        >
-          {isLoggedIn ? (
-            <UserRound size={22} />
-          ) : (
-            <UserRoundPlus size={22} />
-          )}
-        </NavLink>
+            {wishlistCount > 0 && (
+              <span className="absolute right-1 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-white">
+                {wishlistCount}
+              </span>
+            )}
+          </NavLink>
+
+          <Button
+            type="button"
+            className="icon-link relative"
+            ariaLabel={`Open cart, ${cartCount} items`}
+            onClick={onOpenCart}
+          >
+            <ShoppingCart size={22} />
+
+            {cartCount > 0 && (
+              <span className="absolute right-1 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-white">
+                {cartCount}
+              </span>
+            )}
+          </Button>
+          <NavLink
+            to={isLoggedIn ? "/user/profile" : "/login"}
+            className="icon-link"
+          >
+            {isLoggedIn ? <UserRound size={22} /> : <UserRoundPlus size={22} />}
+          </NavLink>
         </nav>
       </div>
     );
@@ -136,7 +146,6 @@ const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount 
   if (variant === "mobile") {
     return (
       <div className="flex-1 overflow-y-auto">
-
         {/* Profile section */}
         <div className="border-b border-line bg-page p-4">
           <div className="mb-3 flex items-center gap-3">
@@ -147,12 +156,8 @@ const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount 
             />
 
             <div>
-              <p className="font-heading font-semibold text-ink">
-                Welcome!
-              </p>
-              <p className="text-sm text-muted">
-                Sign in to your account
-              </p>
+              <p className="font-heading font-semibold text-ink">Welcome!</p>
+              <p className="text-sm text-muted">Sign in to your account</p>
             </div>
           </div>
 
@@ -183,11 +188,7 @@ const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount 
           className="flex flex-col gap-1 border-b border-line p-3"
         >
           {menuLinks.map(({ to, label, Icon, badge }) => (
-            <IconNavLink
-              key={to}
-              to={to}
-              onClick={onClose}
-            >
+            <IconNavLink key={to} to={to} onClick={onClose}>
               <Icon size={20} className="shrink-0 text-muted" />
               <span>{label}</span>
 
@@ -206,11 +207,7 @@ const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount 
           className="flex flex-col gap-1 border-b border-line p-3"
         >
           {helpLinks.map(({ to, label, Icon }) => (
-            <IconNavLink
-              key={to}
-              to={to}
-              onClick={onClose}
-            >
+            <IconNavLink key={to} to={to} onClick={onClose}>
               <Icon size={19} className="shrink-0 text-muted" />
               <span>{label}</span>
             </IconNavLink>
@@ -233,7 +230,6 @@ const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount 
             </NavLink>
           ))}
         </nav>
-
       </div>
     );
   }
@@ -241,4 +237,4 @@ const NavbarLinks = ({variant, isLoggedIn = false, wishlistCount = 0, cartCount 
   return null;
 };
 
-export default NavbarLinks
+export default NavbarLinks;
