@@ -1,43 +1,46 @@
-
 import { useEffect, useState } from "react";
-import { Link} from "react-router-dom";
-import { Menu, UserRound, UserRoundPlus, ShoppingCart} from "lucide-react";
+
+import { Link } from "react-router-dom";
+import { Menu, UserRound, UserRoundPlus, ShoppingCart } from "lucide-react";
+
 import HeaderDrawers from "./HeaderDrawers";
 import Button from "../common/Button";
 import NavbarLinks from "../common/NavbarLinks";
 
 export default function Header() {
-
   const [isMobile, setIsMobile] = useState(
     () =>
       typeof window !== "undefined" &&
-      window.matchMedia("(max-width: 991px)").matches
+      window.matchMedia("(max-width: 991px)").matches,
   );
 
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [cartItems, setCartItems] = useState([
     {
-    id: 1,
-    name: "Wireless Bluetooth Headphones",
-    price: 59.99,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80"
-  },
-  {
-    id: 2,
-    name: "Minimalist Leather Watch",
-    price: 129.50,
-    quantity: 2,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80"
-  },
-  {
-    id: 3,
-    name: "Ergonomic Coffee Mug",
-    price: 24.99,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80"
-  }
+      id: 1,
+      name: "Wireless Bluetooth Headphones",
+      price: 59.99,
+      quantity: 1,
+      image:
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80",
+    },
+    {
+      id: 2,
+      name: "Minimalist Leather Watch",
+      price: 129.5,
+      quantity: 2,
+      image:
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80",
+    },
+    {
+      id: 3,
+      name: "Ergonomic Coffee Mug",
+      price: 24.99,
+      quantity: 1,
+      image:
+        "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80",
+    },
   ]);
   const isLoggedIn = false;
   const wishlistCount = 0;
@@ -60,14 +63,11 @@ export default function Header() {
     };
   }, []);
 
-  const cartCount = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const subTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
-    0
+    0,
   );
 
   const handleQtyChange = (id, quantity) => {
@@ -75,14 +75,14 @@ export default function Header() {
 
     setCartItems((currentItems) =>
       currentItems.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      )
+        item.id === id ? { ...item, quantity } : item,
+      ),
     );
   };
 
   const handleRemoveItem = (id) => {
     setCartItems((currentItems) =>
-      currentItems.filter((item) => item.id !== id)
+      currentItems.filter((item) => item.id !== id),
     );
   };
 
@@ -111,14 +111,18 @@ export default function Header() {
             className="group flex items-center gap-2.5 py-2 transition-transform duration-300 hover:scale-[1.02]"
           >
             <div className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
-              <svg 
-                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor" 
+              <svg
+                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
                 strokeWidth="2"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
             </div>
             <div className="flex flex-col">
@@ -138,6 +142,7 @@ export default function Header() {
                   Everything you need, all in one place.
                 </p>
               </div>
+
               <NavbarLinks
                 variant="desktop"
                 isLoggedIn={isLoggedIn}
@@ -145,9 +150,7 @@ export default function Header() {
                 cartCount={cartCount}
                 onOpenCart={() => setShowCart(true)}
               />
-              
             </>
-            
           )}
 
           {/* Mobile profile and cart */}
@@ -165,10 +168,11 @@ export default function Header() {
                 )}
               </Link>
               <Button
-              type={"button"}
-              className={`relative rounded-control p-2 text-primary hover:bg-page`}
-              ariaLabel={`Open cart, ${cartCount} items`}
-              onClick={() => setShowCart(true)}>
+                type={"button"}
+                className={`relative rounded-control p-2 text-primary hover:bg-page`}
+                ariaLabel={`Open cart, ${cartCount} items`}
+                onClick={() => setShowCart(true)}
+              >
                 <ShoppingCart size={24} />
 
                 {cartCount > 0 && (
@@ -182,7 +186,7 @@ export default function Header() {
         </div>
       </header>
 
-      <HeaderDrawers 
+      <HeaderDrawers
         showMenu={showMenu}
         onCloseMenu={() => setShowMenu(false)}
         showCart={showCart}
