@@ -8,6 +8,7 @@ import {
   Volume2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import Button from "../common/Button";
 
 const products = [
   {
@@ -184,14 +185,12 @@ export default function ProductPage() {
               </p>
             </div>
           </div>
-
-          <button
-            type="button"
-            className="mt-6 inline-flex w-full items-center justify-center gap-2.5 rounded-control bg-primary px-6 py-3.5 text-base font-semibold text-white shadow-md shadow-primary/25 transition hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg hover:shadow-primary/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-0 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <Button
+          type="button"
+          className="btn btn-primary w-full mt-6 py-3.5">
             <ShoppingBag size={19} aria-hidden="true" />
             Buy now
-          </button>
+          </Button>
         </div>
       </section>
 

@@ -1,9 +1,9 @@
-import StoreHeroDemo from '../components/StoreHeroDemo'
+import StoreHeroDemo from "../components/layout/StoreHeroDemo"
 
 export const Home = () => {
   return (
-    <div>
+    <>
       <StoreHeroDemo />
-    </div>
+    </>
   )
 }
