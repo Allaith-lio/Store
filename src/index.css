@@ -39,7 +39,6 @@
   --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* الثيم الداكن خارج الـ root وفي النطاق الصحيح */
 [data-theme="dark"] {
   color-scheme: dark;
 

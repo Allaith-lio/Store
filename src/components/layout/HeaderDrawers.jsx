@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Button from "../common/Button";
 import NavbarLinks from "../common/NavbarLinks";
+import UserProfile from "../../pages/UserProfile";
 const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 
@@ -184,7 +185,7 @@ function CartContent({
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="line-clamp-2 font-semibold text-ink">
+                    <h3 className="line-clamp-2 font-semibold text-base text-ink">
                       {item.name}
                     </h3>
 
@@ -278,7 +279,7 @@ function CartContent({
   );
 }
 
-export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseCart, cartItems, subTotal, onQtyChange, onRemoveItem, wishlistCount}) {
+export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseCart, showProfile, onCloseProfile, cartItems, subTotal, onQtyChange, onRemoveItem, wishlistCount}) {
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   return (
     <>
@@ -303,7 +304,7 @@ export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseC
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="font-logo text-3xl leading-none logo-gradient drop-shadow-xs pt-1 px-1 inline-block">
+              <span className="font-logo font-bold text-3xl leading-none logo-gradient drop-shadow-xs pt-1 px-1 inline-block">
                 Omni
               </span>
               <span className="-mt-1 font-body text-[10px] font-bold tracking-widest text-muted uppercase">
@@ -334,6 +335,16 @@ export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseC
           onRemoveItem={onRemoveItem}
           onClose={onCloseCart}
         />
+      </Drawer>
+            <Drawer
+        open={showProfile}
+        onClose={onCloseProfile}
+        title="My Account"
+        side="right"
+      >
+        <div className="flex-1 overflow-y-auto">
+          <UserProfile />
+        </div>
       </Drawer>
     </>
   );

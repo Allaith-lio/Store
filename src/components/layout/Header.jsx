@@ -23,6 +23,7 @@ export default function Header() {
 
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -49,7 +50,7 @@ export default function Header() {
         "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80",
     },
   ]);
-  const isLoggedIn = false;
+  const isLoggedIn = true;
   const wishlistCount = 0;
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   const subTotal = cartItems.reduce(
@@ -132,7 +133,7 @@ export default function Header() {
               <span className="font-logo text-3xl leading-none logo-gradient font-bold drop-shadow-xs pt-1 px-1 inline-block">
                 Omni
               </span>
-              <span className="-mt-1 font-body text-[10px] font-bold tracking-widest text-muted uppercase">
+              <span className="-mt-1  text-[10px] font-bold tracking-widest text-muted uppercase">
                 Store
               </span>
             </div>
@@ -146,6 +147,7 @@ export default function Header() {
                 wishlistCount={wishlistCount}
                 cartCount={cartCount}
                 onOpenCart={() => setShowCart(true)}
+                onOpenProfile={() => setShowProfile(true)}
               />
             </>
           )}
@@ -167,17 +169,24 @@ export default function Header() {
                   <Moon size={22} />
                 )}
               </Button>
-              <Link
-                to={isLoggedIn ? "/user/profile" : "/user/signUp"}
-                aria-label={isLoggedIn ? "Profile" : "Register"}
-                className="rounded-control p-2 text-ink hover:bg-page"
-              >
-                {isLoggedIn ? (
+              {isLoggedIn ? (
+                <button
+                  type="button"
+                  onClick={() => setShowProfile(true)}
+                  aria-label="Open profile"
+                  className="rounded-control p-2 text-ink hover:bg-page"
+                >
                   <UserRound size={22} />
-                ) : (
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  aria-label="Register"
+                  className="rounded-control p-2 text-ink hover:bg-page"
+                >
                   <UserRoundPlus size={22} />
-                )}
-              </Link>
+                </Link>
+              )}
               <Button
                 type={"button"}
                 className={`relative rounded-control p-2 text-primary hover:bg-page`}
@@ -202,6 +211,8 @@ export default function Header() {
         onCloseMenu={() => setShowMenu(false)}
         showCart={showCart}
         onCloseCart={() => setShowCart(false)}
+        showProfile={showProfile}
+        onCloseProfile={() => setShowProfile(false)}
         cartItems={cartItems}
         subTotal={subTotal}
         onQtyChange={handleQtyChange}

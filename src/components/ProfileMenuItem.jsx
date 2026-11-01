@@ -1,21 +1,42 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react'
 
-import React from 'react'
-
-const profileMenuItem = ({icon:Icon ,title ,onClick}) => {
+const ProfileMenuItem = ({
+  icon: Icon,
+  title,
+  onClick,
+  color = 'bg-primary/10 text-primary',
+  danger = false,
+}) => {
   return (
-   <>
-   <button onClick={onClick} className='flex items-center justify-between w-full px-3 py-5 
-   hover:bg-blue-50 transition-rounded-xl'>
-    <div className='flex items-center gap-5'>
-        <Icon size={23} className='text-gray-600'/>
-        <span className='text-gray-700 font-meduium'>{title}</span>
-    </div>
-    <ChevronRight size={20} className='text-gray-400'/>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-3.5 text-left transition-colors ${
+        danger ? 'hover:bg-red-500/10' : 'hover:bg-page'
+      }`}
+    >
+      <span className="flex items-center gap-4">
+        <span
+          className={`flex size-10 shrink-0 items-center justify-center rounded-control ${
+            danger ? 'bg-red-500/10 text-red-500' : color
+          }`}
+        >
+          <Icon size={20} />
+        </span>
 
-   </button>
-   </>
+        <span
+          className={`text-sm font-semibold ${danger ? 'text-red-500' : 'text-ink'}`}
+        >
+          {title}
+        </span>
+      </span>
+
+      <ChevronRight
+        size={18}
+        className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
+      />
+    </button>
   )
 }
 
-export default profileMenuItem
+export default ProfileMenuItem

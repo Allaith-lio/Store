@@ -10,9 +10,9 @@ const shopLinks = [
 ];
 
 const supportLinks = [
-  { label: "About Us", to: "/help/about" },
+  { label: "About Us", to: "/aboutUs" },
   { label: "FAQs", to: "/help/faq" },
-  { label: "Contact Us", to: "/help/contact" },
+  { label: "Contact Us", to: "/contactUs" },
 ];
 
 const legalLinks = [
@@ -41,7 +41,7 @@ const benefits = [
 function FooterLinks({ title, links }) {
   return (
     <div>
-      <h3 className="mb-5 font-body text-sm font-bold tracking-wide text-ink">
+      <h3 className="mb-5 font-heading text-sm font-bold tracking-wide text-ink">
         {title}
       </h3>
 
@@ -74,7 +74,7 @@ export default function Footer() {
               </div>
 
               <div>
-                <h4 className="font-body text-sm font-bold text-ink">
+                <h4 className="font-heading text-sm font-bold text-ink">
                   {title}
                 </h4>
                 <p className="mt-1 text-xs leading-5 text-muted">
@@ -137,7 +137,7 @@ export default function Footer() {
 
           {/* Account */}
           <div className="lg:col-span-3">
-            <h3 className="mb-5 font-body text-sm font-bold tracking-wide text-ink">
+            <h3 className="mb-5 font-heading text-sm font-bold tracking-wide text-ink">
               Your Account
             </h3>
 

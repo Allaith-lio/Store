@@ -23,7 +23,8 @@ const desktopLinks = [
   { to: "/", label: "Home" },
   { to: "/products", label: "Shop" },
   { to: "/aboutUs", label: "About Us" },
-  { to: "/messageUs", label: "Contact Us" },
+  { to: "/contactUs", label: "Contact Us" },
+  { to: "/faq", label: "FAQ" },
 ];
 
 // Mobile shopping links
@@ -37,9 +38,9 @@ const menuLinks = [
 
 // Mobile help links
 const helpLinks = [
-  { to: "/help/faq", label: "FAQ", Icon: CircleHelp },
-  { to: "/help/contact", label: "Contact us", Icon: Headphones },
-  { to: "/aboutUS", label: "About", Icon: Info },
+  { to: "/faq", label: "FAQ", Icon: CircleHelp },
+  { to: "/contactUs", label: "Contact Us", Icon: Headphones },
+  { to: "/aboutUs", label: "About Us", Icon: Info },
 ];
 
 // Mobile legal links
@@ -71,6 +72,7 @@ const NavbarLinks = ({
   wishlistCount = 0,
   cartCount = 0,
   onOpenCart,
+  onOpenProfile,
   onClose,
   userAvatar,
 }) => {
@@ -131,12 +133,20 @@ const NavbarLinks = ({
               </span>
             )}
           </Button>
-          <NavLink
-            to={isLoggedIn ? "/user/profile" : "/login"}
-            className="icon-link"
-          >
-            {isLoggedIn ? <UserRound size={22} /> : <UserRoundPlus size={22} />}
-          </NavLink>
+          {isLoggedIn ? (
+            <button
+              type="button"
+              onClick={onOpenProfile}
+              aria-label="Open profile"
+              className="icon-link"
+            >
+              <UserRound size={22} />
+            </button>
+          ) : (
+            <NavLink to="/login" className="icon-link">
+              <UserRoundPlus size={22} />
+            </NavLink>
+          )}
         </nav>
       </div>
     );

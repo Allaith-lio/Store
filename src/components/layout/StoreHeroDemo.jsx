@@ -82,10 +82,11 @@ export default function StoreHeroDemo() {
 					<ShoppingBag className="size-5 text-ink" />
 				</div>
 
-				<h1 className="font-body font-bold text-4xl md:text-6xl leading-tight max-w-3xl mx-auto">
-					Everything You Love, All in One Store
-				</h1>
-
+        <h1 className=" text-4xl md:text-6xl leading-tight max-w-3xl mx-auto">
+            Everything You{' '} 
+            <span className="font-logo logo-gradient text-[1.3em]">Love,</span><br/>
+            All in One Store
+          </h1>
 				<div className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 items-center">
           <div className="flex items-center -space-x-3">
               <img 
@@ -158,12 +159,12 @@ export default function StoreHeroDemo() {
 				<div className="max-w-xs">
 					<div className="flex items-center justify-between">
 						<div className="flex items-baseline gap-3">
-							<span className="text-5xl font-light">01</span>
+							<span className="text-5xl font-heading">01</span>
 							<span className="text-xs">Featured</span>
 						</div>
 						<ArrowRight className="size-5" />
 					</div>
-					<h3 className="mt-3 font-body font-bold">
+					<h3 className="mt-3">
 						Discover Top Picks Across Every Category
 					</h3>
 				</div>
