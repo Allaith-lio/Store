@@ -8,7 +8,7 @@ import ShopProducts from "./pages/ShopProducts";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import FAQ from "./pages/FAQ";
-
+import ProductPage from "./components/Product/ProductPage";
 
 function App() {
   return (

@@ -107,6 +107,10 @@
     @apply bg-linear-to-b from-primary to-primary-hover text-white shadow-md shadow-primary/30 inset-shadow-xs inset-shadow-white/25 hover:shadow-lg hover:shadow-primary/40 hover:brightness-110;
   }
 
+  .btn-wishlist {
+    @apply bg-linear-to-b from-amber-300 to-amber-500 text-amber-950 shadow-md shadow-amber-500/25 inset-shadow-xs inset-shadow-white/50 hover:shadow-lg hover:shadow-amber-500/40 hover:brightness-105;
+  }
+
   .btn-secondary {
     @apply bg-linear-to-b from-secondary to-secondary-hover text-white shadow-md shadow-secondary/25 inset-shadow-xs inset-shadow-white/15 hover:shadow-lg hover:brightness-110;
   }
