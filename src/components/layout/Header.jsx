@@ -51,7 +51,7 @@ export default function Header() {
     },
   ]);
   const isLoggedIn = true;
-  const wishlistCount = 0;
+  // const wishlistCount = 0;
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   const subTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -144,7 +144,6 @@ export default function Header() {
               <NavbarLinks
                 variant="desktop"
                 isLoggedIn={isLoggedIn}
-                wishlistCount={wishlistCount}
                 cartCount={cartCount}
                 onOpenCart={() => setShowCart(true)}
                 onOpenProfile={() => setShowProfile(true)}
@@ -217,7 +216,6 @@ export default function Header() {
         subTotal={subTotal}
         onQtyChange={handleQtyChange}
         onRemoveItem={handleRemoveItem}
-        wishlistCount={wishlistCount}
       />
     </>
   );

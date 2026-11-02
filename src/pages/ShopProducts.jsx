@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { Search, SlidersHorizontal, Star } from "lucide-react";
-import ProductCard from "../components/product/ProductCard";
+import { ChevronLeft, ChevronRight, Search, SlidersHorizontal } from "lucide-react";
+import ProductCard from "../components/Product/ProductCard";
 
-const products = [
+export const products = [
   {
     id: 1,
     name: "Wireless Bluetooth Headphones",
@@ -57,6 +57,69 @@ const products = [
     image:
       "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=900&q=85",
   },
+  {
+    id: 7,
+    name: "Classic Ceramic Mug",
+    category: "Home",
+    price: 18.0,
+    rating: 4.5,
+    image:
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=900&q=85",
+  },
+  {
+    id: 8,
+    name: "Morning Coffee Mug",
+    category: "Home",
+    price: 18.0,
+    rating: 4.5,
+    image:
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=900&q=85",
+  },
+  {
+    id: 9,
+    name: "Artisan Coffee Mug",
+    category: "Home",
+    price: 18.0,
+    rating: 4.5,
+    image:
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=900&q=85",
+  },
+  {
+    id: 10,
+    name: "Office Coffee Mug",
+    category: "Home",
+    price: 18.0,
+    rating: 4.5,
+    image:
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=900&q=85",
+  },
+  {
+    id: 11,
+    name: "Travel Coffee Mug",
+    category: "Home",
+    price: 18.0,
+    rating: 4.5,
+    image:
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=900&q=85",
+  },
+  {
+    id: 12,
+    name: "Vintage Coffee Mug",
+    category: "Home",
+    price: 18.0,
+    rating: 4.5,
+    image:
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=900&q=85",
+  },
+  {
+    id: 13,
+    name: "Golden Coffee Mug",
+    category: "Home",
+    price: 22.0,
+    rating: 4.8,
+    image:
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=900&q=85",
+  }
 ];
 
 const categories = ["All", "Electronics", "Accessories", "Home", "Clothing"];
@@ -65,6 +128,8 @@ const ShopProducts = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("default");
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsInPage = 8;
 
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -86,10 +151,23 @@ const ShopProducts = () => {
     });
   }, [search, category, sort]);
 
+  const indexOfLastItem = currentPage * productsInPage;
+  const indexOfFirstItem = indexOfLastItem - productsInPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredProducts.length / productsInPage);
+
   const clearFilters = () => {
     setSearch("");
     setCategory("All");
     setSort("default");
+    setCurrentPage(1);
+  };
+
+  const getPageNumbers = () => {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
   };
 
   return (
@@ -115,7 +193,10 @@ const ShopProducts = () => {
             <input
               type="search"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
               placeholder="Search products..."
               className="h-12 w-full rounded-control border border-line bg-page pl-11 pr-4 text-sm text-ink placeholder:text-[grey] focus:border-primary focus:outline-none"
             />
@@ -128,7 +209,10 @@ const ShopProducts = () => {
             />
             <select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => {
+                setCategory(e.target.value);
+                setCurrentPage(1);
+              }}
               className="h-12 w-full cursor-pointer appearance-none rounded-control border border-line bg-page pl-11 pr-9 text-sm text-ink focus:border-primary focus:outline-none"
             >
               {categories.map((item) => (
@@ -142,7 +226,10 @@ const ShopProducts = () => {
           <div className="lg:w-48">
             <select
               value={sort}
-              onChange={(e) => setSort(e.target.value)}
+              onChange={(e) => {
+                setSort(e.target.value);
+                setCurrentPage(1);
+              }}
               className="h-12 w-full cursor-pointer rounded-control appearance-none border border-line bg-page px-3 text-sm text-ink focus:border-primary focus:outline-none"
             >
               <option value="default">Sort by default</option>
@@ -172,56 +259,50 @@ const ShopProducts = () => {
       </div>
 
       {filteredProducts.length > 0 ? (
-        <div className="mt-5 grid grid-cols-1 gap-5 min-[451px]:grid-cols-2 min-[791px]:grid-cols-3 min-[1024px]:grid-cols-4">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="flex h-full cursor-pointer flex-col overflow-hidden rounded-[15px] border border-line bg-surface shadow-card transition duration-300 hover:scale-102 hover:shadow-lg"
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="aspect-[5/3] w-full shrink-0 object-cover"
-              />
-              <div className="flex flex-1 flex-col p-4 sm:p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                  {product.category}
-                </p>
-                <h2 className="mt-2 text-lg leading-tight text-ink">
-                  {product.name}
-                </h2>
-                <div className="mt-4 flex items-center justify-between gap-2">
-                  <span className="text-lg font-bold text-primary">
-                    ${product.price.toFixed(2)}
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-[grey]">
-                    <Star
-                      size={16}
-                      className="text-accent"
-                      fill="currentColor"
-                    />
-                    {product.rating}
-                  </span>
-                </div>
-                <div className="mt-auto grid grid-cols-2 gap-2 pt-5">
-                  <button
-                    type="button"
-                    className="btn btn-primary h-11 w-full whitespace-nowrap px-2 text-xs sm:px-3 sm:text-sm"
-                  >
-                    Add To Cart
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-outline h-11 w-full whitespace-nowrap px-2 text-xs sm:px-3 sm:text-sm"
-                  >
-                    More Details
-                  </button>
-                </div>
-              </div>
+        <>
+          <div className="mt-5 grid grid-cols-1 gap-5 min-[451px]:grid-cols-2 min-[791px]:grid-cols-3 min-[1024px]:grid-cols-4">
+            {currentProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
+                disabled={currentPage === 1}
+                className="btn btn-primary h-11 gap-2 px-3 sm:px-4 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ChevronLeft size={18} />
+                Previous
+              </button>
+
+              {getPageNumbers().map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => setCurrentPage(page)}
+                  className={`h-11 min-w-11 cursor-pointer rounded-control px-3 text-sm font-semibold transition ${currentPage === page
+                    ? "bg-primary text-white shadow-md"
+                    : "border border-line bg-surface text-ink hover:border-primary hover:text-primary"
+                    }`}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.min(page + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="btn btn-primary h-11 gap-2 px-3 sm:px-4 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Next
+                <ChevronRight size={18} />
+              </button>
             </div>
-            // <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+          )}
+        </>
       ) : (
         <div className="mt-5 px-4 py-16 text-center">
           <Search className="mx-auto text-[grey]" size={32} />

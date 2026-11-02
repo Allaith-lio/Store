@@ -8,13 +8,14 @@ import ShopProducts from "./pages/ShopProducts";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import FAQ from "./pages/FAQ";
-import ProductPage from "./components/Product/ProductPage";
+import Wishlist from "./pages/Wishlist";
 
 function App() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/products" element={<ShopProducts />} />
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/contactUs" element={<ContactUs />} />
