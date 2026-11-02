@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, SlidersHorizontal, Star } from "lucide-react";
+import { Search, SlidersHorizontal, SparklesIcon, Star } from "lucide-react";
 import ProductCard from "../components/product/ProductCard";
 
 const products = [
@@ -93,19 +93,25 @@ const ShopProducts = () => {
   };
 
   return (
-    <div className="px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-      <header className="text-center">
-        <span className="inline-block rounded-full bg-primary/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-2xl py-12 text-center md:py-20">
+        <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-primary shadow-card">
+          <SparklesIcon className="size-4 text-accent" />
           Our collection
         </span>
-        <h1 className="mt-2 text-ink">Explore Our Products</h1>
-        <p className="mt-3 leading-7 text-[grey] sm:text-lg">
+
+        <h1 className="mt-6">
+          Explore Our{' '}
+          <span className="font-logo logo-gradient text-[1.3em]">Products </span>{' '} here
+        </h1>
+
+        <p className="mt-5 leading-8 text-muted">
           Discover our current collection and find everything you're looking for
           in one place.
         </p>
-      </header>
+      </section>
 
-      <div className="mt-8 rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
+      <div className=" rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search

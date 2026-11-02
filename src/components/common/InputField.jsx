@@ -19,9 +19,11 @@ function InputField({
   minLength,
   multiline = false,
   rows = 5,
+  icon,
 }) {
-  const Icon = icons[name];
+  const Icon = icon || icons[name];
   const Field = multiline ? "textarea" : "input";
+
   return (
     <label
       htmlFor={name}
@@ -38,7 +40,7 @@ function InputField({
           <Icon
             size={18}
             aria-hidden="true"
-            className={multiline ? "mt-3.5 shrink-0" : ""}
+            className={multiline ? "mt-3.5 shrink-0" : "shrink-0"}
           />
         )}
 
