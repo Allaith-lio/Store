@@ -17,7 +17,7 @@
   --font-heading: "Fraunces", Georgia, serif;
   --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --font-logo: "Water Brush", cursive;
-  
+
   /* Typography */
   --text-h1: clamp(2.25rem, 1.8rem + 2vw, 3.5rem);
   --text-h1--line-height: 1.1;
@@ -32,7 +32,8 @@
 
   /* Shadows */
   --shadow-card: 0 1px 2px rgb(30 35 33 / 0.05), 0 2px 8px rgb(30 35 33 / 0.06);
-  --shadow-raised: 0 2px 4px rgb(30 35 33 / 0.06), 0 12px 28px -6px rgb(30 35 33 / 0.16);
+  --shadow-raised:
+    0 2px 4px rgb(30 35 33 / 0.06), 0 12px 28px -6px rgb(30 35 33 / 0.16);
 
   /* Transitions */
   --default-transition-duration: 200ms;
@@ -42,7 +43,7 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --color-primary: #60a5fa;
+  /* --color-primary: #60a5fa; */
   --color-primary-hover: #93c5fd;
   --color-secondary: #a9c5f8;
   --color-secondary-hover: #c7d9fc;
@@ -69,12 +70,20 @@
     @apply min-h-dvh bg-page font-body text-ink antialiased;
   }
 
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     @apply font-heading font-semibold tracking-tight;
   }
-  h1 { @apply text-h1; }
-  h2 { @apply text-h2; }
-  h3 { @apply text-h3; }
+  h1 {
+    @apply text-h1;
+  }
+  h2 {
+    @apply text-h2;
+  }
+  h3 {
+    @apply text-h3;
+  }
 
   a:not([class]) {
     @apply text-primary underline underline-offset-4 transition-colors hover:text-primary-hover;
@@ -105,7 +114,7 @@
   .btn-outline {
     @apply border-line bg-surface text-ink shadow-xs hover:border-primary hover:bg-primary/5 hover:text-primary;
   }
-  
+
   .icon-link {
     @apply flex min-w-14 flex-col items-center gap-1 rounded-control px-2 py-2 text-muted transition-colors hover:bg-page hover:text-primary focus-visible:outline-2 focus-visible:outline-primary;
   }
