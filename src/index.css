@@ -6,6 +6,7 @@
   --color-secondary: #243b64;
   --color-secondary-hover: #192b49;
   --color-accent: #e9b949;
+  --color-logo-end: #192b49;
 
   --color-page: #f5f7fa;
   --color-surface: #ffffff;
@@ -43,11 +44,12 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  /* --color-primary: #60a5fa; */
-  --color-primary-hover: #93c5fd;
-  --color-secondary: #a9c5f8;
-  --color-secondary-hover: #c7d9fc;
+  --color-primary: #3b82f6;          /* أزرق ساطع ومريح للعين */
+  --color-primary-hover: #60a5fa;    /* يفتح قليلاً عند الـ Hover */
+  --color-secondary: #1e3a8a;
+  --color-secondary-hover: #1d4ed8;
   --color-accent: #f2c45e;
+  --color-logo-end: #a9c5f8;
 
   --color-page: #111827;
   --color-surface: #1f2937;
@@ -61,7 +63,7 @@
 
 @layer utilities {
   .logo-gradient {
-    @apply bg-linear-to-r from-primary via-blue-600 to-secondary bg-clip-text text-transparent;
+    @apply bg-linear-to-r from-primary via-blue-600 to-logo-end bg-clip-text text-transparent;
   }
 }
 

@@ -16,10 +16,34 @@ import {
 import Banner from '../components/common/Banner'
 
 const tiles = [
-  { label: 'Electronics', Icon: Cpu, color: 'bg-sky-300', h: 'h-56' },
-  { label: 'Accessories', Icon: Watch, color: 'bg-orange-300', h: 'h-40' },
-  { label: 'Style', Icon: Shirt, color: 'bg-amber-300', h: 'h-40' },
-  { label: 'Gifts', Icon: Gift, color: 'bg-emerald-300', h: 'h-56' },
+  {
+    label: 'Electronics',
+    Icon: Cpu,
+    h: 'h-56',
+    image:
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80', // سماعات تكنولوجية أنيقة
+  },
+  {
+    label: 'Style',
+    Icon: Shirt,
+    h: 'h-40',
+    image:
+      'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=600&q=80', // ملابس وأزياء مودرن
+  },
+  {
+    label: 'Accessories',
+    Icon: Watch,
+    h: 'h-40',
+    image:
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80', // ساعة وسوار عصري
+  },
+  {
+    label: 'Gifts',
+    Icon: Gift,
+    h: 'h-56',
+    image:
+      'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=600&q=80', // هدية مغلفة بأسلوب فخم
+  },
 ]
 
 const stats = [
@@ -59,7 +83,7 @@ const values = [
 export default function AboutUs() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <section className="grid items-center gap-12 py-12 md:py-20 lg:grid-cols-2">
+      <section className="grid items-center gap-12 py-12 md:py-8 lg:grid-cols-2">
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-primary shadow-card">
             <Sparkles className="size-4 text-accent" />
@@ -68,7 +92,7 @@ export default function AboutUs() {
 
           <h1 className="mt-6">
             One store for{' '}
-            <span className="font-logo logo-gradient text-[1.3em]">everything</span>{' '}
+            <span className="font-logo logo-gradient text-[1.3em]">everything,  </span>{' '}
             you love
           </h1>
 
@@ -93,26 +117,34 @@ export default function AboutUs() {
         <div className="relative mx-auto grid w-full max-w-md grid-cols-2 gap-4">
           {[tiles.slice(0, 2), tiles.slice(2)].map((column, i) => (
             <div key={i} className={`flex flex-col gap-4 ${i === 1 ? 'mt-10' : ''}`}>
-              {column.map(({ label, Icon, h }) => (
+              {column.map(({ label, Icon, h, image }) => (
                 <div
                   key={label}
-                  className={`${h} flex flex-col rounded-card border border-line bg-surface p-5 text-ink shadow-card transition-transform hover:-translate-y-1`}
+                  className={`${h} group relative flex flex-col overflow-hidden rounded-card border border-line p-5 text-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
                 >
-                  <span className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Icon className="size-5" />
-                  </span>
+                  <img
+                    src={image}
+                    alt={label}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
+                  <div className="relative z-10 flex h-full flex-col justify-between">
+                    <span className="flex size-10 items-center justify-center rounded-full bg-white/25 text-secondary backdrop-blur-md">
+                      <Icon className="size-5" />
+                    </span>
 
-                  <p className="mt-auto font-heading text-xl font-semibold">
-                    {label}
-                  </p>
+                    <p className="font-heading text-xl font-semibold text-white drop-shadow-sm">
+                      {label}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           ))}
 
-          <div className="absolute -bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full border border-line bg-surface px-5 py-3 shadow-raised">
+          <div className="absolute -bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 rounded-full border border-line bg-surface px-5 py-3 shadow-raised">
             <Star className="size-5 fill-accent text-accent" />
-            <span className="text-sm font-bold">4.9</span>
+            <span className="text-sm font-bold text-ink">4.9</span>
             <span className="text-sm text-muted">customer rating</span>
           </div>
         </div>

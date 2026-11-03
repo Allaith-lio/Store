@@ -9,7 +9,7 @@ export default function Banner({
 }) {
   return (
     <section className="pb-16 ">
-      <div className="relative overflow-hidden rounded-card bg-ink px-8 py-14 text-center text-page md:px-16">
+      <div className="relative overflow-hidden rounded-card bg-surface px-8 py-14 text-center text-ink shadow-card md:px-16">
         <span className="absolute -right-10 -top-10 size-48 rounded-full bg-accent/30" />
         <span className="absolute -bottom-12 -left-12 size-56 rounded-full bg-primary/30" />
 

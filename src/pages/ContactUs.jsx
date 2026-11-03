@@ -1,12 +1,5 @@
+import { Clock, MapPin, MessageCircle, Phone, UserRound, Send, Mail, MessageSquare, FileText } from "lucide-react";
 import { useState } from 'react'
-import {
-  Clock,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Phone,
-  Send,
-} from 'lucide-react'
 import InputField from '../components/common/InputField'
 import Button from '../components/common/Button'
 
@@ -20,36 +13,81 @@ const info = [
   {
     Icon: Phone,
     title: 'Call us',
-    text: '+1 (555) 123-4567',
+    text: '+963 (933) 555-0143',
     color: 'bg-amber-400/15 text-amber-500',
   },
   {
     Icon: MapPin,
     title: 'Visit us',
-    text: '123 Market Street, Your City',
+    text: 'Baghdad Street, Latakia, Syria',
     color: 'bg-emerald-400/15 text-emerald-500',
   },
 ]
+const fields = {
+  name: {
+    label: "Your name",
+    placeholder: "John Doe",
+    autoComplete: "name",
+    icon: UserRound,
+  },
 
+  email: {
+    label: "Email address",
+    type: "email",
+    placeholder: "you@example.com",
+    autoComplete: "email",
+    icon: Mail,
+  },
+
+  subject: {
+    label: "Subject",
+    placeholder: "How can we help?",
+    icon: FileText,
+  },
+
+  message: {
+    label: "Message",
+    placeholder: "Write your message here...",
+    multiline: true,
+    rows: 5,
+    minLength: 10,
+    icon: MessageSquare,
+  },
+};
 export default function ContactUs() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  })
-  const [notice, setNotice] = useState('')
+  
+const [formData, setFormData] = useState({
+  name: "",
+  email: "",
+  subject: "",
+  message: "",
+});
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+const [notice, setNotice] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+const handleChange = (e) => {
+  const { name, value } = e.target;
 
-    setNotice(`Thanks ${formData.name}! Your message was sent. We will reply soon.`)
-    setFormData({ name: '', email: '', subject: '', message: '' })
-  }
+  setFormData((prevData) => ({
+    ...prevData,
+    [name]: value,
+  }));
+};
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  setNotice(
+    `Thanks ${formData.name}! Your message was sent. We will reply soon.`
+  );
+
+  setFormData({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+};
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -61,7 +99,7 @@ export default function ContactUs() {
 
         <h1 className="mt-6">
           We’d love to{' '}
-          <span className="font-logo logo-gradient text-[1.3em]">hear</span>{' '}
+          <span className="font-logo logo-gradient text-[1.3em]"> hear </span>{' '}
           from you
         </h1>
 
@@ -109,44 +147,32 @@ export default function ContactUs() {
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
+
             <div className="grid gap-5 sm:grid-cols-2">
-              <InputField
-                name="name"
-                label="Your name"
-                placeholder="John Doe"
-                autoComplete="name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-              <InputField
-                name="email"
-                label="Email address"
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
+              {Object.keys(fields)
+                .slice(0, 2)
+                .map((name) => (
+                  <InputField
+                    key={name}
+                    name={name}
+                    {...fields[name]}
+                    value={formData[name]}
+                    onChange={handleChange}
+                  />
+                ))}
             </div>
 
-            <InputField
-              name="subject"
-              label="Subject"
-              placeholder="How can we help?"
-              value={formData.subject}
-              onChange={handleChange}
-            />
-
-            <InputField
-              name="message"
-              label="Message"
-              placeholder="Write your message here..."
-              multiline
-              rows={5}
-              minLength={10}
-              value={formData.message}
-              onChange={handleChange}
-            />
+            {Object.keys(fields)
+              .slice(2)
+              .map((name) => (
+                <InputField
+                  key={name}
+                  name={name}
+                  {...fields[name]}
+                  value={formData[name]}
+                  onChange={handleChange}
+                />
+              ))}
 
             {notice && (
               <p
@@ -162,6 +188,7 @@ export default function ContactUs() {
               <Send className="size-4" />
             </Button>
           </form>
+
         </div>
       </section>
     </div>
