@@ -178,8 +178,8 @@ const ShopProducts = () => {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <section className="mx-auto max-w-2xl py-12 text-center md:py-20">
-        <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-primary shadow-card">
+      <section className="mx-auto max-w-2xl py-8 text-center md:py-20">
+        <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-primary-text shadow-card">
           <SparklesIcon className="size-4 text-accent" />
           Our collection
         </span>

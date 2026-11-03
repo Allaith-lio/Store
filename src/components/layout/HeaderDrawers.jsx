@@ -189,7 +189,7 @@ function CartContent({
                       {item.name}
                     </h3>
 
-                    <span className="shrink-0 font-semibold text-primary">
+                    <span className="shrink-0 font-semibold text-primary-text">
                       ${(item.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
@@ -208,7 +208,7 @@ function CartContent({
                         onClick={() =>
                           onQtyChange(item.id, item.quantity - 1)
                         }
-                        className="text-muted hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                        className="text-muted hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         <Minus size={16} />
                       </Button>
@@ -223,7 +223,7 @@ function CartContent({
                         onClick={() =>
                           onQtyChange(item.id, item.quantity + 1)
                         }
-                        className="text-muted hover:text-primary"
+                        className="text-muted hover:text-primary-text"
                       >
                         <Plus size={16} />
                       </Button>
@@ -251,7 +251,7 @@ function CartContent({
           <div className="mb-5 flex items-center justify-between gap-3">
             <span className="font-semibold text-ink">Subtotal</span>
 
-            <span className="font-heading text-xl font-semibold text-primary">
+            <span className="font-heading text-xl font-semibold text-primary-text">
               ${subTotal.toFixed(2)}
             </span>
           </div>
@@ -292,7 +292,7 @@ export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseC
             aria-label="Go to homepage"
             className="group flex items-center gap-2.5 py-2 transition-transform duration-300 hover:scale-[1.02]"
           >
-            <div className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
+            <div className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary-text shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
               <svg 
                 className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" 
                 fill="none" 

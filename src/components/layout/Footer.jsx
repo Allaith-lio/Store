@@ -50,7 +50,7 @@ function FooterLinks({ title, links }) {
           <li key={to}>
             <Link
               to={to}
-              className="inline-flex items-center gap-2 text-sm text-muted no-underline transition-colors hover:text-primary"
+              className="inline-flex items-center gap-2 text-sm text-muted no-underline transition-colors hover:text-primary-text"
             >
               <span>{label}</span>
             </Link>
@@ -69,7 +69,7 @@ export default function Footer() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-8 sm:grid-cols-3 sm:px-6 lg:px-8">
           {benefits.map(({ icon: Icon, title, description }) => (
             <div key={title} className="flex items-center gap-4">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-card bg-primary/10 text-primary">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-card bg-primary/10 text-primary-text">
                 <Icon size={23} strokeWidth={1.8} aria-hidden="true" />
               </div>
 
@@ -96,7 +96,7 @@ export default function Footer() {
               aria-label="Go to homepage"
               className="group flex items-center gap-2.5 py-2 transition-transform duration-300 hover:scale-[1.02]"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary-text shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
                 <svg
                   className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
                   fill="none"
@@ -145,7 +145,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/user/login"
-                  className="text-sm text-muted no-underline transition-colors hover:text-primary"
+                  className="text-sm text-muted no-underline transition-colors hover:text-primary-text"
                 >
                   Sign In
                 </Link>
@@ -153,7 +153,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/user/signUp"
-                  className="text-sm text-muted no-underline transition-colors hover:text-primary"
+                  className="text-sm text-muted no-underline transition-colors hover:text-primary-text"
                 >
                   Create Account
                 </Link>
@@ -161,7 +161,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/user/profile"
-                  className="text-sm text-muted no-underline transition-colors hover:text-primary"
+                  className="text-sm text-muted no-underline transition-colors hover:text-primary-text"
                 >
                   My Profile
                 </Link>
@@ -180,7 +180,7 @@ export default function Footer() {
               <Link
                 key={link.to}
                 to={link.to}
-                className="text-xs text-muted no-underline transition-colors hover:text-primary"
+                className="text-xs text-muted no-underline transition-colors hover:text-primary-text"
               >
                 {link.label}
               </Link>

@@ -114,7 +114,7 @@ export default function Header() {
             aria-label="Go to homepage"
             className="group flex items-center gap-2.5 py-2 transition-transform duration-300 hover:scale-[1.02]"
           >
-            <div className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
+            <div className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary-text shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
               <svg
                 className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
                 fill="none"
@@ -188,7 +188,7 @@ export default function Header() {
               )}
               <Button
                 type={"button"}
-                className={`relative rounded-control p-2 text-primary hover:bg-page`}
+                className={`relative rounded-control p-2 text-primary-text hover:bg-page`}
                 ariaLabel={`Open cart, ${cartCount} items`}
                 onClick={() => setShowCart(true)}
               >

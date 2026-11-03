@@ -85,7 +85,7 @@ export default function AboutUs() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <section className="grid items-center gap-12 py-12 md:py-8 lg:grid-cols-2">
         <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-primary shadow-card">
+          <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-primary-text shadow-card">
             <Sparkles className="size-4 text-accent" />
             About Omni Store
           </span>
@@ -108,7 +108,7 @@ export default function AboutUs() {
               Start Shopping
               <ArrowUpRight className="size-4" />
             </Link>
-            <Link to="/messageUs" className="btn btn-outline rounded-full px-6 py-3">
+            <Link to="/contactUs" className="btn btn-outline rounded-full px-6 py-3">
               Contact Us
             </Link>
           </div>
@@ -129,7 +129,7 @@ export default function AboutUs() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
                   <div className="relative z-10 flex h-full flex-col justify-between">
-                    <span className="flex size-10 items-center justify-center rounded-full bg-white/25 text-secondary backdrop-blur-md">
+                    <span className="flex size-10 items-center justify-center rounded-full bg-white/25 text-primary-text backdrop-blur-md">
                       <Icon className="size-5" />
                     </span>
 
@@ -153,7 +153,7 @@ export default function AboutUs() {
       <section className="grid grid-cols-2 divide-line rounded-card border border-line bg-surface shadow-card lg:grid-cols-4 lg:divide-x">
         {stats.map(({ value, label }) => (
           <div key={label} className="p-6 text-center md:p-8">
-            <p className="font-heading text-3xl font-semibold text-primary md:text-4xl">
+            <p className="font-heading text-3xl font-semibold text-primary-text md:text-4xl">
               {value}
             </p>
             <p className="mt-1 text-sm text-muted">{label}</p>
@@ -163,7 +163,7 @@ export default function AboutUs() {
 
       <section className="grid gap-10 py-16 md:py-24 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary">
+          <p className="text-sm font-bold uppercase tracking-widest text-primary-text">
             Our story
           </p>
           <h2 className="mt-3">Why we called it Omni</h2>
@@ -197,7 +197,7 @@ export default function AboutUs() {
 
       <section className="pb-16 md:pb-24">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary">
+          <p className="text-sm font-bold uppercase tracking-widest text-primary-text">
             What we stand for
           </p>
           <h2 className="mt-3">Shopping that feels good</h2>

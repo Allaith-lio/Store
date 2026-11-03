@@ -3,6 +3,7 @@
   /* Colors */
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
+  --color-primary-text: #2563eb;
   --color-secondary: #243b64;
   --color-secondary-hover: #192b49;
   --color-accent: #e9b949;
@@ -44,8 +45,8 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --color-primary: #3b82f6;          /* أزرق ساطع ومريح للعين */
-  --color-primary-hover: #60a5fa;    /* يفتح قليلاً عند الـ Hover */
+  /* --color-primary: #3b82f6;        
+  --color-primary-hover: #60a5fa;  */
   --color-secondary: #1e3a8a;
   --color-secondary-hover: #1d4ed8;
   --color-accent: #f2c45e;
@@ -106,28 +107,47 @@
   }
 
   .btn-primary {
-    @apply bg-linear-to-b from-primary to-primary-hover text-white shadow-md shadow-primary/30 inset-shadow-xs inset-shadow-white/25 hover:shadow-lg hover:shadow-primary/40 hover:brightness-110;
+    @apply bg-primary text-white
+    hover:bg-primary-hover
+    active:brightness-95
+    transition-colors duration-200;
   }
 
   .btn-wishlist {
     @apply bg-linear-to-b from-amber-300 to-amber-500 text-amber-950 shadow-md shadow-amber-500/25 inset-shadow-xs inset-shadow-white/50 hover:shadow-lg hover:shadow-amber-500/40 hover:brightness-105;
   }
-
+  /* .btn-wishlist {
+    @apply bg-amber-400 text-amber-950
+      hover:bg-amber-500 transition-colors duration-200;
+  } */
   .btn-secondary {
-    @apply bg-linear-to-b from-secondary to-secondary-hover text-white shadow-md shadow-secondary/25 inset-shadow-xs inset-shadow-white/15 hover:shadow-lg hover:brightness-110;
+    @apply bg-secondary text-white
+      hover:bg-secondary-hover transition-colors duration-200;
   }
 
   .btn-outline {
-    @apply border-line bg-surface text-ink shadow-xs hover:border-primary hover:bg-primary/5 hover:text-primary;
+    @apply border-line bg-surface text-ink
+      transition-colors duration-200
+      hover:border-primary/50 hover:bg-page;
   }
 
   .icon-link {
-    @apply flex min-w-14 flex-col items-center gap-1 rounded-control px-2 py-2 text-muted transition-colors hover:bg-page hover:text-primary focus-visible:outline-2 focus-visible:outline-primary;
+    @apply flex min-w-14 flex-col items-center gap-1
+      rounded-control px-2 py-2 text-muted
+      transition-colors duration-200
+      hover:bg-page hover:text-ink
+      focus-visible:outline-2 focus-visible:outline-primary;
   }
 
-  [data-theme="dark"] .btn-primary,
-  [data-theme="dark"] .btn-secondary {
-    @apply text-gray-950;
+  [data-theme="dark"] .btn-outline {
+    @apply hover:border-gray-500 hover:bg-gray-700/50 hover:text-ink;
+  }
+
+  [data-theme="dark"] .icon-link {
+    @apply hover:bg-gray-700/50 hover:text-ink;
+  }
+  [data-theme="dark"] {
+    --color-primary-text: #60a5fa;
   }
 }
 @keyframes fadeInUp {

@@ -56,7 +56,7 @@ function IconNavLink({ to, children, onClick }) {
       className={({ isActive }) =>
         `flex items-center gap-3 rounded-control px-3 py-3 transition-colors ${
           isActive
-            ? "bg-primary/10 font-semibold text-primary"
+            ? "bg-primary/10 font-semibold text-primary-text"
             : "text-ink hover:bg-page"
         }`
       }
@@ -175,7 +175,7 @@ const NavbarLinks = ({
             <Link
               to="/user/login"
               onClick={onClose}
-              className="text-primary hover:underline"
+              className="text-primary-text hover:underline"
             >
               Sign in
             </Link>
@@ -185,7 +185,7 @@ const NavbarLinks = ({
             <Link
               to="/login"
               onClick={onClose}
-              className="text-primary hover:underline"
+              className="text-primary-text hover:underline"
             >
               Register
             </Link>
@@ -234,7 +234,7 @@ const NavbarLinks = ({
               key={to}
               to={to}
               onClick={onClose}
-              className="rounded-control px-3 py-3 text-sm text-muted transition-colors hover:bg-page hover:text-primary"
+              className="rounded-control px-3 py-3 text-sm text-muted transition-colors hover:bg-page hover:text-primary-text"
             >
               {label}
             </NavLink>

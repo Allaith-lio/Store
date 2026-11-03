@@ -129,7 +129,7 @@ export default function FAQ() {
       <section className="grid items-center gap-12 py-12 md:py-8 lg:grid-cols-2">
 
         <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-primary shadow-card">
+          <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-primary-text shadow-card">
             <CircleHelp className="size-4 text-accent" />
             Help Center
           </span>
@@ -191,7 +191,7 @@ export default function FAQ() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
 
                   <div className="relative z-10 flex h-full flex-col justify-between">
-                    <span className="flex size-10 items-center justify-center rounded-full bg-white/25 text-secondary backdrop-blur-md">
+                    <span className="flex size-10 items-center justify-center rounded-full bg-white/25 text-primary-text backdrop-blur-md">
                       <Icon className="size-5" />
                     </span>
 
@@ -234,7 +234,7 @@ export default function FAQ() {
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-ink">
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary-text">
                       {faqCategory}
                     </span>
                     <span className="text-base font-semibold">{question}</span>

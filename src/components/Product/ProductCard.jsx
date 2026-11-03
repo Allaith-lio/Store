@@ -52,20 +52,20 @@ const ProductCard = ({ product }) => {
         >
           <Heart
             size={18}
-            className={isFavorite ? "text-primary" : "text-ink"}
+            className={isFavorite ? "text-primary-text" : "text-ink"}
             fill={isFavorite ? "currentColor" : "none"}
           />
         </button>
       </div>
 
       <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary-text">
           {product.category}
         </p>
         <h2 className="mt-2 text-lg leading-tight text-ink">{product.name}</h2>
 
         <div className="mt-4 flex items-center justify-between gap-2">
-          <span className="text-lg font-bold text-primary">
+          <span className="text-lg font-bold text-primary-text">
             ${product.price.toFixed(2)}
           </span>
           <span className="inline-flex items-center gap-1 text-sm font-semibold text-[grey]">
