@@ -9,6 +9,7 @@ import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import FAQ from "./pages/FAQ";
 import Wishlist from "./pages/Wishlist";
+import Products from "./pages/Products";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/contactUs" element={<ContactUs />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/product" element={<Products />} />
       </Route>
 
       <Route element={<AuthLayout />}>

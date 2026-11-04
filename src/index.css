@@ -113,13 +113,13 @@
     transition-colors duration-200;
   }
 
-  .btn-wishlist {
-    @apply bg-linear-to-b from-amber-300 to-amber-500 text-amber-950 shadow-md shadow-amber-500/25 inset-shadow-xs inset-shadow-white/50 hover:shadow-lg hover:shadow-amber-500/40 hover:brightness-105;
-  }
   /* .btn-wishlist {
+    @apply bg-linear-to-b from-amber-300 to-amber-500 text-amber-950 shadow-md shadow-amber-500/25 inset-shadow-xs inset-shadow-white/50 hover:shadow-lg hover:shadow-amber-500/40 hover:brightness-105;
+  } */
+  .btn-wishlist {
     @apply bg-amber-400 text-amber-950
       hover:bg-amber-500 transition-colors duration-200;
-  } */
+  }
   .btn-secondary {
     @apply bg-secondary text-white
       hover:bg-secondary-hover transition-colors duration-200;

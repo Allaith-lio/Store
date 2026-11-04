@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Heart, Star } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ product }) => {
   const [isFavorite, setIsFavorite] = useState(() => {
@@ -81,12 +82,12 @@ const ProductCard = ({ product }) => {
           >
             Add To Cart
           </button>
-          <button
-            type="button"
+          <Link
+            to="/product"
             className="btn btn-outline h-11 w-full whitespace-nowrap px-2 text-xs sm:px-3 sm:text-sm"
           >
             More Details
-          </button>
+          </Link>
         </div>
       </div>
     </div>
