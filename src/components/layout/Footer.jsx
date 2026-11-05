@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { Search, Star, PackageCheck} from "lucide-react";
+import { Logo } from "../common/Logo";
 
 const shopLinks = [
   { label: "Home", to: "/" },
@@ -91,37 +92,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-4">
-            <Link
-              to="/"
-              aria-label="Go to homepage"
-              className="group flex items-center gap-2.5 py-2 transition-transform duration-300 hover:scale-[1.02]"
-            >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary-text shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
-                <svg
-                  className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-              </div>
-
-              <div className="flex flex-col">
-                <span className="inline-block px-1 pt-1 font-logo text-3xl leading-none font-bold logo-gradient drop-shadow-xs">
-                  Omni
-                </span>
-                <span className="-mt-1 font-body text-[10px] font-bold tracking-widest text-muted uppercase">
-                  Store
-                </span>
-              </div>
-            </Link>
+            <Logo/>
 
             <p className="max-w-sm text-sm leading-7 text-muted">
               Discover products you’ll love. Explore the collection, save your

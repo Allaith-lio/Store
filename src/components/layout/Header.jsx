@@ -12,6 +12,7 @@ import HeaderDrawers from "./HeaderDrawers";
 import Button from "../common/Button";
 import NavbarLinks from "../common/NavbarLinks";
 import { useTheme } from "../../context/ThemeContext";
+import { Logo } from "../common/Logo";
 
 export default function Header() {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -109,35 +110,7 @@ export default function Header() {
           )}
 
           {/* Logo */}
-          <Link
-            to="/"
-            aria-label="Go to homepage"
-            className="group flex items-center gap-2.5 py-2 transition-transform duration-300 hover:scale-[1.02]"
-          >
-            <div className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary-text shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
-              <svg
-                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-logo text-3xl leading-none logo-gradient font-bold drop-shadow-xs pt-1 px-1 inline-block">
-                Omni
-              </span>
-              <span className="-mt-1  text-[10px] font-bold tracking-widest text-muted uppercase">
-                Store
-              </span>
-            </div>
-          </Link>
+          <Logo/>
           {/* Desktop navigation */}
           {!isMobile && (
             <>

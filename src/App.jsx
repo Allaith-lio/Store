@@ -10,12 +10,14 @@ import ContactUs from "./pages/ContactUs";
 import FAQ from "./pages/FAQ";
 import Wishlist from "./pages/Wishlist";
 import Products from "./pages/Products";
+import { DashboardLayout } from "./layouts/DashboardLayout";
+import {DashboardOverview} from "../src/dashboard/DashboardOverview";
 
 function App() {
   return (
     <Routes>
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<Home />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/products" element={<ShopProducts />} />
         <Route path="/aboutUs" element={<AboutUs />} />
@@ -26,6 +28,11 @@ function App() {
 
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<Login />} />
+      </Route>
+
+      <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route index element={<DashboardOverview />} />
+        {/* put your components here and when you all finish delete this comment */}
       </Route>
     </Routes>
   );

@@ -6,10 +6,10 @@ import {
   Sun,
   Moon
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import Button from "../common/Button";
 import { useTheme } from "../../context/ThemeContext";
 import InputField from "../common/InputField";
+import { Logo } from "../common/Logo";
 
 function LoginPage() {
   const [mode, setMode] = useState("signup");
@@ -82,35 +82,7 @@ function handleChange(e){
             aria-hidden="true"
             className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full border border-white/10 shadow-[0_0_0_32px_rgba(255,255,255,0.035),0_0_0_64px_rgba(255,255,255,0.025)]"
           />
-          <Link
-            to="/"
-            aria-label="Go to homepage"
-            className="relative z-10 inline-flex w-fit items-center gap-3 rounded-xl text-white no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-          >
-            <div className="grid size-11 place-items-center rounded-2xl border border-white/20 bg-white/10 shadow-inner shadow-white/10">
-              <svg
-                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-logo text-3xl leading-none text-white font-bold drop-shadow-xs pt-1 px-1 inline-block">
-                Omni
-              </span>
-              <span className="-mt-1 font-body text-[10px] font-bold tracking-widest text-white uppercase">
-                Store
-              </span>
-            </div>
-          </Link>
+          <Logo variant="light" />
           <div className="relative z-10 my-10 mx-auto w-full max-w-md text-center lg:my-0 lg:py-16">
             <span className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-medium text-blue-50 shadow-sm backdrop-blur-sm">
               <Sparkles size={14} aria-hidden="true" />

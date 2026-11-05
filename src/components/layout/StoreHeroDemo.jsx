@@ -6,27 +6,28 @@ import {
 	ArrowUpRight,
 } from 'lucide-react';
 import Button from '../common/Button';
-import { profile2, profile3, profile4 } from '../../utility/ImagesPlace';
+import { profile1, profile2, profile3, profile4, profile5 } from '../../utility/ImagesPlace';
+import { useEffect, useState } from 'react';
 const columns = [
   [
     { 
       color: 'bg-orange-500 dark:bg-orange-600', 
       h: 'h-72', 
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80', // سماعات ألعاب احترافية
+      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80', 
       notch: 'right',
       title: 'Omni Pro Headset'
     },
     { 
       color: 'bg-amber-400 dark:bg-amber-600', 
       h: 'h-32', 
-      image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&q=80', // فأرة ألعاب (Gaming Mouse)
+      image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&q=80', 
     },
   ],
   [
     { 
       color: 'bg-emerald-400 dark:bg-emerald-600', 
       h: 'h-96', 
-      image: 'https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?w=600&q=80', // وحدة تحكم ألعاب (Controller)
+      image: 'https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?w=600&q=80', 
       notch: 'right' 
     }
   ],
@@ -34,14 +35,14 @@ const columns = [
     { 
       color: 'bg-yellow-400 dark:bg-yellow-600', 
       h: 'h-64', 
-      image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80', // لوحة مفاتيح ميكانيكية (Mechanical Keyboard)
+      image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80', 
     }
   ],
   [
     { 
       color: 'bg-sky-400 dark:bg-sky-600', 
       h: 'h-96', 
-      image: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=600&q=80', // بطاقة شاشة / هاردوير
+      image: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=600&q=80', 
       notch: 'left' 
     }
   ],
@@ -49,16 +50,24 @@ const columns = [
     { 
       color: 'bg-lime-400 dark:bg-lime-600', 
       h: 'h-72', 
-      image: 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&q=80', // سماعات لاسلكية أخرى
+      image: 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&q=80', 
       notch: 'left' 
     },
     { 
       color: 'bg-teal-700 dark:bg-teal-900', 
       h: 'h-32', 
-      image: 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=600&q=80', // ساعة ذكية / اكسسوار
+      image: 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=600&q=80',
     },
   ],
 ];
+const allProfiles = [
+  { id: 1, src: profile1, alt: "User 1" },
+  { id: 2, src: profile2, alt: "User 2" },
+  { id: 3, src: profile3, alt: "User 3" },
+  { id: 4, src: profile4, alt: "User 4" },
+  { id: 5, src: profile5, alt: "User 5" },
+];
+
 function Notch({ side }) {
   return (
     <svg
@@ -74,6 +83,18 @@ function Notch({ side }) {
   )
 }
 export default function StoreHeroDemo() {
+  const [profiles, setProfiles] = useState(allProfiles);
+
+  const handleRotateProfiles = () => {
+    setProfiles((prev) => {
+      const updated = [...prev];
+      const firstItem = updated.shift(); 
+      if (firstItem) updated.push(firstItem);
+      return updated;
+    });
+  };
+
+  const visibleProfiles = profiles.slice(0, 3);
 	return (
 		<section className="section max-w-7xl mx-auto px-6">
 			<div className="relative text-center mb-10">
@@ -89,25 +110,24 @@ export default function StoreHeroDemo() {
           </h1>
 				<div className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 items-center">
           <div className="flex items-center -space-x-3">
-              <img 
-                src={profile2} 
-                alt="profile1" 
-                className="h-9 w-9 rounded-full object-cover border-2 border-primary shadow-xs transition-transform hover:scale-105 hover:z-10" 
-              />
-              <img 
-                src={profile3} 
-                alt="profile2" 
-                className="h-9 w-9 rounded-full object-cover border-2 border-primary shadow-xs transition-transform hover:scale-105 hover:z-10" 
-              />
-              <img 
-                src={profile4} 
-                alt="profile3" 
-                className="h-9 w-9 rounded-full object-cover border-2 border-primary shadow-xs transition-transform hover:scale-105 hover:z-10" 
-              />        
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white border-2 border-primary shadow-xs text-xs font-bold transition-transform hover:scale-105 hover:z-10">
-                <Plus className="size-4" />
-              </span>
-            </div>
+      {visibleProfiles.map((profile) => (
+        <img
+          key={profile.id}
+          src={profile.src}
+          alt={profile.alt}
+          className="h-9 w-9 rounded-full object-cover border-2 border-ink shadow-xs transition-all duration-300 hover:scale-105 hover:z-10"
+        />
+      ))}
+
+      <button
+        type="button"
+        onClick={handleRotateProfiles}
+        aria-label="Show next profiles"
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-surface border-2 border-ink shadow-xs text-xs font-bold transition-transform hover:scale-105 hover:z-10 active:scale-95 cursor-pointer"
+      >
+        <Plus className="size-4 transition-transform active:rotate-90 duration-200" />
+      </button>
+    </div>
 				</div>
 			</div>
 
