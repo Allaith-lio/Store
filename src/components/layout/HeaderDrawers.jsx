@@ -1,18 +1,9 @@
-
 import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  X,
-  ShoppingCart,
-  Trash2,
-  Plus,
-  Minus,
-} from "lucide-react";
+import { X, ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
 import Button from "../common/Button";
 import NavbarLinks from "../common/NavbarLinks";
-import UserProfile from "../../pages/UserProfile";
 const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
 
 function Drawer({ open, onClose, title, side, children }) {
   const closeButtonRef = useRef(null);
@@ -46,11 +37,11 @@ function Drawer({ open, onClose, title, side, children }) {
       if (!drawer) return;
 
       const focusable = drawer.querySelectorAll(
-        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
       );
 
       const elements = Array.from(focusable).filter(
-        (element) => element.getClientRects().length > 0
+        (element) => element.getClientRects().length > 0,
       );
 
       if (elements.length === 0) {
@@ -64,10 +55,7 @@ function Drawer({ open, onClose, title, side, children }) {
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
-      } else if (
-        !event.shiftKey &&
-        document.activeElement === last
-      ) {
+      } else if (!event.shiftKey && document.activeElement === last) {
         event.preventDefault();
         first.focus();
       }
@@ -85,9 +73,7 @@ function Drawer({ open, onClose, title, side, children }) {
   if (!open) return null;
 
   const isLeft = side === "left";
-  const drawerId = isLeft
-    ? "mobile-navigation"
-    : "shopping-cart-drawer";
+  const drawerId = isLeft ? "mobile-navigation" : "shopping-cart-drawer";
 
   return (
     <div className="fixed inset-0 z-50">
@@ -143,11 +129,7 @@ function CartContent({
       <div className="flex-1 overflow-y-auto p-5">
         {cartItems.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <ShoppingCart
-              size={48}
-              strokeWidth={1.5}
-              className="text-muted"
-            />
+            <ShoppingCart size={48} strokeWidth={1.5} className="text-muted" />
 
             <h3 className="font-heading text-lg font-semibold text-ink">
               Your cart is empty
@@ -205,9 +187,7 @@ function CartContent({
                         type="button"
                         disabled={item.quantity <= 1}
                         ariaLabel={`Decrease quantity of ${item.name}`}
-                        onClick={() =>
-                          onQtyChange(item.id, item.quantity - 1)
-                        }
+                        onClick={() => onQtyChange(item.id, item.quantity - 1)}
                         className="text-muted hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         <Minus size={16} />
@@ -220,9 +200,7 @@ function CartContent({
                       <Button
                         type="button"
                         ariaLabel={`Increase quantity of ${item.name}`}
-                        onClick={() =>
-                          onQtyChange(item.id, item.quantity + 1)
-                        }
+                        onClick={() => onQtyChange(item.id, item.quantity + 1)}
                         className="text-muted hover:text-primary"
                       >
                         <Plus size={16} />
@@ -255,22 +233,24 @@ function CartContent({
               ${subTotal.toFixed(2)}
             </span>
           </div>
-          <Button 
-          type={"button"} 
-          onClick={() => {
+          <Button
+            type={"button"}
+            onClick={() => {
               onClose();
               navigate("/user/checkout");
             }}
-          className="btn btn-primary w-full">
+            className="btn btn-primary w-full"
+          >
             Checkout
           </Button>
-          <Button 
-          type={"button"} 
-          onClick={() => {
+          <Button
+            type={"button"}
+            onClick={() => {
               onClose();
               navigate("/myCart");
             }}
-          className="mt-4 btn btn-outline w-full">
+            className="mt-4 btn btn-outline w-full"
+          >
             View Cart
           </Button>
         </div>
@@ -279,8 +259,26 @@ function CartContent({
   );
 }
 
-export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseCart, showProfile, onCloseProfile, cartItems, subTotal, onQtyChange, onRemoveItem, wishlistCount}) {
+export default function HeaderDrawers({
+  showMenu,
+  onCloseMenu,
+  showCart,
+  onCloseCart,
+  showProfile,
+  onCloseProfile,
+  cartItems,
+  subTotal,
+  onQtyChange,
+  onRemoveItem,
+  wishlistCount,
+}) {
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const navigate = useNavigate();
+
+  const handleMoreInfo = () => {
+    onCloseProfile();
+    navigate("/profile");
+  };
   return (
     <>
       <Drawer
@@ -293,14 +291,18 @@ export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseC
             className="group flex items-center gap-2.5 py-2 transition-transform duration-300 hover:scale-[1.02]"
           >
             <div className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
-              <svg 
-                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor" 
+              <svg
+                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
                 strokeWidth="2"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
             </div>
             <div className="flex flex-col">
@@ -311,7 +313,8 @@ export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseC
                 Store
               </span>
             </div>
-          </Link>}
+          </Link>
+        }
         side="left"
       >
         <NavbarLinks
@@ -336,16 +339,7 @@ export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseC
           onClose={onCloseCart}
         />
       </Drawer>
-            <Drawer
-        open={showProfile}
-        onClose={onCloseProfile}
-        title="My Account"
-        side="right"
-      >
-        <div className="flex-1 overflow-y-auto">
-          <UserProfile />
-        </div>
-      </Drawer>
+   
     </>
   );
 }

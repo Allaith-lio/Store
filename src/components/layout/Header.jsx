@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate } from "react-router-dom";
 import {
   Menu,
   UserRound,
@@ -15,6 +15,7 @@ import { useTheme } from "../../context/ThemeContext";
 
 export default function Header() {
   const { isDarkMode, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -23,7 +24,6 @@ export default function Header() {
 
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -147,7 +147,7 @@ export default function Header() {
                 wishlistCount={wishlistCount}
                 cartCount={cartCount}
                 onOpenCart={() => setShowCart(true)}
-                onOpenProfile={() => setShowProfile(true)}
+                onOpenProfile={() =>  navigate("/profile")}
               />
             </>
           )}
@@ -172,7 +172,7 @@ export default function Header() {
               {isLoggedIn ? (
                 <button
                   type="button"
-                  onClick={() => setShowProfile(true)}
+                  onClick={() => navigate("/profile")}
                   aria-label="Open profile"
                   className="rounded-control p-2 text-ink hover:bg-page"
                 >
@@ -211,8 +211,6 @@ export default function Header() {
         onCloseMenu={() => setShowMenu(false)}
         showCart={showCart}
         onCloseCart={() => setShowCart(false)}
-        showProfile={showProfile}
-        onCloseProfile={() => setShowProfile(false)}
         cartItems={cartItems}
         subTotal={subTotal}
         onQtyChange={handleQtyChange}

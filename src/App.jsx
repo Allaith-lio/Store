@@ -9,7 +9,7 @@ import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import FAQ from "./pages/FAQ";
 import ProductPage from "./components/Product/ProductPage";
-
+import UserProfile from "./pages/UserProfile";
 function App() {
   return (
     <Routes>
@@ -19,6 +19,7 @@ function App() {
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/contactUs" element={<ContactUs />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/profile" element={<UserProfile />} />
       </Route>
 
       <Route element={<AuthLayout />}>
