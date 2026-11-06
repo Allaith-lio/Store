@@ -10,10 +10,16 @@ import ContactUs from "./pages/ContactUs";
 import FAQ from "./pages/FAQ";
 import Wishlist from "./pages/Wishlist";
 import Products from "./pages/Products";
+import OrderManagement from "./pages/OrderManagement";
 
 function App() {
   return (
     <Routes>
+      <Route
+        path="/admin/order-management"
+        element={<OrderManagement />}
+      />
+
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/wishlist" element={<Wishlist />} />
