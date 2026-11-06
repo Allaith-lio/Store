@@ -10,9 +10,12 @@ import ContactUs from "./pages/ContactUs";
 import FAQ from "./pages/FAQ";
 import Wishlist from "./pages/Wishlist";
 import Products from "./pages/Products";
+import MyCart from "./pages/MyCart";
+import CartContextProvider from "./context/CartContext";
 
 function App() {
   return (
+    <CartContextProvider>
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
@@ -22,12 +25,14 @@ function App() {
         <Route path="/contactUs" element={<ContactUs />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/product" element={<Products />} />
+        <Route path="/myCart" element={<MyCart />} />
       </Route>
 
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<Login />} />
       </Route>
     </Routes>
+    </CartContextProvider>
   );
 }
 export default App;

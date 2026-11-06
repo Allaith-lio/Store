@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-
+import { useShoppingCart } from "../../context/CartContext";
 const ProductCard = ({ product }) => {
+  const { increaseCartQuantity } = useShoppingCart();
   const [isFavorite, setIsFavorite] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("wishlist") || "[]");
@@ -78,6 +79,7 @@ const ProductCard = ({ product }) => {
         <div className="mt-auto grid grid-cols-2 gap-2 pt-5">
           <button
             type="button"
+             onClick={() => increaseCartQuantity(product.id)}
             className="btn btn-primary h-11 w-full whitespace-nowrap px-2 text-xs sm:px-3 sm:text-sm"
           >
             Add To Cart
