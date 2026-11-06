@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import Button from '../common/Button';
 import { profile1, profile2, profile3, profile4, profile5 } from '../../utility/ImagesPlace';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 const columns = [
   [
     { 
@@ -137,7 +137,7 @@ export default function StoreHeroDemo() {
             {column.map((item, i) => (
               <div
                 key={i}
-                className={`${item.color} ${item.h} rounded-card relative overflow-hidden group transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${
+                className={`${item.color} ${item.h} rounded-card relative overflow-hidden group transition-all duration-500 hover:shadow-2xl ${
                   item.notch === 'right' ? 'rounded-tr-none' : ''
                 } ${item.notch === 'left' ? 'rounded-tl-none' : ''}`}
               >

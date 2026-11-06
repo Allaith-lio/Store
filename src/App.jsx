@@ -12,6 +12,8 @@ import Wishlist from "./pages/Wishlist";
 import Products from "./pages/Products";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import {DashboardOverview} from "../src/dashboard/DashboardOverview";
+import ProductsManagement from "./dashboard/ProductsManagement";
+import OrderManagement from "./dashboard/OrderManagement";
 
 function App() {
   return (
@@ -32,6 +34,9 @@ function App() {
 
       <Route path="/dashboard" element={<DashboardLayout />}>
         <Route index element={<DashboardOverview />} />
+        <Route path="/dashboard/products" element={<ProductsManagement />} />
+        <Route path="/dashboard/orders" element={<OrderManagement />} />
+
         {/* put your components here and when you all finish delete this comment */}
       </Route>
     </Routes>

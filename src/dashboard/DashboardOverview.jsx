@@ -273,6 +273,7 @@ export const DashboardOverview = () => {
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       <div>
+        <p className="text-xs font-bold text-primary-text tracking-wider mb-1">STORE OPERATIONS</p>
         <h1 className="text-3xl">Dashboard Overview</h1>
         <p className="mt-1 text-sm text-muted">
           A quick look at how your store is doing.

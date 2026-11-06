@@ -2,21 +2,21 @@ import { useState } from "react"
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import {
   LayoutDashboard,
+  LogOut,
   Menu,
   Moon,
-  // Package,
+  Package,
   Store,
   Sun,
-  // Users,
+  Users,
   X,
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import { Logo } from "../components/common/Logo"
-//put your tab and path, uncomment the icons  here and delete this comment when you all finish
 const navItems = [
   { to: '/dashboard', label: 'Overview', Icon: LayoutDashboard, end: true },
-  // { to: '/dashboard/products', label: 'Products', Icon: Package },
-  // { to: '/dashboard/orders', label: 'Orders & Customers', Icon: Users },
+  { to: '/dashboard/products', label: 'Products', Icon: Package },
+  { to: '/dashboard/orders', label: 'Orders & Customers', Icon: Users },
 ]
 
 const linkClass = ({ isActive }) =>
@@ -32,9 +32,9 @@ export const DashboardLayout = () => {
   const { isDarkMode, toggleTheme } = useTheme()
   return (
     <div className="min-h-screen bg-page text-ink lg:flex">
-      <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-surface p-4 transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
-          open ? 'translate-x-0' : '-translate-x-full'
-        }`}>
+      <aside className={`fixed inset-y-0 left-0 z-45 flex w-64 flex-col border-r border-line bg-surface p-4 transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
+        open ? 'translate-x-0' : '-translate-x-full'
+      }`}>
         <div className="flex items-center justify-between px-2 py-2">
           <Logo/>
           <button
@@ -46,26 +46,42 @@ export const DashboardLayout = () => {
             <X size={20} />
           </button>
         </div>
+        
         <p className="mt-8 px-3 text-xs font-bold uppercase tracking-widest text-muted">Menu</p>
+        
         <nav className="mt-3 space-y-1" aria-label="Dashboard">
           {navItems.map(({to, label, Icon, end}) => (
-            <NavLink key={to}
-            to={to} 
-            end={end} 
-            className={linkClass}>
+            <NavLink 
+              key={to}
+              to={to} 
+              end={end} 
+              className={linkClass}
+            >
               <Icon size={20} />
               {label}
             </NavLink>
           ))}
         </nav>
+        <div className="mt-auto pt-4 border-t border-line space-y-2">
+          <Link
+            to="/"
+            className="flex items-center gap-3 rounded-control border border-line px-3 py-2.5 text-sm font-semibold text-muted transition-colors hover:border-primary hover:text-primary"
+          >
+            <Store size={20} />
+            Back to store
+          </Link>
 
-        <Link
-          to="/"
-          className="mt-auto flex items-center gap-3 rounded-control border border-line px-3 py-2.5 text-sm font-semibold text-muted transition-colors hover:border-primary hover:text-primary"
-        >
-          <Store size={20} />
-          Back to store
-        </Link>
+          <button
+            type="button"
+            onClick={() => {
+              alert("Logged out");
+            }}
+            className="w-full flex items-center gap-3 cursor-pointer rounded-control border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-sm font-semibold text-red-500 transition-colors hover:bg-red-500/20"
+          >
+            <LogOut size={20} />
+            Logout
+          </button>
+        </div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-line bg-surface/80 px-4 backdrop-blur sm:px-6">
