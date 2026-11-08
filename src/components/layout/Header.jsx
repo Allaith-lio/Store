@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Menu,
   UserRound,
@@ -17,6 +17,7 @@ import { Logo } from "../common/Logo";
 
 export default function Header({ showLinks = true }) {
   const { isDarkMode, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -25,7 +26,6 @@ export default function Header({ showLinks = true }) {
 
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -52,13 +52,15 @@ export default function Header({ showLinks = true }) {
         "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80",
     },
   ]);
+
   const isLoggedIn = true;
-  // const wishlistCount = 0;
+  const wishlistCount = 0;
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   const subTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
   );
+
   const handleQtyChange = (id, quantity) => {
     if (quantity < 1) return;
 
@@ -74,6 +76,7 @@ export default function Header({ showLinks = true }) {
       currentItems.filter((item) => item.id !== id),
     );
   };
+
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 991px)");
 
@@ -94,10 +97,8 @@ export default function Header({ showLinks = true }) {
 
   return (
     <>
-      {/* Main navigation */}
       <header className="sticky top-0 z-40 border-b border-line bg-surface shadow-card">
-        <div className="mx-auto flex justify-between min-h-18 max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6 lg:px-8">
-          {/* Mobile menu toggle */}
+        <div className="mx-auto flex min-h-18 max-w-7xl items-center justify-between gap-3 px-4 sm:gap-5 sm:px-6 lg:px-8">
           {showLinks && isMobile && (
             <button
               type="button"
@@ -110,37 +111,35 @@ export default function Header({ showLinks = true }) {
             </button>
           )}
 
-          {/* Logo */}
-          <Logo/>
+          <Logo />
+
           {!showLinks && (
-            <Link 
-              to="/myCart" 
+            <Link
+              to="/myCart"
               className="inline-flex items-center gap-2 text-sm font-semibold text-ink/70 transition-colors hover:text-primary-text"
             >
               <ArrowLeft size={17} aria-hidden="true" />
               Back to Cart
             </Link>
           )}
-          {/* Desktop navigation */}
+
           {showLinks && !isMobile && (
-            <>
-              <NavbarLinks
-                variant="desktop"
-                isLoggedIn={isLoggedIn}
-                cartCount={cartCount}
-                onOpenCart={() => setShowCart(true)}
-                onOpenProfile={() => setShowProfile(true)}
-              />
-            </>
+            <NavbarLinks
+              variant="desktop"
+              isLoggedIn={isLoggedIn}
+              wishlistCount={wishlistCount}
+              cartCount={cartCount}
+              onOpenCart={() => setShowCart(true)}
+              onOpenProfile={() => navigate("/profile")}
+            />
           )}
 
-          {/* Mobile profile and cart */}
           {showLinks && isMobile && (
             <div className="ml-auto flex shrink-0 items-center gap-2">
               <Button
                 type="button"
                 className="icon-link relative"
-                aria-label={
+                ariaLabel={
                   isDarkMode ? "Switch to light mode" : "Switch to dark mode"
                 }
                 onClick={toggleTheme}
@@ -151,54 +150,56 @@ export default function Header({ showLinks = true }) {
                   <Moon size={22} />
                 )}
               </Button>
-              {isLoggedIn ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowProfile(true)}
-                    aria-label="Open profile"
-                    className="rounded-control p-2 text-ink hover:bg-page"
-                  >
-                    <UserRound size={22} />
-                  </button>
-                ) : (
-                  <Link
-                    to="/login"
-                    aria-label="Register"
-                    className="rounded-control p-2 text-ink hover:bg-page"
-                  >
-                    <UserRoundPlus size={22} />
-                  </Link>
-                )}
-                  <Button
-                  type={"button"}
-                  className={`relative rounded-control p-2 text-primary-text hover:bg-page`}
-                  ariaLabel={`Open cart, ${cartCount} items`}
-                  onClick={() => setShowCart(true)}
-                >
-                  <ShoppingCart size={24} />
 
-                  {cartCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs text-white">
-                      {cartCount}
-                    </span>
-                  )}
-                </Button>
+              {isLoggedIn ? (
+                <button
+                  type="button"
+                  onClick={() => navigate("/profile")}
+                  aria-label="Open profile"
+                  className="rounded-control p-2 text-ink hover:bg-page"
+                >
+                  <UserRound size={22} />
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  aria-label="Register"
+                  className="rounded-control p-2 text-ink hover:bg-page"
+                >
+                  <UserRoundPlus size={22} />
+                </Link>
+              )}
+
+              <Button
+                type="button"
+                className="relative rounded-control p-2 text-primary-text hover:bg-page"
+                ariaLabel={`Open cart, ${cartCount} items`}
+                onClick={() => setShowCart(true)}
+              >
+                <ShoppingCart size={24} />
+
+                {cartCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs text-white">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
             </div>
           )}
         </div>
       </header>
+
       {showLinks && (
         <HeaderDrawers
           showMenu={showMenu}
           onCloseMenu={() => setShowMenu(false)}
           showCart={showCart}
           onCloseCart={() => setShowCart(false)}
-          showProfile={showProfile}
-          onCloseProfile={() => setShowProfile(false)}
           cartItems={cartItems}
           subTotal={subTotal}
           onQtyChange={handleQtyChange}
           onRemoveItem={handleRemoveItem}
+          wishlistCount={wishlistCount}
         />
       )}
     </>

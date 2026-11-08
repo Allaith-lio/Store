@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
 import { ShoppingBag } from "lucide-react";
 import CartSummary from "../components/cart/CartSummary";
-import { useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import { useShoppingCart } from "../context/CartContext";
 import CarItem from "../components/cart/CarItem";
-import { products } from "./ShopProducts";
+import { products } from "../data/products";
 const MyCart = () => {
     const navigate =useNavigate();
 const { cartItems } = useShoppingCart();

@@ -6,7 +6,7 @@ import {
   SlidersHorizontal,
   SparklesIcon,
 } from "lucide-react";
-import ProductCard from "../components/product/ProductCard";
+import ProductCard from "../components/Product/ProductCard";
 import { products } from "../data/products";
 
 const categories = ["All", "Electronics", "Accessories", "Home", "Clothing"];

@@ -1,25 +1,16 @@
-
 import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  X,
-  ShoppingCart,
-  Trash2,
-  Plus,
-  Minus,
-} from "lucide-react";
+import { X, ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
 import Button from "../common/Button";
 import NavbarLinks from "../common/NavbarLinks";
-import UserProfile from "../../pages/UserProfile";
-const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
+const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 function Drawer({ open, onClose, title, side, children }) {
   const closeButtonRef = useRef(null);
   const previousFocusRef = useRef(null);
   const onCloseRef = useRef(onClose);
 
-  // Keep the latest callback without restarting the keyboard effect.
   onCloseRef.current = onClose;
 
   useEffect(() => {
@@ -46,11 +37,11 @@ function Drawer({ open, onClose, title, side, children }) {
       if (!drawer) return;
 
       const focusable = drawer.querySelectorAll(
-        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
       );
 
       const elements = Array.from(focusable).filter(
-        (element) => element.getClientRects().length > 0
+        (element) => element.getClientRects().length > 0,
       );
 
       if (elements.length === 0) {
@@ -64,10 +55,7 @@ function Drawer({ open, onClose, title, side, children }) {
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
-      } else if (
-        !event.shiftKey &&
-        document.activeElement === last
-      ) {
+      } else if (!event.shiftKey && document.activeElement === last) {
         event.preventDefault();
         first.focus();
       }
@@ -85,9 +73,7 @@ function Drawer({ open, onClose, title, side, children }) {
   if (!open) return null;
 
   const isLeft = side === "left";
-  const drawerId = isLeft
-    ? "mobile-navigation"
-    : "shopping-cart-drawer";
+  const drawerId = isLeft ? "mobile-navigation" : "shopping-cart-drawer";
 
   return (
     <div className="fixed inset-0 z-50">
@@ -108,9 +94,7 @@ function Drawer({ open, onClose, title, side, children }) {
         }`}
       >
         <div className="flex shrink-0 items-center justify-between gap-3 border-b border-line p-4">
-          <h2 className="font-heading text-lg font-semibold text-ink">
-            {title}
-          </h2>
+          <h2 className="font-heading text-lg font-semibold text-ink">{title}</h2>
 
           <Button
             ref={closeButtonRef}
@@ -129,13 +113,7 @@ function Drawer({ open, onClose, title, side, children }) {
   );
 }
 
-function CartContent({
-  cartItems,
-  subTotal,
-  onQtyChange,
-  onRemoveItem,
-  onClose,
-}) {
+function CartContent({ cartItems, subTotal, onQtyChange, onRemoveItem, onClose }) {
   const navigate = useNavigate();
 
   return (
@@ -143,18 +121,14 @@ function CartContent({
       <div className="flex-1 overflow-y-auto p-5">
         {cartItems.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <ShoppingCart
-              size={48}
-              strokeWidth={1.5}
-              className="text-muted"
-            />
+            <ShoppingCart size={48} strokeWidth={1.5} className="text-muted" />
 
             <h3 className="font-heading text-lg font-semibold text-ink">
               Your cart is empty
             </h3>
 
             <p className="max-w-xs text-sm text-muted">
-              You haven't added any products to your cart yet.
+              You haven&apos;t added any products to your cart yet.
             </p>
 
             <Button
@@ -199,15 +173,12 @@ function CartContent({
                   </p>
 
                   <div className="mt-3 flex items-center justify-between gap-2">
-                    {/* Quantity controls */}
                     <div className="flex items-center gap-3 rounded-control border border-line px-2 py-1">
                       <Button
                         type="button"
                         disabled={item.quantity <= 1}
                         ariaLabel={`Decrease quantity of ${item.name}`}
-                        onClick={() =>
-                          onQtyChange(item.id, item.quantity - 1)
-                        }
+                        onClick={() => onQtyChange(item.id, item.quantity - 1)}
                         className="text-muted hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         <Minus size={16} />
@@ -220,9 +191,7 @@ function CartContent({
                       <Button
                         type="button"
                         ariaLabel={`Increase quantity of ${item.name}`}
-                        onClick={() =>
-                          onQtyChange(item.id, item.quantity + 1)
-                        }
+                        onClick={() => onQtyChange(item.id, item.quantity + 1)}
                         className="text-muted hover:text-primary-text"
                       >
                         <Plus size={16} />
@@ -245,7 +214,6 @@ function CartContent({
         )}
       </div>
 
-      {/* Billing */}
       {cartItems.length > 0 && (
         <div className="shrink-0 border-t border-line bg-surface p-5">
           <div className="mb-5 flex items-center justify-between gap-3">
@@ -255,22 +223,26 @@ function CartContent({
               ${subTotal.toFixed(2)}
             </span>
           </div>
-          <Button 
-          type={"button"} 
-          onClick={() => {
+
+          <Button
+            type="button"
+            onClick={() => {
               onClose();
               navigate("/checkout");
             }}
-          className="btn btn-primary w-full">
+            className="btn btn-primary w-full"
+          >
             Checkout
           </Button>
-          <Button 
-          type={"button"} 
-          onClick={() => {
+
+          <Button
+            type="button"
+            onClick={() => {
               onClose();
               navigate("/myCart");
             }}
-          className="mt-4 btn btn-outline w-full">
+            className="mt-4 btn btn-outline w-full"
+          >
             View Cart
           </Button>
         </div>
@@ -279,8 +251,27 @@ function CartContent({
   );
 }
 
-export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseCart, showProfile, onCloseProfile, cartItems, subTotal, onQtyChange, onRemoveItem, wishlistCount}) {
+export default function HeaderDrawers({
+  showMenu = false,
+  onCloseMenu = () => {},
+  showCart = false,
+  onCloseCart = () => {},
+  showProfile = false,
+  onCloseProfile = () => {},
+  cartItems = [],
+  subTotal = 0,
+  onQtyChange = () => {},
+  onRemoveItem = () => {},
+  wishlistCount = 0,
+}) {
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const navigate = useNavigate();
+
+  const handleMoreInfo = () => {
+    onCloseProfile();
+    navigate("/profile");
+  };
+
   return (
     <>
       <Drawer
@@ -292,33 +283,39 @@ export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseC
             aria-label="Go to homepage"
             className="group flex items-center gap-2.5 py-2 transition-transform duration-300 hover:scale-[1.02]"
           >
-            <div className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary-text shadow-xs transition-colors group-hover:bg-primary group-hover:text-white">
-              <svg 
-                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor" 
+            <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-xs transition-colors group-hover:bg-primary group-hover:text-white lg:flex">
+              <svg
+                className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
                 strokeWidth="2"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="font-logo font-bold text-3xl leading-none logo-gradient drop-shadow-xs pt-1 px-1 inline-block">
+              <span className="font-logo inline-block px-1 pt-1 text-3xl font-bold leading-none text-primary drop-shadow-xs">
                 Omni
               </span>
-              <span className="-mt-1 font-body text-[10px] font-bold tracking-widest text-muted uppercase">
+              <span className="-mt-1 text-[10px] font-bold uppercase tracking-widest text-muted">
                 Store
               </span>
             </div>
-          </Link>}
+          </Link>
+        }
         side="left"
       >
         <NavbarLinks
           variant="mobile"
           onClose={onCloseMenu}
           wishlistCount={wishlistCount}
-          avatar={defaultAvatar}
+          userAvatar={defaultAvatar}
+          isLoggedIn={false}
         />
       </Drawer>
 
@@ -336,16 +333,34 @@ export default function HeaderDrawers({showMenu, onCloseMenu, showCart, onCloseC
           onClose={onCloseCart}
         />
       </Drawer>
-            <Drawer
-        open={showProfile}
-        onClose={onCloseProfile}
-        title="My Account"
-        side="right"
-      >
-        <div className="flex-1 overflow-y-auto">
-          <UserProfile />
+
+      {showProfile && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-ink/50">
+          <div className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-raised">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="font-heading text-lg font-semibold text-ink">Profile</h3>
+              <Button
+                type="button"
+                onClick={onCloseProfile}
+                ariaLabel="Close profile panel"
+                className="rounded-control p-2 text-muted hover:bg-page hover:text-ink"
+              >
+                <X size={18} />
+              </Button>
+            </div>
+            <p className="mb-4 text-sm text-muted">
+              You are signed in and can view your account details.
+            </p>
+            <Button
+              type="button"
+              onClick={handleMoreInfo}
+              className="w-full rounded-control bg-primary px-4 py-3 font-semibold text-white"
+            >
+              Go to profile
+            </Button>
+          </div>
         </div>
-      </Drawer>
+      )}
     </>
   );
 }
