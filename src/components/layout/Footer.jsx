@@ -62,11 +62,12 @@ function FooterLinks({ title, links }) {
   );
 }
 
-export default function Footer() {
+export default function Footer({showCards = true}) {
   return (
     <footer className="mt-16 border-t border-line bg-surface">
       {/* Benefits */}
-      <div className="border-b border-line">
+      {showCards && (
+              <div className="border-b border-line">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-8 sm:grid-cols-3 sm:px-6 lg:px-8">
           {benefits.map(({ icon: Icon, title, description }) => (
             <div key={title} className="flex items-center gap-4">
@@ -86,6 +87,8 @@ export default function Footer() {
           ))}
         </div>
       </div>
+      )}
+
 
       {/* Main Footer */}
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">

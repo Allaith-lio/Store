@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Heart,
@@ -10,9 +10,18 @@ import Button from "../common/Button";
 import { useTheme } from "../../context/ThemeContext";
 import InputField from "../common/InputField";
 import { Logo } from "../common/Logo";
+import { useSearchParams } from "react-router-dom";
 
 function LoginPage() {
-  const [mode, setMode] = useState("signup");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  const [mode, setMode] = useState(modeParam === "login" ? "login" : "signup");
+  useEffect(() => {
+    if (modeParam === "login" || modeParam === "signup") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMode(modeParam);
+    }
+  }, [modeParam]);
   const [notice, setNotice] = useState("");
   const [formData, setFormData] = useState({
     username: "",
@@ -60,7 +69,9 @@ function handleChange(e){
   }
 
   function toggleMode() {
-    setMode(isSigningUp ? "login" : "signup");
+    const nextMode = isSigningUp ? "login" : "signup";
+    setMode(nextMode);
+    setSearchParams({ mode: nextMode });
     setNotice("");
   }
   const { isDarkMode, toggleTheme } = useTheme();

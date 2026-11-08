@@ -173,7 +173,7 @@ const NavbarLinks = ({
 
           <div className="flex items-center gap-2 text-sm font-semibold">
             <Link
-              to="/user/login"
+              to="/login?mode=login"
               onClick={onClose}
               className="text-primary-text hover:underline"
             >
@@ -183,7 +183,7 @@ const NavbarLinks = ({
             <span className="text-muted">|</span>
 
             <Link
-              to="/login"
+              to="/login?mode=signup"
               onClick={onClose}
               className="text-primary-text hover:underline"
             >

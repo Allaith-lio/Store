@@ -7,6 +7,7 @@ import {
   ShoppingCart,
   Moon,
   Sun,
+  ArrowLeft,
 } from "lucide-react";
 import HeaderDrawers from "./HeaderDrawers";
 import Button from "../common/Button";
@@ -14,7 +15,7 @@ import NavbarLinks from "../common/NavbarLinks";
 import { useTheme } from "../../context/ThemeContext";
 import { Logo } from "../common/Logo";
 
-export default function Header() {
+export default function Header({ showLinks = true }) {
   const { isDarkMode, toggleTheme } = useTheme();
   const [isMobile, setIsMobile] = useState(
     () =>
@@ -95,9 +96,9 @@ export default function Header() {
     <>
       {/* Main navigation */}
       <header className="sticky top-0 z-40 border-b border-line bg-surface shadow-card">
-        <div className="mx-auto flex min-h-18 max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6 lg:px-8">
+        <div className="mx-auto flex justify-between min-h-18 max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6 lg:px-8">
           {/* Mobile menu toggle */}
-          {isMobile && (
+          {showLinks && isMobile && (
             <button
               type="button"
               onClick={() => setShowMenu(true)}
@@ -111,8 +112,17 @@ export default function Header() {
 
           {/* Logo */}
           <Logo/>
+          {!showLinks && (
+            <Link 
+              to="/myCart" 
+              className="inline-flex items-center gap-2 text-sm font-semibold text-ink/70 transition-colors hover:text-primary-text"
+            >
+              <ArrowLeft size={17} aria-hidden="true" />
+              Back to Cart
+            </Link>
+          )}
           {/* Desktop navigation */}
-          {!isMobile && (
+          {showLinks && !isMobile && (
             <>
               <NavbarLinks
                 variant="desktop"
@@ -125,7 +135,7 @@ export default function Header() {
           )}
 
           {/* Mobile profile and cart */}
-          {isMobile && (
+          {showLinks && isMobile && (
             <div className="ml-auto flex shrink-0 items-center gap-2">
               <Button
                 type="button"
@@ -142,54 +152,55 @@ export default function Header() {
                 )}
               </Button>
               {isLoggedIn ? (
-                <button
-                  type="button"
-                  onClick={() => setShowProfile(true)}
-                  aria-label="Open profile"
-                  className="rounded-control p-2 text-ink hover:bg-page"
-                >
-                  <UserRound size={22} />
-                </button>
-              ) : (
-                <Link
-                  to="/login"
-                  aria-label="Register"
-                  className="rounded-control p-2 text-ink hover:bg-page"
-                >
-                  <UserRoundPlus size={22} />
-                </Link>
-              )}
-              <Button
-                type={"button"}
-                className={`relative rounded-control p-2 text-primary-text hover:bg-page`}
-                ariaLabel={`Open cart, ${cartCount} items`}
-                onClick={() => setShowCart(true)}
-              >
-                <ShoppingCart size={24} />
-
-                {cartCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs text-white">
-                    {cartCount}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowProfile(true)}
+                    aria-label="Open profile"
+                    className="rounded-control p-2 text-ink hover:bg-page"
+                  >
+                    <UserRound size={22} />
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    aria-label="Register"
+                    className="rounded-control p-2 text-ink hover:bg-page"
+                  >
+                    <UserRoundPlus size={22} />
+                  </Link>
                 )}
-              </Button>
+                  <Button
+                  type={"button"}
+                  className={`relative rounded-control p-2 text-primary-text hover:bg-page`}
+                  ariaLabel={`Open cart, ${cartCount} items`}
+                  onClick={() => setShowCart(true)}
+                >
+                  <ShoppingCart size={24} />
+
+                  {cartCount > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs text-white">
+                      {cartCount}
+                    </span>
+                  )}
+                </Button>
             </div>
           )}
         </div>
       </header>
-
-      <HeaderDrawers
-        showMenu={showMenu}
-        onCloseMenu={() => setShowMenu(false)}
-        showCart={showCart}
-        onCloseCart={() => setShowCart(false)}
-        showProfile={showProfile}
-        onCloseProfile={() => setShowProfile(false)}
-        cartItems={cartItems}
-        subTotal={subTotal}
-        onQtyChange={handleQtyChange}
-        onRemoveItem={handleRemoveItem}
-      />
+      {showLinks && (
+        <HeaderDrawers
+          showMenu={showMenu}
+          onCloseMenu={() => setShowMenu(false)}
+          showCart={showCart}
+          onCloseCart={() => setShowCart(false)}
+          showProfile={showProfile}
+          onCloseProfile={() => setShowProfile(false)}
+          cartItems={cartItems}
+          subTotal={subTotal}
+          onQtyChange={handleQtyChange}
+          onRemoveItem={handleRemoveItem}
+        />
+      )}
     </>
   );
 }

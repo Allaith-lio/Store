@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Heart, Star } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate()
   const [isFavorite, setIsFavorite] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("wishlist") || "[]");
@@ -32,7 +33,11 @@ const ProductCard = ({ product }) => {
       console.error("Error updating wishlist", error);
     }
   };
-
+  const handleMoreDetails = (e) => {
+    e.stopPropagation();
+    console.log("Navigating to product ID:", product.id); // للتأكد في الـ Console
+    navigate(`/products/${product.id}`);
+  };
   return (
     <div className="flex h-full cursor-pointer flex-col overflow-hidden rounded-[15px] border border-line bg-surface shadow-card transition duration-300 hover:scale-102 hover:shadow-lg">
       <div className="relative">
@@ -64,7 +69,9 @@ const ProductCard = ({ product }) => {
           {product.category}
         </p>
         <h2 className="mt-2 text-lg leading-tight text-ink">{product.name}</h2>
-
+        <p className="mt-2 text-sm text-muted line-clamp-2">
+          {product.description}
+        </p>
         <div className="mt-4 flex items-center justify-between gap-2">
           <span className="text-lg font-bold text-primary-text">
             ${product.price.toFixed(2)}
@@ -82,12 +89,13 @@ const ProductCard = ({ product }) => {
           >
             Add To Cart
           </button>
-          <Link
-            to="/product"
-            className="btn btn-outline h-11 w-full whitespace-nowrap px-2 text-xs sm:px-3 sm:text-sm"
+          <button
+            type="button"
+            onClick={handleMoreDetails}
+            className="btn btn-outline h-11 w-full whitespace-nowrap px-2 text-xs sm:px-3 sm:text-sm flex items-center justify-center cursor-pointer"
           >
             More Details
-          </Link>
+          </button>
         </div>
       </div>
     </div>

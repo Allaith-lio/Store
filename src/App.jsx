@@ -9,11 +9,13 @@ import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import FAQ from "./pages/FAQ";
 import Wishlist from "./pages/Wishlist";
-import Products from "./pages/Products";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import {DashboardOverview} from "../src/dashboard/DashboardOverview";
 import ProductsManagement from "./dashboard/ProductsManagement";
 import OrderManagement from "./dashboard/OrderManagement";
+import Checkout from "./pages/CheckoutPage";
+import ProductPage from "./components/Product/ProductPage";
+
 
 function App() {
   return (
@@ -22,10 +24,11 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/products" element={<ShopProducts />} />
+        <Route path="/products/:id" element={<ProductPage />} />
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/contactUs" element={<ContactUs />} />
         <Route path="/faq" element={<FAQ />} />
-        <Route path="/product" element={<Products />} />
+        <Route path="/checkout" element={<Checkout />} />
       </Route>
 
       <Route element={<AuthLayout />}>

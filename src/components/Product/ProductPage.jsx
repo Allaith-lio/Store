@@ -1,56 +1,14 @@
 import {
-  BatteryCharging,
   Check,
   Heart,
-  Headphones,
   ShoppingBag,
   ShieldCheck,
   Star,
-  Volume2,
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Button from "../common/Button";
-
-const products = [
-  {
-    id: 1,
-    name: "Wireless Bluetooth Headphones",
-    description:
-      "Enjoy your favorite music in exceptional clarity. These wireless headphones pair powerful, balanced sound with active noise cancellation and a comfortable fit made for all-day listening. A long-lasting battery keeps your soundtrack going wherever the day takes you.",
-    highlights: [
-      { label: "Active noise cancellation", Icon: Volume2 },
-      { label: "Comfortable all-day fit", Icon: Headphones },
-      { label: "Long-lasting battery", Icon: BatteryCharging },
-    ],
-    comments: [
-      {
-        name: "Maya R.",
-        rating: 5,
-        date: "October 18, 2026",
-        text: "Great sound quality and comfortable to wear for long periods.",
-      },
-      {
-        name: "Daniel K.",
-        rating: 5,
-        date: "October 12, 2026",
-        text: "The noise cancellation feature is impressive, blocking out background noise effectively.",
-      },
-      {
-        name: "Sofia L.",
-        rating: 4,
-        date: "October 4, 2026",
-        text: "Battery life is excellent, lasting for hours on a single charge.",
-      },
-    ],
-    category: "Electronics",
-    price: 59.99,
-    rating: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&q=90",
-    label: "Bestseller",
-  },
-];
+import { products } from "../../data/products";
 
 function RatingStars({ rating, size = 17 }) {
   return (
@@ -72,9 +30,18 @@ function RatingStars({ rating, size = 17 }) {
 }
 
 export default function ProductPage() {
-  const [product] = products;
+  const { id } = useParams();
+  console.log("Current Product ID from URL:", id);
+  const product = products.find((p) => p.id === Number(id));
   const [isWishlisted, setIsWishlisted] = useState(false);
-
+  if (!product) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-20 text-center">
+        <h2 className="text-2xl font-bold text-ink">Product not found</h2>
+        <p className="mt-2 text-muted">The product you are looking for does not exist.</p>
+      </div>
+    );
+  }
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
       <nav

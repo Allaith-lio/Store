@@ -259,7 +259,7 @@ function CartContent({
           type={"button"} 
           onClick={() => {
               onClose();
-              navigate("/user/checkout");
+              navigate("/checkout");
             }}
           className="btn btn-primary w-full">
             Checkout

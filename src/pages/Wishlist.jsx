@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Heart, HeartIcon, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import ProductCard from '../components/Product/ProductCard';
-import { products } from './ShopProducts';
+import ProductCard from '../components/product/ProductCard';
+import { products } from '../data/products'
 
 const Wishlist = () => {
 	const [wishlistIds, setWishlistIds] = useState(() => {
