@@ -9,15 +9,16 @@ export default function Banner({
 }) {
   return (
     <section className="pb-16 ">
-      <div className="relative overflow-hidden rounded-card bg-surface px-8 py-14 text-center text-ink shadow-card md:px-16">
-        <span className="absolute -right-10 -top-10 size-48 rounded-full bg-accent/30" />
-        <span className="absolute -bottom-12 -left-12 size-56 rounded-full bg-primary/30" />
+      <div className="relative overflow-hidden rounded-card border border-line bg-surface px-8 py-14 text-center text-ink shadow-card md:px-16">
+        {/* Blue tints only: they look clean on both the white and the dark surface */}
+        <span className="absolute -right-10 -top-10 size-48 rounded-full bg-primary/15" />
+        <span className="absolute -bottom-12 -left-12 size-56 rounded-full bg-accent/20" />
 
         <div className="relative z-10">
           <h2 className="mx-auto max-w-xl">
             {title}
           </h2>
-          <p className="mx-auto mt-4 max-w-lg opacity-80">
+          <p className="mx-auto mt-4 max-w-lg text-muted">
             {description}
           </p>
           <Link
