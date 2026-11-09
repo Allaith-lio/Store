@@ -4,10 +4,11 @@ import profile3 from "../assets/images/Profile(3).png"
 import profile4 from "../assets/images/Profile(4).png"
 import profile5 from "../assets/images/Profile(5).png"
 
+
 export{
   profile1,
   profile2,
   profile3,
   profile4,
-  profile5
+  profile5,
 }

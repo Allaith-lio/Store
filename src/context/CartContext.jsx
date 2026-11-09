@@ -1,51 +1,74 @@
+
 import { createContext, useContext, useState } from "react";
 
 const CartContext = createContext({});
 
 const CartContextProvider = ({ children }) => {
-  const [cartItems, SetCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+
+  // Get product quantity
   const getItemQuantity = (id) => {
-  return cartItems.find((item) => item.id === id)?.quantity || 0;
-};
+    return cartItems.find((item) => item.id === id)?.quantity || 0;
+  };
+
+  // Add product or increase its quantity
   const increaseCartQuantity = (id) => {
-    SetCartItems((currItems) => {
-      if (currItems.find((item) => item.id === id) == null) {
+    setCartItems((currItems) => {
+      const existingItem = currItems.find((item) => item.id === id);
+
+      if (!existingItem) {
         return [...currItems, { id, quantity: 1 }];
-      } else {
-        return currItems.map((item) => {
-          if (item.id === id) {
-            return { ...item, quantity: item.quantity + 1 };
-          } else {
-            return item;
-          }
-        });
       }
+
+      return currItems.map((item) =>
+        item.id === id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
     });
   };
-const decreaseCartQuantity = (id) => {
-  SetCartItems((currItems) => {
-    const item = currItems.find((item) => item.id === id);
 
-    if (!item) {
-      return currItems;
-    }
+  // Decrease product quantity
+  const decreaseCartQuantity = (id) => {
+    setCartItems((currItems) => {
+      const item = currItems.find((item) => item.id === id);
 
-    if (item.quantity === 1) {
-      return currItems.filter((item) => item.id !== id);
-    }
+      if (!item) return currItems;
 
-    return currItems.map((item) => {
-      if (item.id === id) {
-        return { ...item, quantity: item.quantity - 1 };
+      if (item.quantity === 1) {
+        return currItems.filter((item) => item.id !== id);
       }
 
-      return item;
+      return currItems.map((item) =>
+        item.id === id
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      );
     });
-  });
-};
+  };
+
+  // Update quantity directly
+  const updateCartQuantity = (id, quantity) => {
+    if (quantity < 1) return;
+
+    setCartItems((currItems) =>
+      currItems.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      )
+    );
+  };
+
+  // Remove product
   const RemoveItemFromCart = (id) => {
-    SetCartItems((currItems) => currItems.filter((item) => item.id !== id));
+    setCartItems((currItems) =>
+      currItems.filter((item) => item.id !== id)
+    );
   };
+  // Clear Cart from Peoducts
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -53,7 +76,9 @@ const decreaseCartQuantity = (id) => {
         getItemQuantity,
         increaseCartQuantity,
         decreaseCartQuantity,
+        updateCartQuantity,
         RemoveItemFromCart,
+        clearCart
       }}
     >
       {children}

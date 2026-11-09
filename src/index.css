@@ -14,6 +14,9 @@
   --color-ink: #202938;
   --color-muted: #667085;
   --color-line: #dce2ea;
+  --color-success: #059669;
+  --color-success-hover: #047857;
+  --color-success-text: #059669;
 
   /* Fonts */
   --font-heading: "Fraunces", Georgia, serif;
@@ -57,6 +60,9 @@
   --color-ink: #f3f4f6;
   --color-muted: #dadbdd;
   --color-line: #374151;
+  --color-success: #10b981;
+  --color-success-hover: #059669;
+  --color-success-text: #34d399;
 
   --shadow-card: 0 1px 3px rgb(0 0 0 / 0.2), 0 4px 12px rgb(0 0 0 / 0.15);
   --shadow-raised: 0 4px 8px rgb(0 0 0 / 0.25), 0 12px 28px rgb(0 0 0 / 0.2);

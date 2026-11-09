@@ -313,7 +313,7 @@ const Checkout = () => {
             </span>
           </div>
 
-          <button type="submit" className="btn btn-primary mt-6 w-full py-3">
+          <button type="submit" className="btn bg-success hover:bg-success-hover text-white mt-6 w-full py-3">
             Place order
           </button>
 

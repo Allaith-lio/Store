@@ -13,10 +13,16 @@ import HeaderDrawers from "./HeaderDrawers";
 import Button from "../common/Button";
 import NavbarLinks from "../common/NavbarLinks";
 import { useTheme } from "../../context/ThemeContext";
+import { useShoppingCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
+import { products } from "../../data/products";
 import { Logo } from "../common/Logo";
 
 export default function Header({ showLinks = true }) {
   const { isDarkMode, toggleTheme } = useTheme();
+  const {cartItems: contextCartItems, updateCartQuantity, RemoveItemFromCart } = useShoppingCart();
+
+  const { wishlistCount } = useWishlist();
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(
     () =>
@@ -26,56 +32,26 @@ export default function Header({ showLinks = true }) {
 
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Wireless Bluetooth Headphones",
-      price: 59.99,
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80",
-    },
-    {
-      id: 2,
-      name: "Minimalist Leather Watch",
-      price: 129.5,
-      quantity: 2,
-      image:
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80",
-    },
-    {
-      id: 3,
-      name: "Ergonomic Coffee Mug",
-      price: 24.99,
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80",
-    },
-  ]);
 
   const isLoggedIn = true;
-  const wishlistCount = 0;
-  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-  const subTotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
+  
+  const cartItems = contextCartItems.map((item) => {
+    const product = products.find((p) => p.id === item.id);
+    if (!product) return null;
+    return {
+      ...product,
+      id: item.id,
+      name: product.name ?? product.title,
+      image: product.image ?? product.thumbnail,
+      quantity: item.quantity,
+    };
+  }).filter(Boolean);
 
-  const handleQtyChange = (id, quantity) => {
-    if (quantity < 1) return;
+  const cartCount = contextCartItems.reduce((total, item) => total + item.quantity, 0);
 
-    setCartItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === id ? { ...item, quantity } : item,
-      ),
-    );
-  };
-
-  const handleRemoveItem = (id) => {
-    setCartItems((currentItems) =>
-      currentItems.filter((item) => item.id !== id),
-    );
-  };
+  const subTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const handleQtyChange = (id, quantity) => {updateCartQuantity(id, quantity);};
+  const handleRemoveItem = (id) => {RemoveItemFromCart(id)};
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 991px)");
