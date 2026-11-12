@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   Ban,
@@ -12,6 +12,7 @@ import {
   Truck,
   UsersRound,
 } from "lucide-react";
+import { getRegisteredUsers } from "../services/dashboardService";
 
 const initialOrders = [
   {
@@ -173,13 +174,44 @@ function formatCurrency(value) {
 
 function OrderManagement() {
   const [activeSection, setActiveSection] = useState("orders");
-  const [orders, setOrders] = useState(initialOrders);
-  const [customers, setCustomers] = useState(initialCustomers);
+  const [orders, setOrders] = useState(() => {
+    const savedOrders = localStorage.getItem("storeOrders");
+    return savedOrders === null ? initialOrders : JSON.parse(savedOrders);
+  });
+  const [customers, setCustomers] = useState(() => {
+    const savedCustomers = localStorage.getItem("storeCustomers");
+    if (savedCustomers !== null) return JSON.parse(savedCustomers);
+
+    const registeredCustomers = getRegisteredUsers().map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      joined: new Date().toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+      orders: 0,
+      spent: 0,
+      lastOrder: "—",
+      accountStatus: "Active",
+      history: [],
+    }));
+    return [...initialCustomers, ...registeredCustomers];
+  });
   const [orderSearch, setOrderSearch] = useState("");
   const [orderFilter, setOrderFilter] = useState("All orders");
   const [customerSearch, setCustomerSearch] = useState("");
   const [customerFilter, setCustomerFilter] = useState("All customers");
   const [expandedCustomer, setExpandedCustomer] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem("storeOrders", JSON.stringify(orders));
+  }, [orders]);
+
+  useEffect(() => {
+    localStorage.setItem("storeCustomers", JSON.stringify(customers));
+  }, [customers]);
 
   const orderCounts = useMemo(
     () => ({

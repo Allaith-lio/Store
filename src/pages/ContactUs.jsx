@@ -2,6 +2,8 @@ import { Clock, MapPin, MessageCircle, Phone, UserRound, Send, Mail, MessageSqua
 import { useState } from 'react'
 import InputField from '../components/common/InputField'
 import Button from '../components/common/Button'
+import { getCurrentUser } from '../services/dashboardService'
+import { checkField, checkForm } from '../utility/validators'
 
 const info = [
   {
@@ -29,6 +31,7 @@ const fields = {
     placeholder: "John Doe",
     autoComplete: "name",
     icon: UserRound,
+    rule: "fullName",
   },
 
   email: {
@@ -42,6 +45,7 @@ const fields = {
   subject: {
     label: "Subject",
     placeholder: "How can we help?",
+    maxLength: 100,
     icon: FileText,
   },
 
@@ -51,43 +55,69 @@ const fields = {
     multiline: true,
     rows: 5,
     minLength: 10,
+    maxLength: 1000,
     icon: MessageSquare,
   },
 };
+function getUserDefaults() {
+  const user = getCurrentUser();
+  return { name: user?.name || "", email: user?.email || "" };
+}
+
+const emptyMessage = { subject: "", message: "" };
 export default function ContactUs() {
-  
-const [formData, setFormData] = useState({
-  name: "",
-  email: "",
-  subject: "",
-  message: "",
-});
-
-const [notice, setNotice] = useState("");
-
-const handleChange = (e) => {
-  const { name, value } = e.target;
-
-  setFormData((prevData) => ({
-    ...prevData,
-    [name]: value,
+  const [formData, setFormData] = useState(() => ({
+    ...getUserDefaults(),
+    ...emptyMessage,
   }));
-};
+  const [errors, setErrors] = useState({});
+  const [notice, setNotice] = useState("");
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: checkField(fields, name, value) }));
+    }
+  };
 
-  setNotice(
-    `Thanks ${formData.name}! Your message was sent. We will reply soon.`
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setErrors((prev) => ({ ...prev, [name]: checkField(fields, name, value) }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const newErrors = checkForm(fields, formData);
+    setErrors(newErrors);
+    const firstInvalid = Object.keys(newErrors)[0];
+    if (firstInvalid) {
+      setNotice("");
+      document.getElementById(firstInvalid)?.focus();
+      return;
+    }
+
+    const firstName = formData.name.trim().split(/\s+/)[0];
+    setNotice(`Thanks ${firstName}! Your message was sent. We will reply soon.`);
+
+    setFormData({ ...getUserDefaults(), ...emptyMessage });
+    setErrors({});
+  };
+
+
+  const renderField = (name) => (
+    <InputField
+      key={name}
+      name={name}
+      {...fields[name]}
+      value={formData[name]}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      error={errors[name]}
+    />
   );
 
-  setFormData({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-};
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -146,33 +176,12 @@ const handleSubmit = (e) => {
             Fill in the form and we will take it from there.
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
-
+          <form onSubmit={handleSubmit} noValidate className="mt-8 grid gap-5">
             <div className="grid gap-5 sm:grid-cols-2">
-              {Object.keys(fields)
-                .slice(0, 2)
-                .map((name) => (
-                  <InputField
-                    key={name}
-                    name={name}
-                    {...fields[name]}
-                    value={formData[name]}
-                    onChange={handleChange}
-                  />
-                ))}
+              {Object.keys(fields).slice(0, 2).map(renderField)}
             </div>
 
-            {Object.keys(fields)
-              .slice(2)
-              .map((name) => (
-                <InputField
-                  key={name}
-                  name={name}
-                  {...fields[name]}
-                  value={formData[name]}
-                  onChange={handleChange}
-                />
-              ))}
+            {Object.keys(fields).slice(2).map(renderField)}
 
             {notice && (
               <p

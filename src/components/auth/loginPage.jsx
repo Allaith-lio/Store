@@ -10,9 +10,14 @@ import Button from "../common/Button";
 import { useTheme } from "../../context/ThemeContext";
 import InputField from "../common/InputField";
 import { Logo } from "../common/Logo";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { loginUser, registerUser } from "../../services/dashboardService";
+import { validateField } from "../../utility/validators";
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const modeParam = searchParams.get("mode");
   const [mode, setMode] = useState(modeParam === "login" ? "login" : "signup");
@@ -23,6 +28,7 @@ function LoginPage() {
     }
   }, [modeParam]);
   const [notice, setNotice] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -30,42 +36,84 @@ function LoginPage() {
   });
   const isSigningUp = mode === "signup";
   const fields = {
-  username: {
-    label: "Your name",
-    type: "text",
-    placeholder: "What should we call you?",
-    autoComplete: "username",
-    minLength: 2,
-  },
+    username: {
+      label: "Your name",
+      type: "text",
+      placeholder: "What should we call you?",
+      autoComplete: "username",
+      minLength: 2,
+    },
 
-  email: {
-    label: "Email address",
-    type: "email",
-    placeholder: "you@example.com",
-    autoComplete: "email",
-  },
+    email: {
+      label: "Email address",
+      type: "email",
+      placeholder: "you@example.com",
+      autoComplete: "email",
+    },
 
-  password: {
-    label: "Password",
-    type: "password",
-    placeholder: "At least 8 characters",
-    autoComplete: isSigningUp ? "new-password" : "current-password",
-    minLength: 8,
-  },
-};
-function handleChange(e){
-  const { name, value} = e.target;
-  setFormData(prev => (
-    {...prev, [name]: value}
-  ))
-}
-  function handleSubmit(event) {
+    password: {
+      label: "Password",
+      type: "password",
+      placeholder: "At least 8 characters",
+      autoComplete: isSigningUp ? "new-password" : "current-password",
+      minLength: 8,
+    },
+  };
+
+  function validateAll() {
+    const newErrors = {};
+    Object.keys(fields)
+      .filter((name) => name !== "username" || isSigningUp)
+      .forEach((name) => {
+        const error = validateLoginField(name, formData[name]);
+        if (error) newErrors[name] = error;
+      });
+    setErrors(newErrors);
+    setTouched({ username: true, email: true, password: true });
+    return Object.keys(newErrors).length === 0;
+  }
+  function validateLoginField(name, value) {
+    if (name === "username" && !isSigningUp) return "";
+    if (name === "password" && !isSigningUp) {
+      return value ? "" : "This field is required.";
+    }
+    return validateField(name, value);
+  }
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (touched[name]) {
+      setErrors((prev) => ({ ...prev, [name]: validateLoginField(name, value) }));
+    }
+  }
+
+  function handleBlur(e) {
+    const { name, value } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    setErrors((prev) => ({ ...prev, [name]: validateLoginField(name, value) }));
+  }
+  async function handleSubmit(event) {
     event.preventDefault();
-    setNotice(
-      isSigningUp
-        ? "Account creation isn't connected yet. Your information hasn't been sent."
-        : "Sign-in isn't connected yet. Your information hasn't been sent.",
-    );
+    setNotice("");
+    if (!validateAll()) return;
+    setIsSubmitting(true);
+
+    try {
+      if (isSigningUp) {
+        await registerUser({
+          name: formData.username,
+          email: formData.email,
+          password: formData.password,
+        });
+      } else {
+        await loginUser(formData);
+      }
+      navigate("/profile", { replace: true });
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Unable to sign in. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function toggleMode() {
@@ -73,6 +121,8 @@ function handleChange(e){
     setMode(nextMode);
     setSearchParams({ mode: nextMode });
     setNotice("");
+    setErrors({});
+    setTouched({});
   }
   const { isDarkMode, toggleTheme } = useTheme();
   return (
@@ -175,30 +225,37 @@ function handleChange(e){
                   {...fields[fieldName]}
                   value={formData[fieldName]}
                   onChange={handleChange}
+                  onBlur={handleBlur} 
+                  error={touched[fieldName] ? errors[fieldName] : ""} 
                 />
               ))}
 
               {notice && (
                 <p
-                  className="rounded-control border border-primary/20 bg-primary/10 px-4 py-3 text-sm leading-5 text-primary"
-                  role="status"
+                  className="rounded-control border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm leading-5 text-red-500"
+                  role="alert"
                 >
                   {notice}
                 </p>
               )}
 
               <button
+                disabled={isSubmitting}
                 className="btn btn-primary mt-1 min-h-12 w-full rounded-control hover:-translate-y-0.5 active:translate-y-0"
                 type="submit"
               >
-                {isSigningUp ? "Create my account" : "Sign in"}
+                {isSubmitting
+                  ? "Please wait..."
+                  : isSigningUp
+                    ? "Create my account"
+                    : "Sign in"}
                 <ArrowRight size={17} aria-hidden="true" />
               </button>
             </form>
 
             <p className="mt-6 text-center text-xs leading-5 text-muted">
-              Your details stay in this form. Account services will be available
-              when sign-in is connected.
+              Demo accounts are saved in this browser only. Do not use a real
+              password; production sign-in requires a secure backend.
             </p>
           </div>
         </section>

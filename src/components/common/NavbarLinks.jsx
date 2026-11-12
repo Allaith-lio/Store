@@ -75,6 +75,7 @@ const NavbarLinks = ({
   onOpenProfile,
   onClose,
   userAvatar,
+  userName = "",
 }) => {
   const { isDarkMode, toggleTheme } = useTheme();
   // Desktop navigation
@@ -166,29 +167,45 @@ const NavbarLinks = ({
             />
 
             <div>
-              <p className="font-heading font-semibold text-ink">Welcome!</p>
-              <p className="text-sm text-muted">Sign in to your account</p>
+              <p className="font-heading font-semibold text-ink">
+                {isLoggedIn ? `Welcome, ${userName || "back"}!` : "Welcome!"}
+              </p>
+              <p className="text-sm text-muted">
+                {isLoggedIn ? userName : "Sign in to your account"}
+              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 text-sm font-semibold">
-            <Link
-              to="/login?mode=login"
-              onClick={onClose}
-              className="text-primary-text hover:underline"
-            >
-              Sign in
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                to="/profile"
+                onClick={onClose}
+                className="text-primary-text hover:underline"
+              >
+                My profile
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login?mode=login"
+                  onClick={onClose}
+                  className="text-primary-text hover:underline"
+                >
+                  Sign in
+                </Link>
 
-            <span className="text-muted">|</span>
+                <span className="text-muted">|</span>
 
-            <Link
-              to="/login?mode=signup"
-              onClick={onClose}
-              className="text-primary-text hover:underline"
-            >
-              Register
-            </Link>
+                <Link
+                  to="/login?mode=signup"
+                  onClick={onClose}
+                  className="text-primary-text hover:underline"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
 

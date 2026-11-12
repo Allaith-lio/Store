@@ -17,6 +17,7 @@ import { useShoppingCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { products } from "../../data/products";
 import { Logo } from "../common/Logo";
+import { getCurrentUser } from "../../services/dashboardService";
 
 export default function Header({ showLinks = true }) {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -33,7 +34,21 @@ export default function Header({ showLinks = true }) {
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
 
-  const isLoggedIn = true;
+  const [user, setUser] = useState(() => getCurrentUser());
+  const isLoggedIn = Boolean(user);
+
+  useEffect(() => {
+    const handleStorage = (event) => {
+      if (event.key === "currentUser") setUser(getCurrentUser());
+    };
+    const handleAuthChange = () => setUser(getCurrentUser());
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("authchange", handleAuthChange);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("authchange", handleAuthChange);
+    };
+  }, []);
   
   const cartItems = contextCartItems.map((item) => {
     const product = products.find((p) => p.id === item.id);
@@ -107,6 +122,7 @@ export default function Header({ showLinks = true }) {
               cartCount={cartCount}
               onOpenCart={() => setShowCart(true)}
               onOpenProfile={() => navigate("/profile")}
+              userAvatar={user?.avatar}
             />
           )}
 
@@ -176,6 +192,9 @@ export default function Header({ showLinks = true }) {
           onQtyChange={handleQtyChange}
           onRemoveItem={handleRemoveItem}
           wishlistCount={wishlistCount}
+          isLoggedIn={isLoggedIn}
+          userName={user?.name}
+          userAvatar={user?.avatar}
         />
       )}
     </>

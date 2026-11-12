@@ -3,8 +3,6 @@ import {
   Package,
   MapPin,
   CreditCard,
-  Settings,
-  CircleHelp,
   LogOut,
 } from "lucide-react";
 import ProfileMenuItem from "./ProfileMenuItem";
@@ -39,25 +37,10 @@ const sections = [
       },
     ],
   },
-  {
-    title: "Support",
-    items: [
-      {
-        icon: Settings,
-        title: "Settings",
-        onClick: () => {},
-      },
-      {
-        icon: CircleHelp,
-        title: "Help Center",
-        color: "bg-amber-400/15 text-amber-500",
-        onClick: () => {},
-      },
-    ],
-  },
+
 ];
 
-const ProfileMenu = ({ onSelect }) => {
+const ProfileMenu = ({ onSelect, onLogout, activeSection }) => {
   // const handleContinue = () => {
   //   if (!password.trim()) return;
 
@@ -79,6 +62,7 @@ const ProfileMenu = ({ onSelect }) => {
               <ProfileMenuItem
                 key={item.title}
                 {...item}
+                active={activeSection === item.title}
                 onClick={() => {
                   if (item.title === "Edit Profile") {
                     onSelect("Verify Password");
@@ -97,7 +81,7 @@ const ProfileMenu = ({ onSelect }) => {
           icon={LogOut}
           title="Log out"
           danger
-          onClick={() => {}}
+          onClick={onLogout}
         />
       </div>
       {/* { (

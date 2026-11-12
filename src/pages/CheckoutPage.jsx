@@ -9,30 +9,26 @@ import {
   Mail,
   MapPin,
   Building2,
-  Hash,
   Phone,
   ShoppingBag,
-  CheckCircle2
+  CheckCircle2, Landmark, Globe,
 } from "lucide-react";
 import InputField from "../components/common/InputField";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { getCurrentUser, getStoreOrders } from "../services/dashboardService";
+import { useShoppingCart } from "../context/CartContext";
+import { products } from "../data/products";
+import { sanitize, checkField, checkForm } from '../utility/validators';
 
 const checkoutFields = {
-  firstName: {
-    label: "First name",
-    placeholder: "Your first name",
-    autoComplete: "given-name",
+  fullName: {
+    label: "Full name",
+    placeholder: "Your full name",
+    autoComplete: "name",
     icon: UserRound,
+    wrapperClassName: "sm:col-span-2",
   },
-
-  lastName: {
-    label: "Last name",
-    placeholder: "Your last name",
-    autoComplete: "family-name",
-    icon: UserRound,
-  },
-
   email: {
     label: "Email address",
     type: "email",
@@ -41,7 +37,6 @@ const checkoutFields = {
     icon: Mail,
     wrapperClassName: "sm:col-span-2",
   },
-
   address: {
     label: "Street address",
     placeholder: "House number and street name",
@@ -49,100 +44,203 @@ const checkoutFields = {
     icon: MapPin,
     wrapperClassName: "sm:col-span-2",
   },
-
   city: {
     label: "City",
     placeholder: "City",
     autoComplete: "address-level2",
     icon: Building2,
   },
-
-  postalCode: {
-    label: "Postal code",
-    placeholder: "Postal code",
-    autoComplete: "postal-code",
-    icon: Hash,
+  region: {
+    label: "State / region (optional)",
+    placeholder: "State or region",
+    autoComplete: "address-level1",
+    icon: Landmark,
+    optional: true,
   },
-
+  country: {
+    label: "Country",
+    placeholder: "Country",
+    autoComplete: "country-name",
+    icon: Globe,
+    wrapperClassName: "sm:col-span-2",
+  },
   phone: {
     label: "Phone number (optional)",
     type: "tel",
-    placeholder: "+1 (555) 000-0000",
+    placeholder: "09XXXXXXXX",
     autoComplete: "tel",
+    inputMode: "numeric",
+    maxLength: 10,
     icon: Phone,
-    required: false,
+    optional: true,
     wrapperClassName: "sm:col-span-2",
   },
 };
 
-const orderItems = [
-  {
-    id: 1,
-    name: "Wireless Bluetooth Headphones",
-    option: "Black",
-    price: 59.99,
-    quantity: 1,
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80",
-  },
-  {
-    id: 2,
-    name: "Minimalist Leather Watch",
-    option: "Brown",
-    price: 129.5,
-    quantity: 2,
-    image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80",
-  },
-  {
-    id: 3,
-    name: "Ergonomic Coffee Mug",
-    option: "Stone",
-    price: 24.99,
-    quantity: 1,
-    image:
-      "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80",
-  },
-];
+function getSavedDeliveryDetails() {
+  const user = getCurrentUser();
+  const savedAddresses = user?.id
+    ? JSON.parse(localStorage.getItem(`storeAddresses:${user.id}`) || "[]")
+    : [];
+  const address = savedAddresses.find((item) => item.isDefault) || savedAddresses[0];
 
-const subtotal = orderItems.reduce(
-  (total, item) => total + item.price * item.quantity,
-  0,
-);
-const shipping = 0;
-const total = subtotal + shipping;
-
+  return {
+    fullName: address?.fullName || user?.name || "",
+    email: user?.email || "",
+    address: address?.address || "",
+    city: address?.city || "",
+    region: address?.region || "",
+    country: address?.country || "",
+    phone: sanitize("phone", address?.phone || user?.phone || ""),
+  };
+}
 const Checkout = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    address: "",
-    city: "",
-    postalCode: "",
-    phone: "",
-  });
+  const { cartItems, clearCart } = useShoppingCart();
+  const orderItems = useMemo(
+    () =>
+      cartItems
+        .map((cartItem) => {
+          const product = products.find((item) => item.id === cartItem.id);
+          return product
+            ? {
+                ...product,
+                quantity: cartItem.quantity,
+                option: product.category,
+              }
+            : null;
+        })
+        .filter(Boolean),
+    [cartItems],
+  );
+  const subtotal = orderItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+  const shipping = 0;
+  const total = subtotal + shipping;
+  const [formData, setFormData] = useState(getSavedDeliveryDetails);
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState("");
-  const handleChange  = (e)=> {
-    const {name, value} = e.target
-    setFormData((prev)=> (
-      {...prev, [name]: value}
-    ))}
-  const handleSubmit = (e)=> {
+  const [completedOrder, setCompletedOrder] = useState(null);
+  const [orderSaveError, setOrderSaveError] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name } = e.target;
+    const value = sanitize(checkoutFields[name].rule ?? name, e.target.value);
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: checkField(checkoutFields, name, value) }));
+    }
+  };
+
+const handleBlur = (e) => {
+  const { name, value } = e.target;
+  setErrors((prev) => ({ ...prev, [name]: checkField(checkoutFields, name, value) }));
+};
+
+  const handleSubmit = (e) => {
     e.preventDefault()
+    const newErrors = checkForm(checkoutFields, formData);
+    setErrors(newErrors);
+    const firstInvalid = Object.keys(newErrors)[0];
+    if (firstInvalid) {
+      document.getElementById(firstInvalid)?.focus();
+      return;
+    }
+
     const randomId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
-    setOrderId(randomId);
-      // Backend integration will be added later.
-    console.log("Checkout data:", formData);
-    setIsOrderPlaced(true);
+    const user = getCurrentUser();
+    const order = {
+      id: randomId,
+      customerId: user?.id || "",
+      customer: formData.fullName.trim() || "Customer",
+      email: formData.email.trim().toLowerCase(),
+      date: new Date().toISOString(),
+      items: orderItems.map((item) => `${item.name} × ${item.quantity}`).join(", "),
+      quantity: orderItems.reduce((count, item) => count + item.quantity, 0),
+      total,
+      status: "Processing",
+      shipping: {
+        fullName: formData.fullName.trim(),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        region: formData.region.trim(),
+        country: formData.country.trim(),
+        phone: formData.phone,
+      },
+    };
+
+    try {
+      localStorage.setItem("storeOrders", JSON.stringify([...getStoreOrders(), order]));
+      setOrderSaveError("");
+      setOrderId(randomId);
+      setCompletedOrder(order);
+      clearCart();
+      setIsOrderPlaced(true);
+    } catch (error) {
+      console.error("Failed to save the order:", error);
+      setOrderSaveError("Your order could not be saved. Please try again.");
+    }
+  };
+
+  if (isOrderPlaced && completedOrder) {
+    return (
+      <section className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6">
+        <div className="rounded-card border border-line bg-surface p-8 shadow-card sm:p-12">
+          <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600">
+            <CheckCircle2 size={36} />
+          </div>
+          <h1 className="mt-5 text-3xl font-bold text-ink">Order Successful!</h1>
+          <p className="mt-2 text-sm leading-6 text-muted">
+           Thank you for your purchase, {formData.fullName.trim().split(/\s+/)[0] || "Customer"}.
+          </p>
+          <div className="my-7 space-y-3 rounded-xl border border-line bg-page p-5 text-left">
+            <div className="flex justify-between gap-4 text-sm">
+              <span className="text-muted">Order ID</span>
+              <span className="font-mono font-semibold text-ink">{orderId}</span>
+            </div>
+            <div className="flex justify-between gap-4 text-sm">
+              <span className="text-muted">Items</span>
+              <span className="text-right font-medium text-ink">{completedOrder.quantity}</span>
+            </div>
+            <div className="flex justify-between gap-4 border-t border-line pt-3">
+              <span className="font-semibold text-ink">Total paid</span>
+              <span className="font-bold text-ink">${Number(completedOrder.total).toFixed(2)}</span>
+            </div>
+          </div>
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
+            <Link to="/products" className="btn btn-primary px-5 py-3">Continue shopping</Link>
+            <Link to="/myCart" className="btn btn-outline px-5 py-3">View empty cart</Link>
+          </div>
+        </div>
+      </section>
+    );
   }
+
+  if (orderItems.length === 0) {
+    return (
+      <section className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6">
+        <div className="rounded-card border border-line bg-surface p-8 shadow-card sm:p-12">
+          <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <ShoppingBag size={32} />
+          </div>
+          <h1 className="mt-5 text-2xl font-bold text-ink">Your cart is empty</h1>
+          <p className="mt-2 text-sm text-muted">Add products to your cart before checking out.</p>
+          <Link to="/products" className="btn btn-primary mt-6 inline-flex px-5 py-3">Browse products</Link>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="mt-7 flex flex-col gap-5 sm:mt-9 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="mt-2">
-            <span className="font-logo logo-gradient text-[1.3em]">Checkout...</span> 
+            <span className="font-logo logo-gradient text-[1.3em]">
+              Checkout...
+            </span>
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted sm:text-base">
             Add your details below to complete your order securely.
@@ -164,7 +262,14 @@ const Checkout = () => {
 
       <form
         className="mt-8 grid gap-6 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_380px]"
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+        noValidate
+      >
+        {orderSaveError && (
+          <p role="alert" className="rounded-control border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500 lg:col-span-2">
+            {orderSaveError}
+          </p>
+        )}
         <div className="space-y-6">
           <section className="rounded-card border border-line bg-surface p-5 shadow-card sm:p-7">
             <div className="flex items-start gap-4">
@@ -180,18 +285,22 @@ const Checkout = () => {
             </div>
 
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
-              {Object.keys(checkoutFields).map((name)=>{
-                const {wrapperClassName, ...fieldProps} = checkoutFields[name];
-                return(
+              {Object.keys(checkoutFields).map((name) => {
+                const { wrapperClassName, ...fieldProps } =
+                  checkoutFields[name];
+                return (
                   <div key={name} className={wrapperClassName}>
                     <InputField
-                    name={name}
-                    {...fieldProps}
-                    value={formData[name] || ''}
-                    onChange={handleChange}
+                      name={name}
+                      {...fieldProps}
+                      required={!fieldProps.optional}
+                      value={formData[name] || ""}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={errors[name]}
                     />
                   </div>
-                )
+                );
               })}
             </div>
           </section>
@@ -261,7 +370,8 @@ const Checkout = () => {
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-xl">Your order</h2>
             <span className="rounded-full bg-page px-3 py-1 text-xs font-semibold text-muted">
-              {orderItems.reduce((count, item) => count + item.quantity, 0)} items
+              {orderItems.reduce((count, item) => count + item.quantity, 0)}{" "}
+              items
             </span>
           </div>
 
@@ -296,7 +406,9 @@ const Checkout = () => {
           <div className="space-y-3 text-sm">
             <div className="flex justify-between gap-4 text-muted">
               <span>Subtotal</span>
-              <span className="font-medium text-ink">${subtotal.toFixed(2)}</span>
+              <span className="font-medium text-ink">
+                ${subtotal.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between gap-4 text-muted">
               <span>Shipping</span>
@@ -313,19 +425,32 @@ const Checkout = () => {
             </span>
           </div>
 
-          <button type="submit" className="btn bg-success hover:bg-success-hover text-white mt-6 w-full py-3">
+          <button
+            type="submit"
+            className="btn bg-success hover:bg-success-hover text-white mt-6 w-full py-3"
+          >
             Place order
           </button>
 
           <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs leading-5 text-muted">
-            <ShieldCheck className="shrink-0 text-primary-text" size={16} aria-hidden="true" />
+            <ShieldCheck
+              className="shrink-0 text-primary-text"
+              size={16}
+              aria-hidden="true"
+            />
             Secure checkout with encrypted payment
           </p>
 
           <div className="mt-6 flex items-start gap-3 rounded-control bg-page p-4">
-            <Truck className="mt-0.5 shrink-0 text-primary-text" size={18} aria-hidden="true" />
+            <Truck
+              className="mt-0.5 shrink-0 text-primary-text"
+              size={18}
+              aria-hidden="true"
+            />
             <p className="text-xs leading-5 text-muted">
-              <span className="font-semibold text-ink">Free standard shipping</span>
+              <span className="font-semibold text-ink">
+                Free standard shipping
+              </span>
               <br />
               Your order will be delivered in 3–5 business days.
             </p>
@@ -337,45 +462,6 @@ const Checkout = () => {
           </div>
         </aside>
       </form>
-      {isOrderPlaced && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6 text-center shadow-2xl sm:p-8">
-            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600">
-              <CheckCircle2 size={36} />
-            </div>
-
-            <h3 className="mt-4 text-2xl font-bold text-ink">Order Successful!</h3>
-            <p className="mt-2 text-sm text-muted">
-              Thank you for your purchase, <span className="font-semibold text-ink">{formData.firstName || "Customer"}</span>. Your order has been placed successfully.
-            </p>
-
-            <div className="my-6 rounded-xl bg-page p-4 text-left space-y-2 border border-line">
-              <div className="flex justify-between text-xs text-muted">
-                <span>Order ID:</span>
-                <span className="font-mono font-semibold text-ink">{orderId}</span>
-              </div>
-              <div className="flex justify-between text-xs text-muted">
-                <span>Total Amount:</span>
-                <span className="font-semibold text-ink">${total.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-xs text-muted">
-                <span>Shipping Address:</span>
-                <span className="font-medium text-ink truncate max-w-[180px]">{formData.address || "N/A"}, {formData.city || "N/A"}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Link
-                to="/"
-                className="btn btn-primary flex-1 py-3 text-center justify-center flex items-center gap-2"
-              >
-                <ShoppingBag size={18} />
-                Continue Shopping
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 };

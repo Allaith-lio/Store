@@ -23,6 +23,7 @@ const WishlistProvider = ({ children }) => {
 
   // Add or remove product
   const toggleWishlist = (id) => {
+    console.log("Toggling wishlist:", id);
     setWishlistIds((currentIds) =>
       currentIds.includes(id)
         ? currentIds.filter((itemId) => itemId !== id)
