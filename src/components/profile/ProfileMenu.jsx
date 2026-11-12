@@ -57,7 +57,7 @@ const sections = [
   },
 ];
 
-const ProfileMenu = ({ onSelect }) => {
+const ProfileMenu = ({ onSelect, onLogout, activeSection }) => {
   // const handleContinue = () => {
   //   if (!password.trim()) return;
 
@@ -79,6 +79,7 @@ const ProfileMenu = ({ onSelect }) => {
               <ProfileMenuItem
                 key={item.title}
                 {...item}
+                active={activeSection === item.title}
                 onClick={() => {
                   if (item.title === "Edit Profile") {
                     onSelect("Verify Password");
@@ -97,7 +98,7 @@ const ProfileMenu = ({ onSelect }) => {
           icon={LogOut}
           title="Log out"
           danger
-          onClick={() => {}}
+          onClick={onLogout}
         />
       </div>
       {/* { (

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   LogOut,
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import { Logo } from "../components/common/Logo"
+import { getCurrentUser, logoutUser } from "../services/dashboardService"
 const navItems = [
   { to: '/dashboard', label: 'Overview', Icon: LayoutDashboard, end: true },
   { to: '/dashboard/products', label: 'Products', Icon: Package },
@@ -29,6 +30,8 @@ const linkClass = ({ isActive }) =>
 
 export const DashboardLayout = () => {
   const [open, setOpen] = useState(false)
+  const [user, setUser] = useState(() => getCurrentUser())
+  const navigate = useNavigate()
   const { isDarkMode, toggleTheme } = useTheme()
   return (
     <div className="min-h-screen bg-page text-ink lg:flex">
@@ -74,7 +77,9 @@ export const DashboardLayout = () => {
           <button
             type="button"
             onClick={() => {
-              alert("Logged out");
+              logoutUser()
+              setUser(null)
+              navigate('/login?mode=login')
             }}
             className="w-full flex items-center gap-3 cursor-pointer rounded-control border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-sm font-semibold text-red-500 transition-colors hover:bg-red-500/20"
           >
@@ -110,9 +115,11 @@ export const DashboardLayout = () => {
 
             <div className="flex items-center gap-2.5 rounded-full border border-line py-1 pl-1 pr-4">
               <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                A
+                {user?.name?.trim()?.[0]?.toUpperCase() || 'A'}
               </span>
-              <span className="hidden text-sm font-semibold sm:inline">Admin</span>
+              <span className="hidden text-sm font-semibold sm:inline">
+                {user?.name || 'Admin'}
+              </span>
             </div>
           </div>
         </header>

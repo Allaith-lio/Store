@@ -10,9 +10,11 @@ import Button from "../common/Button";
 import { useTheme } from "../../context/ThemeContext";
 import InputField from "../common/InputField";
 import { Logo } from "../common/Logo";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { loginUser, registerUser } from "../../services/dashboardService";
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const modeParam = searchParams.get("mode");
   const [mode, setMode] = useState(modeParam === "login" ? "login" : "signup");
@@ -23,6 +25,7 @@ function LoginPage() {
     }
   }, [modeParam]);
   const [notice, setNotice] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -59,13 +62,27 @@ function handleChange(e){
     {...prev, [name]: value}
   ))
 }
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    setNotice(
-      isSigningUp
-        ? "Account creation isn't connected yet. Your information hasn't been sent."
-        : "Sign-in isn't connected yet. Your information hasn't been sent.",
-    );
+    setNotice("");
+    setIsSubmitting(true);
+
+    try {
+      if (isSigningUp) {
+        await registerUser({
+          name: formData.username,
+          email: formData.email,
+          password: formData.password,
+        });
+      } else {
+        await loginUser(formData);
+      }
+      navigate("/profile", { replace: true });
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Unable to sign in. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function toggleMode() {
@@ -180,25 +197,30 @@ function handleChange(e){
 
               {notice && (
                 <p
-                  className="rounded-control border border-primary/20 bg-primary/10 px-4 py-3 text-sm leading-5 text-primary"
-                  role="status"
+                  className="rounded-control border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm leading-5 text-red-500"
+                  role="alert"
                 >
                   {notice}
                 </p>
               )}
 
               <button
+                disabled={isSubmitting}
                 className="btn btn-primary mt-1 min-h-12 w-full rounded-control hover:-translate-y-0.5 active:translate-y-0"
                 type="submit"
               >
-                {isSigningUp ? "Create my account" : "Sign in"}
+                {isSubmitting
+                  ? "Please wait..."
+                  : isSigningUp
+                    ? "Create my account"
+                    : "Sign in"}
                 <ArrowRight size={17} aria-hidden="true" />
               </button>
             </form>
 
             <p className="mt-6 text-center text-xs leading-5 text-muted">
-              Your details stay in this form. Account services will be available
-              when sign-in is connected.
+              Demo accounts are saved in this browser only. Do not use a real
+              password; production sign-in requires a secure backend.
             </p>
           </div>
         </section>

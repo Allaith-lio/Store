@@ -6,13 +6,15 @@ const ProfileMenuItem = ({
   onClick,
   color = 'bg-primary/10 text-primary',
   danger = false,
+  active = false,
 }) => {
   return (
     <button
       type="button"
       onClick={onClick}
+      aria-current={active ? 'page' : undefined}
       className={`group flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-3.5 text-left transition-colors ${
-        danger ? 'hover:bg-red-500/10' : 'hover:bg-page'
+        danger ? 'hover:bg-red-500/10' : active ? 'bg-primary/5' : 'hover:bg-page'
       }`}
     >
       <span className="flex items-center gap-4">
@@ -25,7 +27,7 @@ const ProfileMenuItem = ({
         </span>
 
         <span
-          className={`text-sm font-semibold ${danger ? 'text-red-500' : 'text-ink'}`}
+          className={`text-sm font-semibold ${danger ? 'text-red-500' : active ? 'text-primary' : 'text-ink'}`}
         >
           {title}
         </span>

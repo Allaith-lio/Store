@@ -11,7 +11,9 @@ function Drawer({ open, onClose, title, side, children }) {
   const previousFocusRef = useRef(null);
   const onCloseRef = useRef(onClose);
 
-  onCloseRef.current = onClose;
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) return;
@@ -263,6 +265,9 @@ export default function HeaderDrawers({
   onQtyChange = () => {},
   onRemoveItem = () => {},
   wishlistCount = 0,
+  isLoggedIn = false,
+  userName = "",
+  userAvatar = "",
 }) {
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   const navigate = useNavigate();
@@ -314,8 +319,9 @@ export default function HeaderDrawers({
           variant="mobile"
           onClose={onCloseMenu}
           wishlistCount={wishlistCount}
-          userAvatar={defaultAvatar}
-          isLoggedIn={false}
+          userAvatar={userAvatar || defaultAvatar}
+          userName={userName}
+          isLoggedIn={isLoggedIn}
         />
       </Drawer>
 

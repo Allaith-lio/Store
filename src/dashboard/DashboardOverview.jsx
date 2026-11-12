@@ -109,7 +109,7 @@ function SalesChart({ range, onRangeChange, data, loading, error }) {
   let peak = null
   let total = 0
   if (hasData) {
-    max = Math.max(...data.map((d) => d.value))
+    max = Math.max(1, ...data.map((d) => d.value))
     peak = data.find((d) => d.value === max)
     total = data.reduce((sum, d) => sum + d.value, 0)
   }
