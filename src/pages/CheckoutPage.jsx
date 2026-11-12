@@ -9,10 +9,9 @@ import {
   Mail,
   MapPin,
   Building2,
-  Hash,
   Phone,
   ShoppingBag,
-  CheckCircle2,
+  CheckCircle2, Landmark, Globe,
 } from "lucide-react";
 import InputField from "../components/common/InputField";
 import { useMemo, useState } from "react";
@@ -20,22 +19,16 @@ import { Link } from "react-router-dom";
 import { getCurrentUser, getStoreOrders } from "../services/dashboardService";
 import { useShoppingCart } from "../context/CartContext";
 import { products } from "../data/products";
+import { sanitize, checkField, checkForm } from '../utility/validators';
 
 const checkoutFields = {
-  firstName: {
-    label: "First name",
-    placeholder: "Your first name",
-    autoComplete: "given-name",
+  fullName: {
+    label: "Full name",
+    placeholder: "Your full name",
+    autoComplete: "name",
     icon: UserRound,
+    wrapperClassName: "sm:col-span-2",
   },
-
-  lastName: {
-    label: "Last name",
-    placeholder: "Your last name",
-    autoComplete: "family-name",
-    icon: UserRound,
-  },
-
   email: {
     label: "Email address",
     type: "email",
@@ -44,7 +37,6 @@ const checkoutFields = {
     icon: Mail,
     wrapperClassName: "sm:col-span-2",
   },
-
   address: {
     label: "Street address",
     placeholder: "House number and street name",
@@ -52,28 +44,35 @@ const checkoutFields = {
     icon: MapPin,
     wrapperClassName: "sm:col-span-2",
   },
-
   city: {
     label: "City",
     placeholder: "City",
     autoComplete: "address-level2",
     icon: Building2,
   },
-
-  postalCode: {
-    label: "Postal code",
-    placeholder: "Postal code",
-    autoComplete: "postal-code",
-    icon: Hash,
+  region: {
+    label: "State / region (optional)",
+    placeholder: "State or region",
+    autoComplete: "address-level1",
+    icon: Landmark,
+    optional: true,
   },
-
+  country: {
+    label: "Country",
+    placeholder: "Country",
+    autoComplete: "country-name",
+    icon: Globe,
+    wrapperClassName: "sm:col-span-2",
+  },
   phone: {
     label: "Phone number (optional)",
     type: "tel",
-    placeholder: "+963 (933) 555-0143",
+    placeholder: "09XXXXXXXX",
     autoComplete: "tel",
+    inputMode: "numeric",
+    maxLength: 10,
     icon: Phone,
-    required: false,
+    optional: true,
     wrapperClassName: "sm:col-span-2",
   },
 };
@@ -84,19 +83,17 @@ function getSavedDeliveryDetails() {
     ? JSON.parse(localStorage.getItem(`storeAddresses:${user.id}`) || "[]")
     : [];
   const address = savedAddresses.find((item) => item.isDefault) || savedAddresses[0];
-  const [firstName = "", ...lastNameParts] = (address?.fullName || user?.name || "").split(" ");
 
   return {
-    firstName,
-    lastName: lastNameParts.join(" "),
+    fullName: address?.fullName || user?.name || "",
     email: user?.email || "",
     address: address?.address || "",
     city: address?.city || "",
-    postalCode: address?.postalCode || "",
-    phone: address?.phone || user?.phone || "",
+    region: address?.region || "",
+    country: address?.country || "",
+    phone: sanitize("phone", address?.phone || user?.phone || ""),
   };
 }
-
 const Checkout = () => {
   const { cartItems, clearCart } = useShoppingCart();
   const orderItems = useMemo(
@@ -126,24 +123,52 @@ const Checkout = () => {
   const [orderId, setOrderId] = useState("");
   const [completedOrder, setCompletedOrder] = useState(null);
   const [orderSaveError, setOrderSaveError] = useState("");
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    const value = sanitize(checkoutFields[name].rule ?? name, e.target.value);
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: checkField(checkoutFields, name, value) }));
+    }
   };
+
+const handleBlur = (e) => {
+  const { name, value } = e.target;
+  setErrors((prev) => ({ ...prev, [name]: checkField(checkoutFields, name, value) }));
+};
+
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
+    const newErrors = checkForm(checkoutFields, formData);
+    setErrors(newErrors);
+    const firstInvalid = Object.keys(newErrors)[0];
+    if (firstInvalid) {
+      document.getElementById(firstInvalid)?.focus();
+      return;
+    }
+
     const randomId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
     const user = getCurrentUser();
     const order = {
       id: randomId,
       customerId: user?.id || "",
-      customer: `${formData.firstName} ${formData.lastName}`.trim() || "Customer",
+      customer: formData.fullName.trim() || "Customer",
       email: formData.email.trim().toLowerCase(),
       date: new Date().toISOString(),
       items: orderItems.map((item) => `${item.name} × ${item.quantity}`).join(", "),
       quantity: orderItems.reduce((count, item) => count + item.quantity, 0),
       total,
       status: "Processing",
+      shipping: {
+        fullName: formData.fullName.trim(),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        region: formData.region.trim(),
+        country: formData.country.trim(),
+        phone: formData.phone,
+      },
     };
 
     try {
@@ -168,7 +193,7 @@ const Checkout = () => {
           </div>
           <h1 className="mt-5 text-3xl font-bold text-ink">Order Successful!</h1>
           <p className="mt-2 text-sm leading-6 text-muted">
-            Thank you for your purchase, {formData.firstName || "Customer"}. Your order has been placed and your cart is now empty.
+           Thank you for your purchase, {formData.fullName.trim().split(/\s+/)[0] || "Customer"}.
           </p>
           <div className="my-7 space-y-3 rounded-xl border border-line bg-page p-5 text-left">
             <div className="flex justify-between gap-4 text-sm">
@@ -238,6 +263,7 @@ const Checkout = () => {
       <form
         className="mt-8 grid gap-6 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_380px]"
         onSubmit={handleSubmit}
+        noValidate
       >
         {orderSaveError && (
           <p role="alert" className="rounded-control border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500 lg:col-span-2">
@@ -267,8 +293,11 @@ const Checkout = () => {
                     <InputField
                       name={name}
                       {...fieldProps}
+                      required={!fieldProps.optional}
                       value={formData[name] || ""}
                       onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={errors[name]}
                     />
                   </div>
                 );

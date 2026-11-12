@@ -5,10 +5,11 @@ import {
   ShieldCheck,
   Star,
 } from "lucide-react";
-import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Button from "../common/Button";
 import { products } from "../../data/products";
+import { useShoppingCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 function RatingStars({ rating, size = 17 }) {
   return (
@@ -30,10 +31,12 @@ function RatingStars({ rating, size = 17 }) {
 }
 
 export default function ProductPage() {
+  const { increaseCartQuantity } = useShoppingCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const { id } = useParams();
   console.log("Current Product ID from URL:", id);
-  const product = products.find((p) => p.id === Number(id));
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const productId = Number(id);
+  const product = products.find((p) => p.id === productId);
   if (!product) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-20 text-center">
@@ -42,6 +45,7 @@ export default function ProductPage() {
       </div>
     );
   }
+  const isFavorite = isInWishlist(productId);
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
       <nav
@@ -155,25 +159,30 @@ export default function ProductPage() {
               </p>
             </div>
           </div>
-          <Button type="button" className="btn btn-primary w-full mt-6 py-3.5">
+          <Button 
+            type="button"
+            onClick={() => increaseCartQuantity(productId)}
+            className="btn btn-primary w-full mt-6 py-3.5">
             <ShoppingBag size={19} aria-hidden="true" />
-            Buy now
+            Add to cart
           </Button>
+
+          {/* زر المفضلة: تم ربطه بدالة toggleWishlist مع تمرير الـ id وفحص الحالة بـ isInWishlist */}
           <button
             type="button"
             className="btn btn-wishlist mt-3 w-full py-3.5"
-            onClick={() => setIsWishlisted((current) => !current)}
+            onClick={() => toggleWishlist(productId)}
             aria-label={
-              isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+              isFavorite ? "Remove from wishlist" : "Add to wishlist"
             }
-            aria-pressed={isWishlisted}
+            aria-pressed={isFavorite}
           >
             <Heart
               size={19}
-              fill={isWishlisted ? "currentColor" : "none"}
+              fill={isFavorite ? "currentColor" : "none"}
               aria-hidden="true"
             />
-            {isWishlisted ? "Added to wishlist" : "Add to wishlist"}
+            {isFavorite ? "Added to wishlist" : "Add to wishlist"}
           </button>
         </div>
       </section>

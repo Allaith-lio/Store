@@ -15,6 +15,9 @@ function InputField({
   autoComplete,
   value,
   onChange,
+  onBlur,
+  error,
+  inputMode, maxLength,
   required = true,
   minLength,
   multiline = false,
@@ -32,9 +35,11 @@ function InputField({
       <span>{label}</span>
 
       <span
-        className={`flex min-h-12 gap-3 rounded-control border border-line bg-page/50 px-3.5 text-muted transition focus-within:border-primary focus-within:bg-surface focus-within:ring-4 focus-within:ring-primary/10 ${
-          multiline ? "items-start" : "items-center"
-        }`}
+        className={`flex min-h-12 gap-3 rounded-control border bg-page/50 px-3.5 text-muted transition focus-within:bg-surface focus-within:ring-4 ${
+          error
+            ? "border-red-500 focus-within:border-red-500 focus-within:ring-red-500/10"
+            : "border-line focus-within:border-primary focus-within:ring-primary/10"
+        } ${multiline ? "items-start" : "items-center"}`}
       >
         {Icon && (
           <Icon
@@ -54,10 +59,20 @@ function InputField({
           autoComplete={autoComplete}
           value={value}
           onChange={onChange}
+          inputMode={inputMode}
+          maxLength={maxLength}
           required={required}
           minLength={minLength}
+          onBlur={onBlur}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${name}-error` : undefined}
         />
       </span>
+      {error && (
+        <span id={`${name}-error`} role="alert" className="text-xs font-medium text-red-500">
+          {error}
+        </span>
+      )}
     </label>
   );
 }

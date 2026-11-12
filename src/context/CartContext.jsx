@@ -13,6 +13,7 @@ const CartContextProvider = ({ children }) => {
 
   // Add product or increase its quantity
   const increaseCartQuantity = (id) => {
+    console.log("Adding to cart:", id);
     setCartItems((currItems) => {
       const existingItem = currItems.find((item) => item.id === id);
 

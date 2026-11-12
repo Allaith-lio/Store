@@ -12,9 +12,12 @@ import InputField from "../common/InputField";
 import { Logo } from "../common/Logo";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { loginUser, registerUser } from "../../services/dashboardService";
+import { validateField } from "../../utility/validators";
 
 function LoginPage() {
   const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const modeParam = searchParams.get("mode");
   const [mode, setMode] = useState(modeParam === "login" ? "login" : "signup");
@@ -33,38 +36,66 @@ function LoginPage() {
   });
   const isSigningUp = mode === "signup";
   const fields = {
-  username: {
-    label: "Your name",
-    type: "text",
-    placeholder: "What should we call you?",
-    autoComplete: "username",
-    minLength: 2,
-  },
+    username: {
+      label: "Your name",
+      type: "text",
+      placeholder: "What should we call you?",
+      autoComplete: "username",
+      minLength: 2,
+    },
 
-  email: {
-    label: "Email address",
-    type: "email",
-    placeholder: "you@example.com",
-    autoComplete: "email",
-  },
+    email: {
+      label: "Email address",
+      type: "email",
+      placeholder: "you@example.com",
+      autoComplete: "email",
+    },
 
-  password: {
-    label: "Password",
-    type: "password",
-    placeholder: "At least 8 characters",
-    autoComplete: isSigningUp ? "new-password" : "current-password",
-    minLength: 8,
-  },
-};
-function handleChange(e){
-  const { name, value} = e.target;
-  setFormData(prev => (
-    {...prev, [name]: value}
-  ))
-}
+    password: {
+      label: "Password",
+      type: "password",
+      placeholder: "At least 8 characters",
+      autoComplete: isSigningUp ? "new-password" : "current-password",
+      minLength: 8,
+    },
+  };
+
+  function validateAll() {
+    const newErrors = {};
+    Object.keys(fields)
+      .filter((name) => name !== "username" || isSigningUp)
+      .forEach((name) => {
+        const error = validateLoginField(name, formData[name]);
+        if (error) newErrors[name] = error;
+      });
+    setErrors(newErrors);
+    setTouched({ username: true, email: true, password: true });
+    return Object.keys(newErrors).length === 0;
+  }
+  function validateLoginField(name, value) {
+    if (name === "username" && !isSigningUp) return "";
+    if (name === "password" && !isSigningUp) {
+      return value ? "" : "This field is required.";
+    }
+    return validateField(name, value);
+  }
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (touched[name]) {
+      setErrors((prev) => ({ ...prev, [name]: validateLoginField(name, value) }));
+    }
+  }
+
+  function handleBlur(e) {
+    const { name, value } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    setErrors((prev) => ({ ...prev, [name]: validateLoginField(name, value) }));
+  }
   async function handleSubmit(event) {
     event.preventDefault();
     setNotice("");
+    if (!validateAll()) return;
     setIsSubmitting(true);
 
     try {
@@ -90,6 +121,8 @@ function handleChange(e){
     setMode(nextMode);
     setSearchParams({ mode: nextMode });
     setNotice("");
+    setErrors({});
+    setTouched({});
   }
   const { isDarkMode, toggleTheme } = useTheme();
   return (
@@ -192,6 +225,8 @@ function handleChange(e){
                   {...fields[fieldName]}
                   value={formData[fieldName]}
                   onChange={handleChange}
+                  onBlur={handleBlur} 
+                  error={touched[fieldName] ? errors[fieldName] : ""} 
                 />
               ))}
 
