@@ -50,7 +50,7 @@ const MyCart = () => {
   if (cartProducts.length === 0) {
     return (
       <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="flex min-h-[420px] flex-col items-center justify-center rounded-card border border-line bg-surface px-5 py-12 text-center shadow-card">
+        <div className="flex min-h-105 flex-col items-center justify-center rounded-card border border-line bg-surface px-5 py-12 text-center shadow-card">
 
           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-primary">
             <ShoppingBag size={42} strokeWidth={1.5} />

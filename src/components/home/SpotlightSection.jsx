@@ -13,10 +13,10 @@ export default function SpotlightSection() {
 
   return (
     <section className="mx-auto max-w-7xl px-6 pb-16 md:pb-24">
-      <div className="relative grid items-center gap-8 overflow-hidden rounded-card border border-white/10 bg-linear-to-br from-[#244b7b] via-[#2b5b8f] to-[#3975a4] p-8 text-white shadow-card md:grid-cols-2 md:p-14">
+      <div className="relative grid items-center gap-8 overflow-hidden rounded-card border border-white/10 bg-gradient-to-br from-[#1e3a63] via-[#254675] to-[#1e3a63] data-[theme=dark]:from-[#111827] data-[theme=dark]:via-[#1f2937] data-[theme=dark]:to-[#111827]  p-8 text-white shadow-card md:grid-cols-2 md:p-14">
         {/* Decorative circles: soft white + blue + a thin accent ring (no yellow fill, it turns muddy on navy) */}
         <span className="absolute -right-16 -top-16 size-64 rounded-full bg-white/5" />
-        <span className="absolute -bottom-20 -left-16 size-64 rounded-full bg-primary/30" />
+        <span className="absolute -bottom-20 -left-16 size-64 rounded-full bg-white/5" />
         <span className="absolute -bottom-6 -left-4 size-40 rounded-full border-2 border-accent/40" />
 
         <div className="relative z-10">
