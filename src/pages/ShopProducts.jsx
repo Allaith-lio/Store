@@ -6,7 +6,7 @@ import {
   SlidersHorizontal,
   SparklesIcon,
 } from "lucide-react";
-import ProductCard from "../components/Product/ProductCard";
+import ProductCard from "../components/product/ProductCard";
 import { products } from "../data/products";
 
 const categories = ["All", "Electronics", "Accessories", "Home", "Clothing"];
@@ -79,80 +79,95 @@ const ShopProducts = () => {
         </p>
       </section>
 
-      <div className=" rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="relative flex-1">
-            <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[grey]"
-              size={19}
-            />
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Search products..."
-              className="h-12 w-full rounded-control border border-line bg-page pl-11 pr-4 text-sm text-ink placeholder:text-[grey] focus:border-primary focus:outline-none"
-            />
-          </div>
+      <div className="rounded-card border border-line bg-surface p-5 shadow-card sm:p-6">
+  <div className="flex flex-col gap-3.5 lg:flex-row lg:items-center">
+    
 
-          <div className="relative lg:w-56">
-            <SlidersHorizontal
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[grey]"
-              size={18}
-            />
-            <select
-              value={category}
-              onChange={(e) => {
-                setCategory(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="h-12 w-full cursor-pointer appearance-none rounded-control border border-line bg-page pl-11 pr-9 text-sm text-ink focus:border-primary focus:outline-none"
-            >
-              {categories.map((item) => (
-                <option key={item} value={item}>
-                  {item === "All" ? "All categories" : item}
-                </option>
-              ))}
-            </select>
-          </div>
+    <div className="relative flex-1">
+      <Search
+        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted transition-colors"
+        size={18}
+      />
+      <input
+        type="search"
+        value={search}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setCurrentPage(1);
+        }}
+        placeholder="Search products..."
+        className="h-12 w-full rounded-control border border-line bg-page pl-11 pr-4 text-sm text-ink placeholder:text-muted/70 transition-all focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
+      />
+    </div>
 
-          <div className="lg:w-48">
-            <select
-              value={sort}
-              onChange={(e) => {
-                setSort(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="h-12 w-full cursor-pointer rounded-control appearance-none border border-line bg-page px-3 text-sm text-ink focus:border-primary focus:outline-none"
-            >
-              <option value="default">Sort by default</option>
-              <option value="price-low">Price: Low to high</option>
-              <option value="price-high">Price: High to low</option>
-              <option value="rating">Highest rated</option>
-            </select>
-          </div>
-        </div>
+
+    <div className="relative lg:w-56">
+      <SlidersHorizontal
+        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
+        size={17}
+      />
+      <select
+        value={category}
+        onChange={(e) => {
+          setCategory(e.target.value);
+          setCurrentPage(1);
+        }}
+        className="h-12 w-full cursor-pointer appearance-none rounded-control border border-line bg-page pl-11 pr-10 text-sm text-ink transition-all focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
+      >
+        {categories.map((item) => (
+          <option key={item} value={item} className="bg-surface text-ink">
+            {item === "All" ? "All categories" : item}
+          </option>
+        ))}
+      </select>
+  
+      <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted">
+        <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
       </div>
+    </div>
 
-      <div className="mt-6 flex items-center justify-between gap-4">
-        <p className="text-sm text-[grey]">
-          Showing{" "}
-          <span className="font-bold text-ink">{filteredProducts.length}</span>{" "}
-          {filteredProducts.length === 1 ? "product" : "products"}
-        </p>
-        {(search || category !== "All" || sort !== "default") && (
-          <button
-            type="button"
-            onClick={clearFilters}
-            className="cursor-pointer text-sm font-semibold text-primary hover:text-primary-hover"
-          >
-            Clear filters
-          </button>
-        )}
+    <div className="relative lg:w-48">
+      <select
+        value={sort}
+        onChange={(e) => {
+          setSort(e.target.value);
+          setCurrentPage(1);
+        }}
+        className="h-12 w-full cursor-pointer appearance-none rounded-control border border-line bg-page pl-4 pr-10 text-sm text-ink transition-all focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
+      >
+        <option value="default" className="bg-surface text-ink">Sort by default</option>
+        <option value="price-low" className="bg-surface text-ink">Price: Low to high</option>
+        <option value="price-high" className="bg-surface text-ink">Price: High to low</option>
+        <option value="rating" className="bg-surface text-ink">Highest rated</option>
+      </select>
+
+      <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted">
+        <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
       </div>
+    </div>
+  </div>
+</div>
+<div className="mt-5 flex items-center justify-between px-1">
+  <p className="text-sm text-muted">
+    Showing{" "}
+    <span className="font-semibold text-ink">{filteredProducts.length}</span>{" "}
+    {filteredProducts.length === 1 ? "product" : "products"}
+  </p>
+  
+  {(search || category !== "All" || sort !== "default") && (
+    <button
+      type="button"
+      onClick={clearFilters}
+      className="group inline-flex items-center gap-1.5 cursor-pointer text-sm font-medium text-primary hover:text-primary-hover transition-colors"
+    >
+      <span>Clear filters</span>
+    </button>
+  )}
+</div>
 
       {filteredProducts.length > 0 ? (
         <>

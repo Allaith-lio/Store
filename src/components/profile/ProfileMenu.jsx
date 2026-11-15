@@ -13,7 +13,7 @@ const sections = [
     items: [
       {
         icon: UserRound,
-        title: "Edit Profile",
+        title: "Profile",
         color: "bg-sky-400/15 text-sky-500",
         onClick: () => {},
       },
@@ -37,17 +37,9 @@ const sections = [
       },
     ],
   },
-
 ];
 
 const ProfileMenu = ({ onSelect, onLogout, activeSection }) => {
-  // const handleContinue = () => {
-  //   if (!password.trim()) return;
-
-  //   // واجهة تجريبية فقط، بدون تحقق حقيقي من كلمة المرور
-  //   setShowPasswordModal(false);
-  //   setPassword("");
-  // };
 
   return (
     <div className="mt-6 space-y-6">
@@ -84,71 +76,6 @@ const ProfileMenu = ({ onSelect, onLogout, activeSection }) => {
           onClick={onLogout}
         />
       </div>
-      {/* { (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-
-        <div className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-2xl">
-
-            <h2 className="text-xl font-bold text-ink">
-                Verify Your Password
-            </h2>
-
-           <div className="mb-4 flex items-center justify-between">
-    <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-        <LockKeyhole size={24} />
-    </div>
-
-    <button
-        type="button"
-        onClick={() => {
-            setShowPasswordModal(false);
-            setPassword('');
-        }}
-        className="rounded-lg p-2 text-muted transition hover:bg-page hover:text-ink"
-        aria-label="Close"
-    >
-        <X size={20} />
-    </button>
-</div>
-
-<h2 className="text-xl font-bold text-ink">
-    Verify Your Password
-</h2>
-
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                className="mt-5 w-full rounded-xl border border-line bg-surface px-4 py-3 text-ink outline-none focus:border-primary"
-            />
-
-            <div className="mt-5 flex gap-3">
-
-                <button
-                    type="button"
-                    onClick={() => {
-                        setShowPasswordModal(false);
-                        setPassword('');
-                    }}
-                    className="flex-1 rounded-xl border border-line px-4 py-3"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="button"
-                    disabled={!password.trim()}
-                   onClick={handleContinue}
-                    className="flex-1 rounded-xl bg-primary px-4 py-3 text-white disabled:opacity-50"
-                >
-                    Continue
-                </button>
-
-            </div>
-        </div>
-    </div>
-    )} */}
     </div>
   );
 };

@@ -2,7 +2,6 @@ import { Link, NavLink } from "react-router-dom";
 import {
   House,
   Info,
-  UserRound,
   UserRoundPlus,
   Heart,
   ShoppingCart,
@@ -141,7 +140,11 @@ const NavbarLinks = ({
               aria-label="Open profile"
               className="icon-link"
             >
-              <UserRound size={22} />
+              <img
+                src={userAvatar || defaultAvatar}
+                alt=""
+                className="size-8 rounded-full object-cover"
+              />
             </button>
           ) : (
             <NavLink to="/login" className="icon-link">
@@ -162,7 +165,7 @@ const NavbarLinks = ({
           <div className="mb-3 flex items-center gap-3">
             <img
               src={isLoggedIn && userAvatar ? userAvatar : defaultAvatar}
-              alt="Default profile"
+              alt={userName ? `${userName} profile` : "Profile"}
               className="h-12 w-12 rounded-full border-2 border-primary object-cover"
             />
 

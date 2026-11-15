@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Menu,
-  UserRound,
   UserRoundPlus,
   ShoppingCart,
   Moon,
@@ -18,6 +17,8 @@ import { useWishlist } from "../../context/WishlistContext";
 import { products } from "../../data/products";
 import { Logo } from "../common/Logo";
 import { getCurrentUser } from "../../services/dashboardService";
+
+const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 export default function Header({ showLinks = true }) {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -150,7 +151,11 @@ export default function Header({ showLinks = true }) {
                   aria-label="Open profile"
                   className="rounded-control p-2 text-ink hover:bg-page"
                 >
-                  <UserRound size={22} />
+                  <img
+                    src={user?.avatar || defaultAvatar}
+                    alt=""
+                    className="size-8 rounded-full object-cover"
+                  />
                 </button>
               ) : (
                 <Link

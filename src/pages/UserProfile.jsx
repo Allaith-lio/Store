@@ -13,6 +13,7 @@ import {
 	Mail,
 	Phone,
 	UserRound,
+	ChevronDown,
 } from 'lucide-react';
 import InputField from '../components/common/InputField';
 import {
@@ -54,13 +55,12 @@ const profileFields = {
 		type: 'tel',
 		placeholder: '09XXXXXXXX',
 		autoComplete: 'tel',
-    inputMode: "numeric",
-    maxLength: 10, 
+		inputMode: 'numeric',
+		maxLength: 10,
 		icon: Phone,
 		optional: true,
 	},
 };
-
 
 const addressFields = {
 	label: { label: 'Address label', placeholder: 'Home, work...' },
@@ -87,8 +87,8 @@ const addressFields = {
 		type: 'tel',
 		placeholder: '09XXXXXXXX',
 		autoComplete: 'tel',
-    inputMode: "numeric", 
-    maxLength: 10, 
+		inputMode: 'numeric',
+		maxLength: 10,
 		optional: true,
 	},
 };
@@ -112,11 +112,12 @@ function getCardBrand(number) {
 
 const UserProfile = () => {
 	const navigate = useNavigate();
+	const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 	const [profileErrors, setProfileErrors] = useState({});
 	const [addressErrors, setAddressErrors] = useState({});
 	const [user, setUser] = useState(() => getCurrentUser());
 	const [orders] = useState(() => getStoreOrders());
-	const [activeSection, setActiveSection] = useState('');
+	const [activeSection, setActiveSection] = useState('Profile');
 	const [addresses, setAddresses] = useState(() =>
 		readUserCollection('storeAddresses', getCurrentUser()?.id),
 	);
@@ -126,13 +127,19 @@ const UserProfile = () => {
 	const [addressForm, setAddressForm] = useState(emptyAddress);
 
 	function handleProfileChange(event) {
-    const { name } = event.target;
-    const value = sanitize(profileFields[name].rule ?? name, event.target.value);
-    setForm((current) => ({ ...current, [name]: value }));
-    if (profileErrors[name]) {
-      setProfileErrors((current) => ({ ...current, [name]: checkField(profileFields, name, value) }));
-    }
-  }
+		const { name } = event.target;
+		const value = sanitize(
+			profileFields[name].rule ?? name,
+			event.target.value,
+		);
+		setForm(current => ({ ...current, [name]: value }));
+		if (profileErrors[name]) {
+			setProfileErrors(current => ({
+				...current,
+				[name]: checkField(profileFields, name, value),
+			}));
+		}
+	}
 
 	function handleProfileBlur(event) {
 		const { name, value } = event.target;
@@ -142,14 +149,48 @@ const UserProfile = () => {
 		}));
 	}
 
+	function handleAvatarChange(event) {
+		const file = event.target.files?.[0];
+		event.target.value = '';
+		if (!file) return;
+		if (!file.type.startsWith('image/')) {
+			setNotice('Choose an image file for your profile photo.');
+			return;
+		}
+		if (file.size > 1024 * 1024) {
+			setNotice('Choose an image smaller than 1 MB.');
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onload = () => {
+			if (typeof reader.result !== 'string') {
+				setNotice('Unable to read this image. Please try another file.');
+				return;
+			}
+			setForm(current => ({ ...current, avatar: reader.result }));
+			setNotice('');
+		};
+		reader.onerror = () => {
+			setNotice('Unable to read this image. Please try another file.');
+		};
+		reader.readAsDataURL(file);
+	}
+
 	function handleAddressChange(event) {
-    const { name } = event.target;
-    const value = sanitize(addressFields[name].rule ?? name, event.target.value);
-    setAddressForm((current) => ({ ...current, [name]: value }));
-    if (addressErrors[name]) {
-      setAddressErrors((current) => ({ ...current, [name]: checkField(addressFields, name, value) }));
-    }
-  }
+		const { name } = event.target;
+		const value = sanitize(
+			addressFields[name].rule ?? name,
+			event.target.value,
+		);
+		setAddressForm(current => ({ ...current, [name]: value }));
+		if (addressErrors[name]) {
+			setAddressErrors(current => ({
+				...current,
+				[name]: checkField(addressFields, name, value),
+			}));
+		}
+	}
 
 	function handleAddressBlur(event) {
 		const { name, value } = event.target;
@@ -176,6 +217,7 @@ const UserProfile = () => {
 			name: currentUser?.name || '',
 			email: currentUser?.email || '',
 			phone: currentUser?.phone || '',
+			avatar: currentUser?.avatar || '',
 		};
 	});
 	const name = user?.name || 'Guest';
@@ -314,10 +356,11 @@ const UserProfile = () => {
 				name: form.name.trim(),
 				email: form.email.trim().toLowerCase(),
 				phone: form.phone.trim(),
+				avatar: form.avatar,
 			});
 			setUser(updatedUser);
 			setNotice('Your profile has been updated.');
-			setActiveSection('');
+			setActiveSection('Profile');
 		} catch (error) {
 			setNotice(
 				error instanceof Error
@@ -339,6 +382,7 @@ const UserProfile = () => {
 				name: user?.name || '',
 				email: user?.email || '',
 				phone: user?.phone || '',
+				avatar: user?.avatar || '',
 			});
 			setShowPasswordModal(false);
 			setPassword('');
@@ -354,10 +398,43 @@ const UserProfile = () => {
 	}
 
 	return (
-		<div className="p-4 lg:grid lg:grid-cols-[40%_60%] lg:p-0 lg:min-h-[calc(100vh-5rem)]">
-			{/* Right Profile Section */}
-			<section className="p-4 lg:flex lg:flex-col lg:justify-center lg:px-10 lg:py-8 xl:px-16">
-				<div className="relative overflow-hidden rounded-card border border-line bg-surface p-6 text-center shadow-card">
+		<div className="p-4 lg:grid lg:grid-cols-[32%_68%] lg:p-0 lg:min-h-[calc(100vh-5rem)]">
+
+			<section className="p-4 lg:flex lg:flex-col lg:justify-center lg:px-6 lg:py-8 xl:px-10">
+				{/* Mobile Profile Toggle */}
+				<button
+					type="button"
+					onClick={() => setIsProfileMenuOpen(prev => !prev)}
+					aria-expanded={isProfileMenuOpen}
+					className="flex w-full items-center justify-between rounded-card border border-line bg-surface p-4 text-left shadow-card transition-colors hover:bg-page lg:hidden"
+				>
+					<span className="flex min-w-0 items-center gap-3">
+						<img
+							src={avatar}
+							alt={`${name} profile`}
+							className="size-12 shrink-0 rounded-full border-2 border-surface object-cover ring-2 ring-primary"
+						/>
+
+						<span className="min-w-0">
+							<span className="block truncate font-semibold text-ink">
+								{name}
+							</span>
+							<span className="mt-1 block truncate text-sm text-muted">
+								{email}
+							</span>
+						</span>
+					</span>
+
+					<ChevronDown
+						size={20}
+						className={`shrink-0 text-muted transition-transform duration-300 ${
+							isProfileMenuOpen ? 'rotate-180' : ''
+						}`}
+					/>
+				</button>
+
+				{/* Desktop Profile Card */}
+				<div className="relative hidden overflow-hidden rounded-card border border-line bg-surface p-6 text-center shadow-card lg:block">
 					<span className="absolute -right-8 -top-8 size-28 rounded-full bg-accent/30" />
 					<span className="absolute -bottom-10 -left-10 size-32 rounded-full bg-primary/20" />
 
@@ -373,24 +450,31 @@ const UserProfile = () => {
 					</div>
 				</div>
 
-				<ProfileMenu
-					activeSection={activeSection}
-					onLogout={() => {
-						logoutUser();
-						navigate('/', { replace: true });
-					}}
-					onSelect={section => {
-						if (section === 'Verify Password') {
-							setPassword('');
-							setPasswordError('');
-							setShowPasswordModal(true);
-						} else {
-							setNotice('');
-							setActiveSection(section);
-						}
-					}}
-				/>
+				{/* Profile Menu */}
+				<div
+					className={`grid transition-all duration-300 ease-in-out lg:mt-6 lg:grid-rows-[1fr] ${
+						isProfileMenuOpen
+							? 'mt-4 grid-rows-[1fr] opacity-100'
+							: 'mt-0 grid-rows-[0fr] opacity-0 lg:mt-6 lg:opacity-100'
+					}`}
+				>
+					<div className="min-h-0 overflow-hidden lg:overflow-visible">
+						<ProfileMenu
+							activeSection={activeSection}
+							onLogout={() => {
+								logoutUser();
+								navigate('/', { replace: true });
+							}}
+							onSelect={section => {
+								setNotice('');
+								setActiveSection(section);
+								setIsProfileMenuOpen(false);
+							}}
+						/>
+					</div>
+				</div>
 			</section>
+
 			<section className="p-4 lg:p-8">
 				{notice && (
 					<p
@@ -400,6 +484,86 @@ const UserProfile = () => {
 						{notice}
 					</p>
 				)}
+
+				{activeSection === 'Profile' && (
+					<div className="space-y-5">
+						{/* Section Header */}
+						<div className="flex flex-wrap items-end justify-between gap-3">
+							<div>
+								<p className="text-xs font-bold uppercase tracking-widest text-primary">
+									Your account
+								</p>
+
+								<h2 className="mt-1 text-2xl font-bold text-ink">
+									Personal Information
+								</h2>
+
+								<p className="mt-1 text-sm text-muted">
+									View and manage your personal account information.
+								</p>
+							</div>
+
+							<button
+								type="button"
+								onClick={() => {
+									setPassword('');
+									setPasswordError('');
+									setShowPasswordModal(true);
+								}}
+								className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+							>
+								<Pencil size={17} />
+								Edit Profile
+							</button>
+						</div>
+
+						{/* Profile Information */}
+						<article className="overflow-hidden rounded-card border border-line bg-surface shadow-card">
+							<div className="flex flex-wrap items-center gap-4 border-b border-line bg-page/60 px-5 py-4">
+								<img
+									src={avatar}
+									alt={`${name} profile`}
+									className="size-16 rounded-full border-2 border-surface object-cover"
+								/>
+
+								<div>
+									<h3 className="font-semibold text-ink">{name}</h3>
+									<p className="mt-1 text-sm text-muted">{email}</p>
+								</div>
+							</div>
+
+							<div className="grid gap-6 px-5 py-5 sm:grid-cols-2">
+								<div>
+									<p className="text-xs font-semibold uppercase tracking-wide text-muted">
+										Full Name
+									</p>
+									<p className="mt-2 font-medium text-ink">
+										{user?.name || 'Not provided'}
+									</p>
+								</div>
+
+								<div>
+									<p className="text-xs font-semibold uppercase tracking-wide text-muted">
+										Email Address
+									</p>
+									<p className="mt-2 font-medium text-ink">
+										{user?.email || 'Not provided'}
+									</p>
+								</div>
+
+								<div>
+									<p className="text-xs font-semibold uppercase tracking-wide text-muted">
+										Phone Number
+									</p>
+									<p className="mt-2 font-medium text-ink">
+										{user?.phone || 'Not provided'}
+									</p>
+								</div>
+							</div>
+						</article>
+					</div>
+				)}
+
 				{activeSection === 'Edit Profile' && (
 					<div className="rounded-card border border-line bg-surface p-6 shadow-card">
 						<h2 className="mb-2 text-2xl font-bold text-ink">Edit Profile</h2>
@@ -409,6 +573,25 @@ const UserProfile = () => {
 						</p>
 
 						<form className="space-y-5" onSubmit={handleProfileSave}>
+							<div className="flex items-center gap-4">
+								<img
+									src={form.avatar || defaultAvatar}
+									alt="Profile preview"
+									className="size-16 rounded-full object-cover"
+								/>
+								<label className="grid gap-1.5 text-sm font-medium text-ink">
+									Profile photo
+									<input
+										type="file"
+										accept="image/*"
+										onChange={handleAvatarChange}
+										className="max-w-full text-sm text-muted file:mr-3 file:rounded-control file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:font-semibold file:text-primary-text"
+									/>
+									<span className="text-xs font-normal text-muted">
+										Image files up to 1 MB
+									</span>
+								</label>
+							</div>
 							{Object.keys(profileFields).map(name => (
 								<InputField
 									key={name}
@@ -425,7 +608,7 @@ const UserProfile = () => {
 								<button
 									type="button"
 									onClick={() => {
-										setActiveSection('');
+										setActiveSection('Profile');
 										setProfileErrors({});
 									}}
 									className="rounded-xl border border-line px-5 py-3 text-ink hover:bg-page"
@@ -448,7 +631,7 @@ const UserProfile = () => {
 						<div className="flex flex-wrap items-end justify-between gap-3">
 							<div>
 								<p className="text-xs font-bold uppercase tracking-widest text-primary">
-									Your account
+									Your orders
 								</p>
 								<h2 className="mt-1 text-2xl font-bold text-ink">My Orders</h2>
 								<p className="mt-1 text-sm text-muted">
