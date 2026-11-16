@@ -17,9 +17,13 @@ import InputField from "../components/common/InputField";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getCurrentUser, getStoreOrders } from "../services/dashboardService";
-import { useShoppingCart } from "../context/CartContext";
-import { products } from "../data/products";
+import { useShoppingCart } from "../context/useShoppingCart";
 import { sanitize, checkField, checkForm } from '../utility/validators';
+import { useBranch } from "../context/useBranch";
+import {
+  getCatalogProducts,
+  getProductStock,
+} from "../services/branchService";
 
 const checkoutFields = {
   fullName: {
@@ -96,9 +100,11 @@ function getSavedDeliveryDetails() {
 }
 const Checkout = () => {
   const { cartItems, clearCart } = useShoppingCart();
+  const { selectedBranch } = useBranch();
   const orderItems = useMemo(
-    () =>
-      cartItems
+    () => {
+      const products = getCatalogProducts();
+      return cartItems
         .map((cartItem) => {
           const product = products.find((item) => item.id === cartItem.id);
           return product
@@ -106,11 +112,13 @@ const Checkout = () => {
                 ...product,
                 quantity: cartItem.quantity,
                 option: product.category,
+                stock: getProductStock(product, selectedBranch.id),
               }
             : null;
         })
-        .filter(Boolean),
-    [cartItems],
+        .filter(Boolean);
+    },
+    [cartItems, selectedBranch.id],
   );
   const subtotal = orderItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -141,6 +149,13 @@ const handleBlur = (e) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (orderItems.some((item) => item.quantity > item.stock)) {
+      setOrderSaveError(
+        `Some items are no longer available in the required quantity at ${selectedBranch.name}. Please update your cart.`,
+      );
+      return;
+    }
+
     const newErrors = checkForm(checkoutFields, formData);
     setErrors(newErrors);
     const firstInvalid = Object.keys(newErrors)[0];
@@ -153,6 +168,8 @@ const handleBlur = (e) => {
     const user = getCurrentUser();
     const order = {
       id: randomId,
+      branchId: selectedBranch.id,
+      branchName: selectedBranch.name,
       customerId: user?.id || "",
       customer: formData.fullName.trim() || "Customer",
       email: formData.email.trim().toLowerCase(),
@@ -171,7 +188,30 @@ const handleBlur = (e) => {
       },
     };
 
+    const previousProducts = localStorage.getItem("products");
     try {
+      const quantitiesByProduct = new Map(
+        orderItems.map((item) => [item.id, item.quantity]),
+      );
+      const updatedProducts = getCatalogProducts().map((product) => {
+        const quantity = quantitiesByProduct.get(product.id);
+        if (!quantity) return product;
+
+        const stockByBranch = {
+          ...product.stockByBranch,
+          [selectedBranch.id]:
+            getProductStock(product, selectedBranch.id) - quantity,
+        };
+        return {
+          ...product,
+          stockByBranch,
+          stock: Object.values(stockByBranch).reduce(
+            (total, stock) => total + Number(stock || 0),
+            0,
+          ),
+        };
+      });
+      localStorage.setItem("products", JSON.stringify(updatedProducts));
       localStorage.setItem("storeOrders", JSON.stringify([...getStoreOrders(), order]));
       setOrderSaveError("");
       setOrderId(randomId);
@@ -179,6 +219,15 @@ const handleBlur = (e) => {
       clearCart();
       setIsOrderPlaced(true);
     } catch (error) {
+      try {
+        if (previousProducts === null) {
+          localStorage.removeItem("products");
+        } else {
+          localStorage.setItem("products", previousProducts);
+        }
+      } catch (restoreError) {
+        console.error("Failed to restore product stock after order error:", restoreError);
+      }
       console.error("Failed to save the order:", error);
       setOrderSaveError("Your order could not be saved. Please try again.");
     }
@@ -203,6 +252,10 @@ const handleBlur = (e) => {
             <div className="flex justify-between gap-4 text-sm">
               <span className="text-muted">Items</span>
               <span className="text-right font-medium text-ink">{completedOrder.quantity}</span>
+            </div>
+            <div className="flex justify-between gap-4 text-sm">
+              <span className="text-muted">Branch</span>
+              <span className="text-right font-medium text-ink">{completedOrder.branchName}</span>
             </div>
             <div className="flex justify-between gap-4 border-t border-line pt-3">
               <span className="font-semibold text-ink">Total paid</span>
@@ -244,6 +297,9 @@ const handleBlur = (e) => {
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted sm:text-base">
             Add your details below to complete your order securely.
+          </p>
+          <p className="mt-2 text-sm font-semibold text-primary-text">
+            Pickup branch: {selectedBranch.name}
           </p>
         </div>
 

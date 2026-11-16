@@ -192,9 +192,10 @@ function CartContent({ cartItems, subTotal, onQtyChange, onRemoveItem, onClose }
 
                       <Button
                         type="button"
+                        disabled={item.quantity >= item.stock}
                         ariaLabel={`Increase quantity of ${item.name}`}
                         onClick={() => onQtyChange(item.id, item.quantity + 1)}
-                        className="text-muted hover:text-primary-text"
+                        className="text-muted hover:text-primary-text disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         <Plus size={16} />
                       </Button>

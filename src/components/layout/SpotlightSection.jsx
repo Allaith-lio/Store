@@ -1,15 +1,23 @@
 import { Link } from "react-router-dom";
 import { Star, ShoppingCart } from "lucide-react";
 import { products } from "../../data/products";
-import { useShoppingCart } from "../../context/CartContext";
+import { useShoppingCart } from "../../context/useShoppingCart";
+import { useBranch } from "../../context/useBranch";
+import {
+  getCatalogProducts,
+  getProductStock,
+} from "../../services/branchService";
 
 // The product we want to highlight (Modern Smart Watch)
-const spotlight = products.find((p) => p.id === 4);
+const spotlightId = products.find((p) => p.id === 4)?.id;
 
 export default function SpotlightSection() {
   const { increaseCartQuantity } = useShoppingCart();
+  const { selectedBranch } = useBranch();
+  const spotlight = getCatalogProducts().find((product) => product.id === spotlightId);
 
   if (!spotlight) return null;
+  const stock = getProductStock(spotlight, selectedBranch.id);
 
   return (
     <section className="mx-auto max-w-7xl px-6 pb-16 md:pb-24">
@@ -44,10 +52,11 @@ export default function SpotlightSection() {
             <button
               type="button"
               onClick={() => increaseCartQuantity(spotlight.id)}
-              className="btn rounded-full bg-accent px-6 py-3 text-gray-950 hover:brightness-110"
+              disabled={stock === 0}
+              className="btn rounded-full bg-accent px-6 py-3 text-gray-950 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ShoppingCart className="size-4" />
-              Add To Cart
+              {stock > 0 ? "Add To Cart" : `Sold out at ${selectedBranch.name}`}
             </button>
             <Link
               to={`/products/${spotlight.id}`}

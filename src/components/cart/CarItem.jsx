@@ -1,6 +1,6 @@
 
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { useShoppingCart } from "../../context/CartContext";
+import { useShoppingCart } from "../../context/useShoppingCart";
 
 const CarItem = ({ product }) => {
   const {
@@ -51,8 +51,9 @@ const CarItem = ({ product }) => {
           <button
             type="button"
             onClick={() => increaseCartQuantity(product.id)}
+            disabled={quantity >= product.stock}
             aria-label="Increase quantity"
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-control border border-line text-ink transition-colors hover:bg-page"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-control border border-line text-ink transition-colors hover:bg-page disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Plus size={15} />
           </button>

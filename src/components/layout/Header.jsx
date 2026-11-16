@@ -12,11 +12,16 @@ import HeaderDrawers from "./HeaderDrawers";
 import Button from "../common/Button";
 import NavbarLinks from "../common/NavbarLinks";
 import { useTheme } from "../../context/ThemeContext";
-import { useShoppingCart } from "../../context/CartContext";
+import { useShoppingCart } from "../../context/useShoppingCart";
 import { useWishlist } from "../../context/WishlistContext";
-import { products } from "../../data/products";
 import { Logo } from "../common/Logo";
 import { getCurrentUser } from "../../services/dashboardService";
+import { useBranch } from "../../context/useBranch";
+   import BranchPicker from "../common/BranchPicker";
+import {
+  getCatalogProducts,
+  getProductStock,
+} from "../../services/branchService";
 
 const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
@@ -25,6 +30,7 @@ export default function Header({ showLinks = true }) {
   const {cartItems: contextCartItems, updateCartQuantity, RemoveItemFromCart } = useShoppingCart();
 
   const { wishlistCount } = useWishlist();
+     const { selectedBranch } = useBranch();
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(
     () =>
@@ -52,7 +58,7 @@ export default function Header({ showLinks = true }) {
   }, []);
   
   const cartItems = contextCartItems.map((item) => {
-    const product = products.find((p) => p.id === item.id);
+    const product = getCatalogProducts().find((p) => p.id === item.id);
     if (!product) return null;
     return {
       ...product,
@@ -60,6 +66,7 @@ export default function Header({ showLinks = true }) {
       name: product.name ?? product.title,
       image: product.image ?? product.thumbnail,
       quantity: item.quantity,
+      stock: getProductStock(product, selectedBranch.id),
     };
   }).filter(Boolean);
 
@@ -104,6 +111,8 @@ export default function Header({ showLinks = true }) {
           )}
 
           <Logo />
+
+          {showLinks && <BranchPicker />}
 
           {!showLinks && (
             <Link

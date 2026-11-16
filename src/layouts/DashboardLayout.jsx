@@ -16,7 +16,7 @@ import { Logo } from "../components/common/Logo"
 import { getCurrentUser, logoutUser } from "../services/dashboardService"
 const navItems = [
   { to: '/dashboard', label: 'Overview', Icon: LayoutDashboard, end: true },
-  { to: '/dashboard/products', label: 'Products', Icon: Package },
+  { to: '/dashboard/products', label: 'Products & Branch Stock', Icon: Package },
   { to: '/dashboard/orders', label: 'Orders & Customers', Icon: Users },
 ]
 

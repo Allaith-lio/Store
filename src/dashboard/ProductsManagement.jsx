@@ -6,12 +6,17 @@ import {
 	Package,
 	AlertTriangle,
 } from 'lucide-react';
+import { branches } from '../data/branches';
+import {
+	getCatalogProducts,
+	getProductStock,
+} from '../services/branchService';
 
 const emptyForm = {
 	name: '',
 	description: '',
 	price: '',
-	stock: '',
+	stockByBranch: Object.fromEntries(branches.map(branch => [branch.id, 0])),
 	image: '',
 	category: '',
 	rating: '',
@@ -22,12 +27,7 @@ const emptyForm = {
 
 export default function ProductsManagement() {
 	const [products, setProducts] = useState(() => {
-		try {
-			const saved = localStorage.getItem('products');
-			return saved ? JSON.parse(saved) : [];
-		} catch {
-			return [];
-		}
+		return getCatalogProducts();
 	});
 
 	const [form, setForm] = useState(emptyForm);
@@ -63,10 +63,19 @@ export default function ProductsManagement() {
 	const handleSubmit = e => {
 		e.preventDefault();
 
+		const hasInvalidStock = branches.some(branch => {
+			const stock = Number(form.stockByBranch[branch.id]);
+			return !Number.isInteger(stock) || stock < 0;
+		});
+
+		if (hasInvalidStock) {
+			setError('Enter a non-negative whole-number stock quantity for every branch.');
+			return;
+		}
+
 		if (
 			!form.name ||
 			!form.price ||
-			!form.stock ||
 			!form.category ||
 			!form.rating ||
 			!form.image ||
@@ -82,7 +91,16 @@ export default function ProductsManagement() {
 			category: form.category.trim(),
 			image: form.image.trim(),
 			price: Number(form.price),
-			stock: Number(form.stock),
+			stockByBranch: Object.fromEntries(
+				branches.map(branch => [
+					branch.id,
+					Number(form.stockByBranch[branch.id]),
+				]),
+			),
+			stock: Object.values(form.stockByBranch).reduce(
+				(total, stock) => total + Number(stock || 0),
+				0,
+			),
 			rating: Number(form.rating),
 			highlights: [form.highlight1, form.highlight2, form.highlight3]
 				.map(h => h.trim())
@@ -113,7 +131,12 @@ export default function ProductsManagement() {
 			name: product.name || '',
 			description: product.description || '',
 			price: String(product.price || ''),
-			stock: String(product.stock || ''),
+			stockByBranch: Object.fromEntries(
+				branches.map(branch => [
+					branch.id,
+					String(getProductStock(product, branch.id)),
+				]),
+			),
 			image: product.image || '',
 			category: product.category || '',
 			rating: String(product.rating || ''),
@@ -262,21 +285,6 @@ export default function ProductsManagement() {
 
 							<label className="block space-y-1.5">
 								<span className="text-xs font-semibold text-muted uppercase tracking-wider">
-									Stock Qty
-								</span>
-								<input
-									name="stock"
-									type="number"
-									min="0"
-									value={form.stock}
-									onChange={handleChange}
-									className="w-full rounded-xl border border-line bg-page px-4 py-3 text-ink outline-none transition-all mt-1"
-									placeholder="0"
-								/>
-							</label>
-
-							<label className="block space-y-1.5">
-								<span className="text-xs font-semibold text-muted uppercase tracking-wider">
 									Rating (0 - 5)
 								</span>
 								<input
@@ -292,6 +300,38 @@ export default function ProductsManagement() {
 								/>
 							</label>
 						</div>
+
+						<fieldset>
+							<legend className="mb-2 text-xs font-semibold text-muted uppercase tracking-wider">
+								Stock by branch
+							</legend>
+							<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+								{branches.map(branch => (
+									<label key={branch.id} className="block space-y-1.5">
+										<span className="text-xs font-semibold text-muted">
+											{branch.name}
+										</span>
+										<input
+											type="number"
+											min="0"
+											step="1"
+											value={form.stockByBranch[branch.id] ?? 0}
+											onChange={event =>
+												setForm(previous => ({
+													...previous,
+													stockByBranch: {
+														...previous.stockByBranch,
+														[branch.id]: event.target.value,
+													},
+												}))
+											}
+											className="mt-1 w-full rounded-xl border border-line bg-page px-4 py-3 text-ink outline-none transition-all"
+											aria-label={`${branch.name} stock quantity`}
+										/>
+									</label>
+								))}
+							</div>
+						</fieldset>
 
 						<label className="block space-y-1.5">
 							<span className="text-xs font-semibold text-muted uppercase tracking-wider">
@@ -421,17 +461,21 @@ export default function ProductsManagement() {
 												<span>•</span>
 												<span>⭐ {Number(product.rating || 0).toFixed(1)}</span>
 												<span>•</span>
-												<span
-													className={
-														product.stock > 0
-															? 'text-ink font-medium'
-															: 'text-red-500 font-medium'
-													}
-												>
-													{product.stock > 0
-														? `Stock: ${product.stock}`
-														: 'Out of Stock'}
-												</span>
+												{branches.map(branch => {
+													const stock = getProductStock(product, branch.id);
+													return (
+														<span
+															key={branch.id}
+															className={
+																stock > 0
+																	? 'text-ink font-medium'
+																	: 'text-red-500 font-medium'
+															}
+														>
+															{branch.name}: {stock}
+														</span>
+													);
+												})}
 											</p>
 										</div>
 									</div>

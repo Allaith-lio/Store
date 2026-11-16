@@ -15,13 +15,11 @@ import OrderManagement from "./dashboard/OrderManagement";
 import Checkout from "./pages/CheckoutPage";
 import ProductPage from "./components/Product/ProductPage";
 import MyCart from "./pages/MyCart";
-import CartContextProvider from "./context/CartContext";
 import UserProfile from "./pages/UserProfile";
 
 function App() {
   return (
-    <CartContextProvider>
-      <Routes>
+    <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/wishlist" element={<Wishlist />} />
@@ -44,8 +42,7 @@ function App() {
           <Route path="products" element={<ProductsManagement />} />
           <Route path="orders" element={<OrderManagement />} />
         </Route>
-      </Routes>
-    </CartContextProvider>
+    </Routes>
   );
 }
 
