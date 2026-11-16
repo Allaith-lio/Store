@@ -90,7 +90,7 @@ export default function Header({ showLinks = true }) {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-line bg-surface shadow-card">
-        <div className="mx-auto flex min-h-18 max-w-7xl items-center justify-between gap-3 px-4 sm:gap-5 sm:px-6 lg:px-8">
+        <div className="flex min-h-18 w-full items-center justify-between gap-3 px-4 sm:gap-5 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
           {showLinks && isMobile && (
             <button
               type="button"

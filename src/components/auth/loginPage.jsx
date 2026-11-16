@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
+  Camera,
   Heart,
   Sparkles,
   Sun,
@@ -13,6 +14,8 @@ import { Logo } from "../common/Logo";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { loginUser, registerUser } from "../../services/dashboardService";
 import { validateField } from "../../utility/validators";
+
+const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -29,6 +32,7 @@ function LoginPage() {
   }, [modeParam]);
   const [notice, setNotice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [avatar, setAvatar] = useState("");
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -92,6 +96,34 @@ function LoginPage() {
     setTouched((prev) => ({ ...prev, [name]: true }));
     setErrors((prev) => ({ ...prev, [name]: validateLoginField(name, value) }));
   }
+  function handleAvatarChange(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setNotice("Choose an image file for your profile photo.");
+      return;
+    }
+    if (file.size > 1024 * 1024) {
+      setNotice("Choose an image smaller than 1 MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result !== "string") {
+        setNotice("Unable to read this image. Please try another file.");
+        return;
+      }
+      setAvatar(reader.result);
+      setNotice("");
+    };
+    reader.onerror = () => {
+      setNotice("Unable to read this image. Please try another file.");
+    };
+    reader.readAsDataURL(file);
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     setNotice("");
@@ -104,6 +136,7 @@ function LoginPage() {
           name: formData.username,
           email: formData.email,
           password: formData.password,
+          avatar,
         });
       } else {
         await loginUser(formData);
@@ -216,6 +249,39 @@ function LoginPage() {
             </p>
 
             <form className="mt-8 grid gap-5" onSubmit={handleSubmit}>
+              {isSigningUp && (
+                <div className="flex items-center gap-4">
+                  <div className="relative shrink-0">
+                    <img
+                      src={avatar || defaultAvatar}
+                      alt="Profile preview"
+                      className="size-16 rounded-full border border-line object-cover"
+                    />
+                    <label
+                      htmlFor="signup-avatar"
+                      className="absolute -bottom-1 -right-1 flex size-7 cursor-pointer items-center justify-center rounded-full border border-line bg-surface text-primary shadow-card transition-colors hover:bg-page"
+                    >
+                      <Camera size={14} aria-hidden="true" />
+                      <span className="sr-only">Upload profile photo</span>
+                    </label>
+                    <input
+                      id="signup-avatar"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="sr-only"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-ink">
+                      Add a profile photo
+                    </p>
+                    <p className="mt-0.5 text-xs leading-5 text-muted">
+                      Optional — JPG or PNG up to 1 MB.
+                    </p>
+                  </div>
+                </div>
+              )}
               {Object.keys(fields)
               .filter((name) => name !== "username" || isSigningUp)
               .map((fieldName)=>(
