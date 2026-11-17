@@ -7,9 +7,13 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import Button from "../common/Button";
-import { products } from "../../data/products";
-import { useShoppingCart } from "../../context/CartContext";
+import { useShoppingCart } from "../../context/useShoppingCart";
 import { useWishlist } from "../../context/WishlistContext";
+import { useBranch } from "../../context/useBranch";
+import {
+  getCatalogProducts,
+  getProductStock,
+} from "../../services/branchService";
 
 function RatingStars({ rating, size = 17 }) {
   return (
@@ -33,10 +37,10 @@ function RatingStars({ rating, size = 17 }) {
 export default function ProductPage() {
   const { increaseCartQuantity } = useShoppingCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { selectedBranch } = useBranch();
   const { id } = useParams();
-  console.log("Current Product ID from URL:", id);
   const productId = Number(id);
-  const product = products.find((p) => p.id === productId);
+  const product = getCatalogProducts().find((p) => p.id === productId);
   if (!product) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-20 text-center">
@@ -46,6 +50,7 @@ export default function ProductPage() {
     );
   }
   const isFavorite = isInWishlist(productId);
+  const stock = getProductStock(product, selectedBranch.id);
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
       <nav
@@ -123,23 +128,38 @@ export default function ProductPage() {
           <p className="mt-4 text-base leading-7 text-muted">
             {product.description}
           </p>
+          <p
+            className={`mt-3 text-sm font-semibold ${
+              stock > 0 ? "text-primary-text" : "text-red-500"
+            }`}
+          >
+            {stock > 0
+              ? `${stock} available at ${selectedBranch.name}`
+              : `Out of stock at ${selectedBranch.name}`}
+          </p>
 
           <div className="mt-6 border-t border-line pt-5">
             <h2 className="text-sm font-semibold text-ink">
               Why you’ll love it
             </h2>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-              {product.highlights.map(({ label, Icon }) => (
-                <li
-                  key={label}
-                  className="flex items-center gap-2.5 text-sm text-muted"
-                >
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Icon size={16} aria-hidden="true" />
-                  </span>
-                  {label}
-                </li>
-              ))}
+              {product.highlights.map((highlight) => {
+                const label =
+                  typeof highlight === "string" ? highlight : highlight.label;
+                const Icon =
+                  typeof highlight === "string" ? Check : highlight.Icon || Check;
+                return (
+                  <li
+                    key={label}
+                    className="flex items-center gap-2.5 text-sm text-muted"
+                  >
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <Icon size={16} aria-hidden="true" />
+                    </span>
+                    {label}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -162,9 +182,10 @@ export default function ProductPage() {
           <Button 
             type="button"
             onClick={() => increaseCartQuantity(productId)}
-            className="btn btn-primary w-full mt-6 py-3.5">
+            disabled={stock === 0}
+            className="btn btn-primary w-full mt-6 py-3.5 disabled:cursor-not-allowed disabled:opacity-50">
             <ShoppingBag size={19} aria-hidden="true" />
-            Add to cart
+            {stock > 0 ? "Add to cart" : "Sold out"}
           </Button>
 
           {/* زر المفضلة: تم ربطه بدالة toggleWishlist مع تمرير الـ id وفحص الحالة بـ isInWishlist */}

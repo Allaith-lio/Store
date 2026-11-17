@@ -7,7 +7,8 @@ import {
   SparklesIcon,
 } from "lucide-react";
 import ProductCard from "../components/product/ProductCard";
-import { products } from "../data/products";
+import { getCatalogProducts , getProductStock} from "../services/branchService";
+import { useBranch } from "../context/useBranch";
 
 const categories = ["All", "Electronics", "Accessories", "Home", "Clothing"];
 
@@ -16,7 +17,10 @@ const ShopProducts = () => {
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
+  const { selectedBranch } = useBranch();
+const [inStockOnly, setInStockOnly] = useState(false);
   const productsInPage = 8;
+  const products = useMemo(() => getCatalogProducts(), []);
 
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -27,7 +31,8 @@ const ShopProducts = () => {
         product.category.toLowerCase().includes(query);
       const matchesCategory =
         category === "All" || product.category === category;
-      return matchesSearch && matchesCategory;
+      const matchesInStock = !inStockOnly || getProductStock(product, selectedBranch.id) > 0;
+      return matchesSearch && matchesCategory && matchesInStock;
     });
 
     return [...results].sort((a, b) => {
@@ -36,7 +41,7 @@ const ShopProducts = () => {
       if (sort === "rating") return b.rating - a.rating;
       return a.id - b.id;
     });
-  }, [search, category, sort]);
+  }, [products, search, category, sort, inStockOnly, selectedBranch.id]);
 
   const indexOfLastItem = currentPage * productsInPage;
   const indexOfFirstItem = indexOfLastItem - productsInPage;
@@ -51,6 +56,8 @@ const ShopProducts = () => {
     setCategory("All");
     setSort("default");
     setCurrentPage(1);
+    setInStockOnly(false);
+    
   };
 
   const getPageNumbers = () => {
@@ -149,16 +156,28 @@ const ShopProducts = () => {
         </svg>
       </div>
     </div>
+    <label className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-control border border-line bg-page px-4 text-sm text-ink">
+  <input
+    type="checkbox"
+    checked={inStockOnly}
+    onChange={(e) => {
+      setInStockOnly(e.target.checked);
+      setCurrentPage(1);
+    }}
+    className="size-4 accent-primary"
+  />
+  In stock here
+</label>
   </div>
 </div>
 <div className="mt-5 flex items-center justify-between px-1">
   <p className="text-sm text-muted">
     Showing{" "}
     <span className="font-semibold text-ink">{filteredProducts.length}</span>{" "}
-    {filteredProducts.length === 1 ? "product" : "products"}
+   {filteredProducts.length === 1 ? "product" : "products"} · {selectedBranch.name}
   </p>
   
-  {(search || category !== "All" || sort !== "default") && (
+ {(search || category !== "All" || sort !== "default" || inStockOnly) && (
     <button
       type="button"
       onClick={clearFilters}
@@ -232,6 +251,7 @@ const ShopProducts = () => {
           </button>
         </div>
       )}
+      
     </div>
   );
 };

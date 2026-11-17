@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Star, ShoppingCart } from "lucide-react";
 import { products } from "../../data/products";
-import { useShoppingCart } from "../../context/CartContext";
+import { useShoppingCart } from "../../context/useShoppingCart";
 
 // The product we want to highlight (Modern Smart Watch)
 const spotlight = products.find((p) => p.id === 4);

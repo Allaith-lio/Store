@@ -7,8 +7,9 @@ import {
   ShoppingCart,
 } from "lucide-react";
 
-import { useShoppingCart } from "../context/CartContext";
-import { products } from "../data/products";
+import { useShoppingCart } from "../context/useShoppingCart";
+import { getCatalogProducts, getProductStock } from "../services/branchService";
+import { useBranch } from "../context/useBranch";
 
 import CartSummary from "../components/cart/CartSummary";
 import CarItem from "../components/cart/CarItem";
@@ -17,6 +18,8 @@ const MyCart = () => {
   const navigate = useNavigate();
 
   const { cartItems, clearCart } = useShoppingCart();
+  const { selectedBranch } = useBranch();
+  const products = getCatalogProducts();
 
   // Get full product details
   const cartProducts = cartItems
@@ -24,7 +27,11 @@ const MyCart = () => {
       const product = products.find((p) => p.id === item.id);
 
       return product
-        ? { ...product, quantity: item.quantity }
+        ? {
+            ...product,
+            quantity: item.quantity,
+            stock: getProductStock(product, selectedBranch.id),
+          }
         : null;
     })
     .filter(Boolean);
