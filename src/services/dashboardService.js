@@ -48,7 +48,7 @@ export function getStoreOrders() {
   return readStorage('storeOrders', [])
 }
 
-export async function registerUser({ name, email, password }) {
+export async function registerUser({ name, email, password, avatar = '' }) {
   const users = getRegisteredUsers()
   const normalizedEmail = email.trim().toLowerCase()
 
@@ -61,7 +61,7 @@ export async function registerUser({ name, email, password }) {
     id: crypto.randomUUID(),
     name: name.trim(),
     email: normalizedEmail,
-    avatar: '',
+    avatar: avatar || '',
     phone: '',
   }
 
