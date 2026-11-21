@@ -9,6 +9,7 @@ import { Order, OrderSchema } from './orders/schemas/order.schema';
 import { Product, ProductSchema } from './products/schemas/product.schema';
 import { Review, ReviewSchema } from './reviews/schemas/review.schema';
 import { User, UserSchema } from './users/schemas/user.schema';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -28,6 +29,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       { name: Order.name, schema: OrderSchema },
       { name: Review.name, schema: ReviewSchema },
     ]),
+    WishlistModule,
     // Distributed tracing, auto-correlated logs, request/job metrics, error
     // telemetry, alarms, and more — out of the box. Sign up at https://observe.nestjs.com,
     // then run `npx @nestjs/observe link` to write your key pair into .env.
