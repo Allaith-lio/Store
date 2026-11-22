@@ -9,6 +9,7 @@ import { Order, OrderSchema } from './orders/schemas/order.schema';
 import { Product, ProductSchema } from './products/schemas/product.schema';
 import { Review, ReviewSchema } from './reviews/schemas/review.schema';
 import { User, UserSchema } from './users/schemas/user.schema';
+import { AdminModule } from './admin/admin.module';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -36,6 +37,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       appSecret: process.env.OBSERVE_APP_SECRET ?? 'YOUR_APP_SECRET',
       serviceId: 'backend',
     }),
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
