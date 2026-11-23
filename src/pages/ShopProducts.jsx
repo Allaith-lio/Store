@@ -7,8 +7,9 @@ import {
   SparklesIcon,
 } from "lucide-react";
 import ProductCard from "../components/product/ProductCard";
-import { getCatalogProducts , getProductStock} from "../services/branchService";
+import { getProductStock } from "../services/branchService";
 import { useBranch } from "../context/useBranch";
+import { useShoppingCart } from "../context/useShoppingCart";
 
 const categories = ["All", "Electronics", "Accessories", "Home", "Clothing"];
 
@@ -18,9 +19,9 @@ const ShopProducts = () => {
   const [sort, setSort] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
   const { selectedBranch } = useBranch();
-const [inStockOnly, setInStockOnly] = useState(false);
+  const { products, productsLoading, productsError } = useShoppingCart();
+  const [inStockOnly, setInStockOnly] = useState(false);
   const productsInPage = 8;
-  const products = useMemo(() => getCatalogProducts(), []);
 
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -39,7 +40,7 @@ const [inStockOnly, setInStockOnly] = useState(false);
       if (sort === "price-low") return a.price - b.price;
       if (sort === "price-high") return b.price - a.price;
       if (sort === "rating") return b.rating - a.rating;
-      return a.id - b.id;
+      return 0;
     });
   }, [products, search, category, sort, inStockOnly, selectedBranch.id]);
 
@@ -188,7 +189,13 @@ const [inStockOnly, setInStockOnly] = useState(false);
   )}
 </div>
 
-      {filteredProducts.length > 0 ? (
+      {productsError ? (
+        <p role="alert" className="mt-8 text-center text-red-500">
+          {productsError}
+        </p>
+      ) : productsLoading ? (
+        <p className="mt-8 text-center text-muted">Loading products...</p>
+      ) : filteredProducts.length > 0 ? (
         <>
           <div className="mt-5 grid grid-cols-1 gap-5 min-[451px]:grid-cols-2 min-[791px]:grid-cols-3 min-[1024px]:grid-cols-4">
             {currentProducts.map((product) => (

@@ -8,8 +8,9 @@ import {
 } from "lucide-react";
 
 import { useShoppingCart } from "../context/useShoppingCart";
-import { getCatalogProducts, getProductStock } from "../services/branchService";
+import { getProductStock } from "../services/branchService";
 import { useBranch } from "../context/useBranch";
+import { useToast } from "../context/useToast";
 
 import CartSummary from "../components/cart/CartSummary";
 import CarItem from "../components/cart/CarItem";
@@ -17,9 +18,9 @@ import CarItem from "../components/cart/CarItem";
 const MyCart = () => {
   const navigate = useNavigate();
 
-  const { cartItems, clearCart } = useShoppingCart();
+  const { cartItems, clearCart, products, productsError } = useShoppingCart();
   const { selectedBranch } = useBranch();
-  const products = getCatalogProducts();
+  const { showToast } = useToast();
 
   // Get full product details
   const cartProducts = cartItems
@@ -49,7 +50,9 @@ const MyCart = () => {
     );
 
     if (confirmed) {
-      clearCart();
+      clearCart().catch((error) =>
+        showToast(error instanceof Error ? error.message : "Unable to clear cart."),
+      );
     }
   };
 
@@ -59,6 +62,7 @@ const MyCart = () => {
       <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="flex min-h-105 flex-col items-center justify-center rounded-card border border-line bg-surface px-5 py-12 text-center shadow-card">
 
+          {productsError && <p role="alert" className="mb-4 text-red-500">{productsError}</p>}
           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-primary">
             <ShoppingBag size={42} strokeWidth={1.5} />
           </div>

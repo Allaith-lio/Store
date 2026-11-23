@@ -1,6 +1,7 @@
 
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useShoppingCart } from "../../context/useShoppingCart";
+import { useToast } from "../../context/useToast";
 
 const CarItem = ({ product }) => {
   const {
@@ -9,6 +10,14 @@ const CarItem = ({ product }) => {
     decreaseCartQuantity,
     RemoveItemFromCart,
   } = useShoppingCart();
+  const { showToast } = useToast();
+  const runCartAction = async (action) => {
+    try {
+      await action();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Unable to update cart.");
+    }
+  };
 
   const quantity = getItemQuantity(product.id);
 
@@ -35,7 +44,7 @@ const CarItem = ({ product }) => {
           {/* Decrease Quantity */}
           <button
             type="button"
-            onClick={() => decreaseCartQuantity(product.id)}
+            onClick={() => runCartAction(() => decreaseCartQuantity(product.id))}
             disabled={quantity <= 1}
             aria-label="Decrease quantity"
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-control border border-line text-ink transition-colors hover:bg-page disabled:cursor-not-allowed disabled:opacity-40"
@@ -50,7 +59,7 @@ const CarItem = ({ product }) => {
           {/* Increase Quantity */}
           <button
             type="button"
-            onClick={() => increaseCartQuantity(product.id)}
+            onClick={() => runCartAction(() => increaseCartQuantity(product.id))}
             disabled={quantity >= product.stock}
             aria-label="Increase quantity"
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-control border border-line text-ink transition-colors hover:bg-page disabled:cursor-not-allowed disabled:opacity-40"
@@ -61,7 +70,7 @@ const CarItem = ({ product }) => {
           {/* Remove Product */}
           <button
             type="button"
-            onClick={() => RemoveItemFromCart(product.id)}
+            onClick={() => runCartAction(() => RemoveItemFromCart(product.id))}
             className="ml-3 flex cursor-pointer items-center gap-1.5 text-sm font-medium text-red-500 transition-colors hover:text-red-600"
           >
             <Trash2 size={16} />

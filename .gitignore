@@ -74,6 +74,7 @@ vite.config.ts.timestamp-*
 .vite
 .astro
 .turbo
+uploads/
 
 # Editor directories and files
 .vscode/*

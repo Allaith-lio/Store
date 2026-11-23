@@ -11,19 +11,16 @@ import {
   Building2,
   Phone,
   ShoppingBag,
-  CheckCircle2, Landmark, Globe,
+  Landmark, Globe,
 } from "lucide-react";
 import InputField from "../components/common/InputField";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { getCurrentUser, getStoreOrders } from "../services/dashboardService";
+import { getCurrentUser, getSavedAddresses } from "../services/dashboardService";
 import { useShoppingCart } from "../context/useShoppingCart";
 import { sanitize, checkField, checkForm } from '../utility/validators';
 import { useBranch } from "../context/useBranch";
-import {
-  getCatalogProducts,
-  getProductStock,
-} from "../services/branchService";
+import { getProductStock } from "../services/branchService";
 
 const checkoutFields = {
   fullName: {
@@ -99,11 +96,10 @@ function getSavedDeliveryDetails() {
   };
 }
 const Checkout = () => {
-  const { cartItems, clearCart } = useShoppingCart();
+  const { cartItems, products } = useShoppingCart();
   const { selectedBranch } = useBranch();
   const orderItems = useMemo(
     () => {
-      const products = getCatalogProducts();
       return cartItems
         .map((cartItem) => {
           const product = products.find((item) => item.id === cartItem.id);
@@ -118,7 +114,7 @@ const Checkout = () => {
         })
         .filter(Boolean);
     },
-    [cartItems, selectedBranch.id],
+    [cartItems, products, selectedBranch.id],
   );
   const subtotal = orderItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -127,11 +123,29 @@ const Checkout = () => {
   const shipping = 0;
   const total = subtotal + shipping;
   const [formData, setFormData] = useState(getSavedDeliveryDetails);
-  const [isOrderPlaced, setIsOrderPlaced] = useState(false);
-  const [orderId, setOrderId] = useState("");
-  const [completedOrder, setCompletedOrder] = useState(null);
   const [orderSaveError, setOrderSaveError] = useState("");
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (!getCurrentUser()) return;
+    getSavedAddresses()
+      .then((addresses) => {
+        const address = addresses.find((item) => item.isDefault) || addresses[0];
+        if (!address) return;
+        setFormData((current) => ({
+          ...current,
+          fullName: address.fullName || current.fullName,
+          address: address.address || current.address,
+          city: address.city || current.city,
+          region: address.region || current.region,
+          country: address.country || current.country,
+          phone: address.phone || current.phone,
+        }));
+      })
+      .catch((error) => {
+        setOrderSaveError(error instanceof Error ? error.message : "Unable to load saved address.");
+      });
+  }, []);
 
   const handleChange = (e) => {
     const { name } = e.target;
@@ -164,112 +178,10 @@ const handleBlur = (e) => {
       return;
     }
 
-    const randomId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
-    const user = getCurrentUser();
-    const order = {
-      id: randomId,
-      branchId: selectedBranch.id,
-      branchName: selectedBranch.name,
-      customerId: user?.id || "",
-      customer: formData.fullName.trim() || "Customer",
-      email: formData.email.trim().toLowerCase(),
-      date: new Date().toISOString(),
-      items: orderItems.map((item) => `${item.name} × ${item.quantity}`).join(", "),
-      quantity: orderItems.reduce((count, item) => count + item.quantity, 0),
-      total,
-      status: "Processing",
-      shipping: {
-        fullName: formData.fullName.trim(),
-        address: formData.address.trim(),
-        city: formData.city.trim(),
-        region: formData.region.trim(),
-        country: formData.country.trim(),
-        phone: formData.phone,
-      },
-    };
-
-    const previousProducts = localStorage.getItem("products");
-    try {
-      const quantitiesByProduct = new Map(
-        orderItems.map((item) => [item.id, item.quantity]),
-      );
-      const updatedProducts = getCatalogProducts().map((product) => {
-        const quantity = quantitiesByProduct.get(product.id);
-        if (!quantity) return product;
-
-        const stockByBranch = {
-          ...product.stockByBranch,
-          [selectedBranch.id]:
-            getProductStock(product, selectedBranch.id) - quantity,
-        };
-        return {
-          ...product,
-          stockByBranch,
-          stock: Object.values(stockByBranch).reduce(
-            (total, stock) => total + Number(stock || 0),
-            0,
-          ),
-        };
-      });
-      localStorage.setItem("products", JSON.stringify(updatedProducts));
-      localStorage.setItem("storeOrders", JSON.stringify([...getStoreOrders(), order]));
-      setOrderSaveError("");
-      setOrderId(randomId);
-      setCompletedOrder(order);
-      clearCart();
-      setIsOrderPlaced(true);
-    } catch (error) {
-      try {
-        if (previousProducts === null) {
-          localStorage.removeItem("products");
-        } else {
-          localStorage.setItem("products", previousProducts);
-        }
-      } catch (restoreError) {
-        console.error("Failed to restore product stock after order error:", restoreError);
-      }
-      console.error("Failed to save the order:", error);
-      setOrderSaveError("Your order could not be saved. Please try again.");
-    }
-  };
-
-  if (isOrderPlaced && completedOrder) {
-    return (
-      <section className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6">
-        <div className="rounded-card border border-line bg-surface p-8 shadow-card sm:p-12">
-          <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600">
-            <CheckCircle2 size={36} />
-          </div>
-          <h1 className="mt-5 text-3xl font-bold text-ink">Order Successful!</h1>
-          <p className="mt-2 text-sm leading-6 text-muted">
-           Thank you for your purchase, {formData.fullName.trim().split(/\s+/)[0] || "Customer"}.
-          </p>
-          <div className="my-7 space-y-3 rounded-xl border border-line bg-page p-5 text-left">
-            <div className="flex justify-between gap-4 text-sm">
-              <span className="text-muted">Order ID</span>
-              <span className="font-mono font-semibold text-ink">{orderId}</span>
-            </div>
-            <div className="flex justify-between gap-4 text-sm">
-              <span className="text-muted">Items</span>
-              <span className="text-right font-medium text-ink">{completedOrder.quantity}</span>
-            </div>
-            <div className="flex justify-between gap-4 text-sm">
-              <span className="text-muted">Branch</span>
-              <span className="text-right font-medium text-ink">{completedOrder.branchName}</span>
-            </div>
-            <div className="flex justify-between gap-4 border-t border-line pt-3">
-              <span className="font-semibold text-ink">Total paid</span>
-              <span className="font-bold text-ink">${Number(completedOrder.total).toFixed(2)}</span>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center gap-3 sm:flex-row">
-            <Link to="/products" className="btn btn-primary px-5 py-3">Continue shopping</Link>
-            <Link to="/myCart" className="btn btn-outline px-5 py-3">View empty cart</Link>
-          </div>
-        </div>
-      </section>
+    setOrderSaveError(
+      "Order placement is unavailable because the backend does not provide an order-creation endpoint yet.",
     );
-  }
+  };
 
   if (orderItems.length === 0) {
     return (
@@ -296,7 +208,7 @@ const handleBlur = (e) => {
             </span>
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted sm:text-base">
-            Add your details below to complete your order securely.
+            Review your delivery details. Order placement is not yet available.
           </p>
           <p className="mt-2 text-sm font-semibold text-primary-text">
             Pickup branch: {selectedBranch.name}

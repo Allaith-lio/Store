@@ -28,14 +28,18 @@ export default function BranchPicker() {
     };
   }, [open]);
 
-  const choose = (branch) => {
+  const choose = async (branch) => {
     selectBranch(branch.id);
-    const cartChanged = clampCartToBranch(branch.id);
-    showToast(
-      cartChanged
-        ? `Switched to ${branch.name}. Some cart items were adjusted to its stock.`
-        : `Switched to ${branch.name}`,
-    );
+    try {
+      const cartChanged = await clampCartToBranch(branch.id);
+      showToast(
+        cartChanged
+          ? `Switched to ${branch.name}. Some cart items were adjusted to its stock.`
+          : `Switched to ${branch.name}`,
+      );
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Unable to update cart.");
+    }
     setOpen(false);
   };
 

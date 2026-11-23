@@ -15,6 +15,21 @@ import { User, UserDocument } from './schemas/user.schema';
 export class UsersService {
   constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
 
+  async findAll() {
+    const users = await this.userModel
+      .find({}, 'email role profile')
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    return users.map((user) => ({
+      id: user._id.toString(),
+      email: user.email,
+      role: user.role,
+      profile: user.profile,
+    }));
+  }
+
   async findById(authUser: AuthenticatedUser) {
     const user = await this.userModel.findById(authUser.sub).exec();
     if (!user) throw new NotFoundException('User not found');
@@ -35,12 +50,9 @@ export class UsersService {
       user.email = email;
     }
 
-    user.profile = {
-      ...user.profile,
-      ...(dto.firstName !== undefined && { firstName: dto.firstName }),
-      ...(dto.lastName !== undefined && { lastName: dto.lastName }),
-      ...(dto.phone !== undefined && { phone: dto.phone }),
-    };
+    if (dto.firstName !== undefined) user.profile.firstName = dto.firstName;
+    if (dto.lastName !== undefined) user.profile.lastName = dto.lastName;
+    if (dto.phone !== undefined) user.profile.phone = dto.phone;
     await user.save();
     return this.toPublicUser(user);
   }

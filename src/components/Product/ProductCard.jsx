@@ -6,7 +6,6 @@ import { useBranch } from "../../context/useBranch";
 import { useToast } from "../../context/useToast";
 import {
   getBranchesWithStock,
-  getCatalogProducts,
   getProductStock,
   getStockStatus,
 } from "../../services/branchService";
@@ -25,8 +24,7 @@ const ProductCard = ({ product }) => {
   const { selectedBranch, selectBranch } = useBranch();
   const { showToast } = useToast();
 
-  const currentProduct =
-    getCatalogProducts().find((item) => item.id === product.id) || product;
+  const currentProduct = product;
   const stock = getProductStock(currentProduct, selectedBranch.id);
   const status = getStockStatus(stock);
   const otherBranches =
@@ -40,26 +38,42 @@ const ProductCard = ({ product }) => {
     goToDetails();
   };
 
-  const handleWishlistToggle = (e) => {
+  const handleWishlistToggle = async (e) => {
     e.stopPropagation();
-    toggleWishlist(currentProduct.id);
+    try {
+      await toggleWishlist(currentProduct.id);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Unable to update wishlist.");
+    }
   };
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.stopPropagation();
     if (getItemQuantity(currentProduct.id) >= stock) {
       showToast(`Only ${stock} available at ${selectedBranch.name}`);
       return;
     }
-    increaseCartQuantity(currentProduct.id);
-    showToast(`${currentProduct.name} added to cart`);
+    try {
+      await increaseCartQuantity(currentProduct.id);
+      showToast(`${currentProduct.name} added to cart`);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Unable to update cart.");
+    }
   };
 
-  const handleSwitchBranch = (e, branch) => {
+  const handleSwitchBranch = async (e, branch) => {
     e.stopPropagation();
     selectBranch(branch.id);
-    clampCartToBranch(branch.id);
-    showToast(`Switched to ${branch.name}`);
+    try {
+      const cartChanged = await clampCartToBranch(branch.id);
+      showToast(
+        cartChanged
+          ? `Switched to ${branch.name}. Cart quantities were adjusted to its stock.`
+          : `Switched to ${branch.name}`,
+      );
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Unable to update cart.");
+    }
   };
 
   return (

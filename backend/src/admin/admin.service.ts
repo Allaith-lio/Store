@@ -1,6 +1,10 @@
-import { Injectable , NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Order , OrderDocument, OrderStatus} from '../orders/schemas/order.schema';
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
 
@@ -16,8 +20,11 @@ export class AdminService {
         return await this.orderModel.find().sort({ createdAt: -1 }).exec();
     }
     async updateOrderStatus(orderId: string, status: OrderStatus) {
+        if (!Types.ObjectId.isValid(orderId)) {
+            throw new BadRequestException('Invalid order ID');
+        }
         const order = await this.orderModel.findByIdAndUpdate(orderId,
-             { status }, { new: true});
+             { status }, { new: true, runValidators: true });
              if(!order){
                 throw new NotFoundException(`Order with ID ${orderId} not found`);
              }
@@ -59,6 +66,9 @@ export class AdminService {
   };
 }
   async getSalesChart(range: 'week' | 'month' = 'week') {
+  if (range !== 'week' && range !== 'month') {
+    throw new BadRequestException('Range must be "week" or "month"');
+  }
   const dayCount = range === 'month' ? 30 : 7;
 
   const today = new Date();

@@ -64,6 +64,9 @@ export class User {
   @Prop({ required: true, select: false })
   passwordHash: string;
 
+  @Prop({ default: 0, select: false })
+  tokenVersion: number;
+
   @Prop({ required: true, enum: UserRole, default: UserRole.Customer })
   role: UserRole;
 

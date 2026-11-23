@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
 	Edit2,
 	Trash2,
@@ -8,9 +8,13 @@ import {
 } from 'lucide-react';
 import { branches } from '../data/branches';
 import {
-	getCatalogProducts,
+	createCatalogProduct,
+	deleteCatalogProduct,
 	getProductStock,
+	uploadCatalogImage,
+	updateCatalogProduct,
 } from '../services/branchService';
+import { useShoppingCart } from '../context/useShoppingCart';
 
 const emptyForm = {
 	name: '',
@@ -26,13 +30,20 @@ const emptyForm = {
 };
 
 export default function ProductsManagement() {
-	const [products, setProducts] = useState(() => {
-		return getCatalogProducts();
-	});
+	const { products, refreshProducts } = useShoppingCart();
 
 	const [form, setForm] = useState(emptyForm);
 	const [editingId, setEditingId] = useState(null);
 	const [error, setError] = useState('');
+	const [loading, setLoading] = useState(false);
+	const [imageFile, setImageFile] = useState(null);
+	const [imagePreview, setImagePreview] = useState('');
+	const imageInputRef = useRef(null);
+	const imagePreviewUrl = useRef('');
+
+	useEffect(() => () => {
+		if (imagePreviewUrl.current) URL.revokeObjectURL(imagePreviewUrl.current);
+	}, []);
 
 	const [deleteModal, setDeleteModal] = useState({
 		isOpen: false,
@@ -40,27 +51,44 @@ export default function ProductsManagement() {
 		name: '',
 	});
 
-	const saveToStorage = newList => {
-		setProducts(newList);
-		try {
-			localStorage.setItem('products', JSON.stringify(newList));
-		} catch (err) {
-			console.error('Failed to save to localStorage:', err);
-		}
-	};
-
 	const handleChange = e => {
 		const { name, value } = e.target;
 		setForm(prev => ({ ...prev, [name]: value }));
 	};
 
+	const clearSelectedImage = () => {
+		if (imagePreviewUrl.current) URL.revokeObjectURL(imagePreviewUrl.current);
+		imagePreviewUrl.current = '';
+		setImageFile(null);
+		setImagePreview('');
+		if (imageInputRef.current) imageInputRef.current.value = '';
+	};
+
+	const handleImageChange = event => {
+		const file = event.target.files?.[0];
+		if (!file) return;
+		const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+		if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+			event.target.value = '';
+			setError('Choose a JPEG, PNG, or WebP image smaller than 5 MB.');
+			return;
+		}
+
+		if (imagePreviewUrl.current) URL.revokeObjectURL(imagePreviewUrl.current);
+		imagePreviewUrl.current = URL.createObjectURL(file);
+		setImageFile(file);
+		setImagePreview(imagePreviewUrl.current);
+		setError('');
+	};
+
 	const resetForm = () => {
+		clearSelectedImage();
 		setForm(emptyForm);
 		setEditingId(null);
 		setError('');
 	};
 
-	const handleSubmit = e => {
+	const handleSubmit = async e => {
 		e.preventDefault();
 
 		const hasInvalidStock = branches.some(branch => {
@@ -78,50 +106,64 @@ export default function ProductsManagement() {
 			!form.price ||
 			!form.category ||
 			!form.rating ||
-			!form.image ||
+			(!form.image && !imageFile) ||
 			!form.description
 		) {
 			setError('Please fill in all required fields to proceed.');
 			return;
 		}
 
-		const productData = {
-			name: form.name.trim(),
-			description: form.description.trim(),
-			category: form.category.trim(),
-			image: form.image.trim(),
-			price: Number(form.price),
-			stockByBranch: Object.fromEntries(
-				branches.map(branch => [
-					branch.id,
-					Number(form.stockByBranch[branch.id]),
-				]),
-			),
-			stock: Object.values(form.stockByBranch).reduce(
-				(total, stock) => total + Number(stock || 0),
-				0,
-			),
-			rating: Number(form.rating),
-			highlights: [form.highlight1, form.highlight2, form.highlight3]
-				.map(h => h.trim())
-				.filter(Boolean),
-		};
+		setLoading(true);
+		setError('');
+		try {
+			let image = form.image.trim();
+			if (imageFile) {
+				image = await uploadCatalogImage(imageFile);
+				if (imagePreviewUrl.current) URL.revokeObjectURL(imagePreviewUrl.current);
+				imagePreviewUrl.current = '';
+				setImageFile(null);
+				setImagePreview(image);
+				setForm(previous => ({ ...previous, image }));
+			}
 
-		if (editingId !== null) {
-			saveToStorage(
-				products.map(p => (p.id === editingId ? { ...p, ...productData } : p)),
-			);
-		} else {
-			const newId = products.length
-				? Math.max(...products.map(p => p.id)) + 1
-				: 1;
-			saveToStorage([...products, { id: newId, ...productData }]);
+			const productData = {
+				name: form.name.trim(),
+				description: form.description.trim(),
+				category: form.category.trim(),
+				image,
+				price: Number(form.price),
+				stockByBranch: Object.fromEntries(
+					branches.map(branch => [
+						branch.id,
+						Number(form.stockByBranch[branch.id]),
+					]),
+				),
+				stock: Object.values(form.stockByBranch).reduce(
+					(total, stock) => total + Number(stock || 0),
+					0,
+				),
+				rating: Number(form.rating),
+				highlights: [form.highlight1, form.highlight2, form.highlight3]
+					.map(h => h.trim())
+					.filter(Boolean),
+			};
+
+			if (editingId !== null) {
+				await updateCatalogProduct(editingId, productData);
+			} else {
+				await createCatalogProduct(productData);
+			}
+			await refreshProducts();
+			resetForm();
+		} catch (requestError) {
+			setError(requestError instanceof Error ? requestError.message : 'Unable to save product.');
+		} finally {
+			setLoading(false);
 		}
-
-		resetForm();
 	};
 
 	const handleEdit = product => {
+		clearSelectedImage();
 		setEditingId(product.id);
 		const highlightsList = Array.isArray(product.highlights)
 			? product.highlights
@@ -144,6 +186,7 @@ export default function ProductsManagement() {
 			highlight2: highlightsList[1] || '',
 			highlight3: highlightsList[2] || '',
 		});
+		setImagePreview(product.image || '');
 		setError('');
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	};
@@ -152,12 +195,21 @@ export default function ProductsManagement() {
 		setDeleteModal({ isOpen: true, id, name });
 	};
 
-	const executeDelete = () => {
+	const executeDelete = async () => {
 		if (deleteModal.id !== null) {
-			saveToStorage(products.filter(p => p.id !== deleteModal.id));
-			if (editingId === deleteModal.id) resetForm();
+			setLoading(true);
+			setError('');
+			try {
+				await deleteCatalogProduct(deleteModal.id);
+				await refreshProducts();
+				if (editingId === deleteModal.id) resetForm();
+				setDeleteModal({ isOpen: false, id: null, name: '' });
+			} catch (requestError) {
+				setError(requestError instanceof Error ? requestError.message : 'Unable to delete product.');
+			} finally {
+				setLoading(false);
+			}
 		}
-		setDeleteModal({ isOpen: false, id: null, name: '' });
 	};
 
 	return (
@@ -195,9 +247,10 @@ export default function ProductsManagement() {
 							<button
 								type="button"
 								onClick={executeDelete}
+								disabled={loading}
 								className="flex-1 rounded-xl bg-red-500 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-red-600 shadow-sm"
 							>
-								Yes, Delete
+								{loading ? 'Deleting...' : 'Yes, Delete'}
 							</button>
 						</div>
 					</div>
@@ -333,19 +386,33 @@ export default function ProductsManagement() {
 							</div>
 						</fieldset>
 
-						<label className="block space-y-1.5">
-							<span className="text-xs font-semibold text-muted uppercase tracking-wider">
-								Image URL
-							</span>
-							<input
-								name="image"
-								type="url"
-								value={form.image}
-								onChange={handleChange}
-								className="w-full rounded-xl border border-line bg-page px-4 py-3 text-ink outline-none transition-all mt-1"
-								placeholder="https://example.com/image.jpg"
-							/>
-						</label>
+						<div className="space-y-3">
+							<label className="block space-y-1.5">
+								<span className="text-xs font-semibold text-muted uppercase tracking-wider">
+									Product image
+								</span>
+								<input
+									ref={imageInputRef}
+									type="file"
+									accept="image/jpeg,image/png,image/webp"
+									onChange={handleImageChange}
+									required={!form.image && !imageFile}
+									disabled={loading}
+									aria-label="Upload product image"
+									className="w-full rounded-xl border border-line bg-page px-4 py-3 text-ink outline-none transition-all file:mr-4 file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-primary"
+								/>
+								<span className="block text-xs text-muted">
+									JPEG, PNG, or WebP. File size up to 5 MB.
+								</span>
+							</label>
+							{imagePreview && (
+								<img
+									src={imagePreview}
+									alt="Product image preview"
+									className="h-36 w-36 rounded-xl border border-line object-cover"
+								/>
+							)}
+						</div>
 
 						<fieldset className="pt-2">
 							<legend className="mb-2 text-xs font-semibold text-muted uppercase tracking-wider">
@@ -386,9 +453,10 @@ export default function ProductsManagement() {
 					<div className="mt-6 flex items-center gap-3">
 						<button
 							type="submit"
+							disabled={loading}
 							className="btn btn-primary flex-1 rounded-xl py-3 text-sm font-bold shadow-md shadow-primary/20 transition-all hover:opacity-95 active:scale-[0.99]"
 						>
-							{editingId !== null ? 'Save Changes' : 'Add Product to Catalog'}
+							{loading ? 'Saving...' : editingId !== null ? 'Save Changes' : 'Add Product to Catalog'}
 						</button>
 						{editingId !== null && (
 							<button

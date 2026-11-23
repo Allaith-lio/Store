@@ -14,23 +14,27 @@ import NavbarLinks from "../common/NavbarLinks";
 import { useTheme } from "../../context/ThemeContext";
 import { useShoppingCart } from "../../context/useShoppingCart";
 import { useWishlist } from "../../context/WishlistContext";
+import { useToast } from "../../context/useToast";
 import { Logo } from "../common/Logo";
 import { getCurrentUser } from "../../services/dashboardService";
 import { useBranch } from "../../context/useBranch";
    import BranchPicker from "../common/BranchPicker";
-import {
-  getCatalogProducts,
-  getProductStock,
-} from "../../services/branchService";
+import { getProductStock } from "../../services/branchService";
 
 const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 export default function Header({ showLinks = true }) {
   const { isDarkMode, toggleTheme } = useTheme();
-  const {cartItems: contextCartItems, updateCartQuantity, RemoveItemFromCart } = useShoppingCart();
+  const {
+    cartItems: contextCartItems,
+    products,
+    updateCartQuantity,
+    RemoveItemFromCart,
+  } = useShoppingCart();
 
   const { wishlistCount } = useWishlist();
-     const { selectedBranch } = useBranch();
+  const { selectedBranch } = useBranch();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(
     () =>
@@ -58,7 +62,7 @@ export default function Header({ showLinks = true }) {
   }, []);
   
   const cartItems = contextCartItems.map((item) => {
-    const product = getCatalogProducts().find((p) => p.id === item.id);
+    const product = products.find((p) => p.id === item.id);
     if (!product) return null;
     return {
       ...product,
@@ -73,8 +77,20 @@ export default function Header({ showLinks = true }) {
   const cartCount = contextCartItems.reduce((total, item) => total + item.quantity, 0);
 
   const subTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  const handleQtyChange = (id, quantity) => {updateCartQuantity(id, quantity);};
-  const handleRemoveItem = (id) => {RemoveItemFromCart(id)};
+  const handleQtyChange = async (id, quantity) => {
+    try {
+      await updateCartQuantity(id, quantity);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Unable to update cart.");
+    }
+  };
+  const handleRemoveItem = async (id) => {
+    try {
+      await RemoveItemFromCart(id);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Unable to update cart.");
+    }
+  };
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 991px)");

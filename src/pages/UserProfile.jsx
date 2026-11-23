@@ -1,5 +1,5 @@
 import ProfileMenu from '../components/profile/ProfileMenu';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
 	Check,
@@ -18,9 +18,13 @@ import {
 import InputField from '../components/common/InputField';
 import {
 	getCurrentUser,
+	getSavedAddresses,
 	getStoreOrders,
 	logoutUser,
+	addSavedAddress,
+	deleteSavedAddress,
 	updateCurrentUser,
+	updateSavedAddress,
 	verifyCurrentPassword,
 } from '../services/dashboardService';
 import { sanitize, checkField, checkForm } from '../utility/validators';
@@ -89,7 +93,6 @@ const addressFields = {
 		autoComplete: 'tel',
 		inputMode: 'numeric',
 		maxLength: 10,
-		optional: true,
 	},
 };
 
@@ -118,9 +121,7 @@ const UserProfile = () => {
 	const [user, setUser] = useState(() => getCurrentUser());
 	const [orders] = useState(() => getStoreOrders());
 	const [activeSection, setActiveSection] = useState('Profile');
-	const [addresses, setAddresses] = useState(() =>
-		readUserCollection('storeAddresses', getCurrentUser()?.id),
-	);
+	const [addresses, setAddresses] = useState([]);
 	const [paymentMethods, setPaymentMethods] = useState(() =>
 		readUserCollection('storePaymentMethods', getCurrentUser()?.id),
 	);
@@ -227,6 +228,15 @@ const UserProfile = () => {
 		.filter(order => order.email === user?.email)
 		.sort((first, second) => new Date(second.date) - new Date(first.date));
 
+	useEffect(() => {
+		if (!getCurrentUser()) return;
+		getSavedAddresses()
+			.then(setAddresses)
+			.catch(error => {
+				setNotice(error instanceof Error ? error.message : 'Unable to load saved addresses.');
+			});
+	}, []);
+
 	function persistCollection(key, items) {
 		try {
 			saveUserCollection(key, user?.id, items);
@@ -239,31 +249,31 @@ const UserProfile = () => {
 		}
 	}
 
-	function handleAddressSubmit(event) {
+	async function handleAddressSubmit(event) {
 		event.preventDefault();
 		const errors = checkForm(addressFields, addressForm);
 		setAddressErrors(errors);
 		if (Object.keys(errors).length) return;
-		const updatedAddresses = editingAddressId
-			? addresses.map(address =>
-					address.id === editingAddressId
-						? { ...address, ...addressForm }
-						: address,
-				)
-			: [
-					...addresses,
-					{
-						...addressForm,
-						id: crypto.randomUUID(),
-						isDefault: addresses.length === 0,
-					},
-				];
-		if (!persistCollection('storeAddresses', updatedAddresses)) return;
-		setAddresses(updatedAddresses);
-		setAddressForm(emptyAddress);
-		setShowAddressForm(false);
-		setEditingAddressId(null);
-		setNotice(editingAddressId ? 'Address updated.' : 'Address saved.');
+		try {
+			const address = {
+				...addressForm,
+				isDefault: editingAddressId
+					? addresses.find(item => item.id === editingAddressId)?.isDefault
+					: addresses.length === 0,
+			};
+			if (editingAddressId) {
+				await updateSavedAddress(editingAddressId, address);
+			} else {
+				await addSavedAddress(address);
+			}
+			setAddresses(await getSavedAddresses());
+			setAddressForm(emptyAddress);
+			setShowAddressForm(false);
+			setEditingAddressId(null);
+			setNotice(editingAddressId ? 'Address updated.' : 'Address saved.');
+		} catch (error) {
+			setNotice(error instanceof Error ? error.message : 'Unable to save address.');
+		}
 	}
 
 	function editAddress(address) {
@@ -281,25 +291,34 @@ const UserProfile = () => {
 		setShowAddressForm(true);
 	}
 
-	function setDefaultAddress(addressId) {
-		const updatedAddresses = addresses.map(address => ({
-			...address,
-			isDefault: address.id === addressId,
-		}));
-		if (!persistCollection('storeAddresses', updatedAddresses)) return;
-		setAddresses(updatedAddresses);
+	async function setDefaultAddress(addressId) {
+		const address = addresses.find(item => item.id === addressId);
+		if (!address) return;
+		try {
+			await updateSavedAddress(addressId, { ...address, isDefault: true });
+			setAddresses(await getSavedAddresses());
+			setNotice('Default address updated.');
+		} catch (error) {
+			setNotice(error instanceof Error ? error.message : 'Unable to update default address.');
+		}
 	}
 
-	function removeAddress(addressId) {
-		const remaining = addresses.filter(address => address.id !== addressId);
-		if (
-			addresses.find(address => address.id === addressId)?.isDefault &&
-			remaining.length
-		) {
-			remaining[0] = { ...remaining[0], isDefault: true };
+	async function removeAddress(addressId) {
+		const removedAddress = addresses.find(address => address.id === addressId);
+		try {
+			await deleteSavedAddress(addressId);
+			let remaining = await getSavedAddresses();
+			if (removedAddress?.isDefault && remaining.length) {
+				await updateSavedAddress(remaining[0].id, {
+					...remaining[0],
+					isDefault: true,
+				});
+				remaining = await getSavedAddresses();
+			}
+			setAddresses(remaining);
+		} catch (error) {
+			setNotice(error instanceof Error ? error.message : 'Unable to remove address.');
 		}
-		if (!persistCollection('storeAddresses', remaining)) return;
-		setAddresses(remaining);
 	}
 
 	function handleCardSubmit(event) {
@@ -346,13 +365,13 @@ const UserProfile = () => {
 		setPaymentMethods(remaining);
 	}
 
-	function handleProfileSave(event) {
+	async function handleProfileSave(event) {
 		event.preventDefault();
 		const errors = checkForm(profileFields, form);
 		setProfileErrors(errors);
 		if (Object.keys(errors).length) return;
 		try {
-			const updatedUser = updateCurrentUser({
+			const updatedUser = await updateCurrentUser({
 				name: form.name.trim(),
 				email: form.email.trim().toLowerCase(),
 				phone: form.phone.trim(),
@@ -461,9 +480,13 @@ const UserProfile = () => {
 					<div className="min-h-0 overflow-hidden lg:overflow-visible">
 						<ProfileMenu
 							activeSection={activeSection}
-							onLogout={() => {
-								logoutUser();
-								navigate('/', { replace: true });
+							onLogout={async () => {
+								try {
+									await logoutUser();
+									navigate('/', { replace: true });
+								} catch (error) {
+									setNotice(error instanceof Error ? error.message : 'Unable to sign out.');
+								}
 							}}
 							onSelect={section => {
 								setNotice('');

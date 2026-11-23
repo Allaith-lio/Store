@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import ProductCard from "../product/ProductCard";
-import { products } from "../../data/products";
-
-// The 4 highest rated products
-const topProducts = [...products]
-  .sort((a, b) => b.rating - a.rating)
-  .slice(0, 4);
+import { useShoppingCart } from "../../context/useShoppingCart";
 
 export default function FeaturedProducts() {
+  const { products, productsLoading, productsError } = useShoppingCart();
+  const topProducts = [...products]
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 4);
+
   return (
     <section className="mx-auto max-w-7xl px-6 pb-16 md:pb-24">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -25,11 +25,23 @@ export default function FeaturedProducts() {
         </Link>
       </div>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {topProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      {productsError ? (
+        <p role="alert" className="mt-8 text-sm text-red-500">
+          {productsError}
+        </p>
+      ) : productsLoading ? (
+        <p aria-live="polite" className="mt-8 text-sm text-muted">
+          Loading products...
+        </p>
+      ) : topProducts.length ? (
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {topProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <p className="mt-8 text-sm text-muted">No products available yet.</p>
+      )}
     </section>
   );
 }

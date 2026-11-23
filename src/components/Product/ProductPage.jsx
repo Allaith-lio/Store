@@ -10,10 +10,8 @@ import Button from "../common/Button";
 import { useShoppingCart } from "../../context/useShoppingCart";
 import { useWishlist } from "../../context/WishlistContext";
 import { useBranch } from "../../context/useBranch";
-import {
-  getCatalogProducts,
-  getProductStock,
-} from "../../services/branchService";
+import { useToast } from "../../context/useToast";
+import { getProductStock } from "../../services/branchService";
 
 function RatingStars({ rating, size = 17 }) {
   return (
@@ -35,17 +33,25 @@ function RatingStars({ rating, size = 17 }) {
 }
 
 export default function ProductPage() {
-  const { increaseCartQuantity } = useShoppingCart();
+  const { increaseCartQuantity, products, productsLoading, productsError } =
+    useShoppingCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { selectedBranch } = useBranch();
+  const { showToast } = useToast();
   const { id } = useParams();
-  const productId = Number(id);
-  const product = getCatalogProducts().find((p) => p.id === productId);
+  const productId = id;
+  const product = products.find((p) => p.id === productId);
   if (!product) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-20 text-center">
+        {productsLoading && <p className="text-muted">Loading product...</p>}
+        {productsError && <p role="alert" className="text-red-500">{productsError}</p>}
+        {!productsLoading && !productsError && (
+          <>
         <h2 className="text-2xl font-bold text-ink">Product not found</h2>
         <p className="mt-2 text-muted">The product you are looking for does not exist.</p>
+          </>
+        )}
       </div>
     );
   }
@@ -181,7 +187,14 @@ export default function ProductPage() {
           </div>
           <Button 
             type="button"
-            onClick={() => increaseCartQuantity(productId)}
+            onClick={async () => {
+              try {
+                await increaseCartQuantity(productId);
+                showToast(`${product.name} added to cart`);
+              } catch (error) {
+                showToast(error instanceof Error ? error.message : "Unable to update cart.");
+              }
+            }}
             disabled={stock === 0}
             className="btn btn-primary w-full mt-6 py-3.5 disabled:cursor-not-allowed disabled:opacity-50">
             <ShoppingBag size={19} aria-hidden="true" />
@@ -192,7 +205,13 @@ export default function ProductPage() {
           <button
             type="button"
             className="btn btn-wishlist mt-3 w-full py-3.5"
-            onClick={() => toggleWishlist(productId)}
+            onClick={async () => {
+              try {
+                await toggleWishlist(productId);
+              } catch (error) {
+                showToast(error instanceof Error ? error.message : "Unable to update wishlist.");
+              }
+            }}
             aria-label={
               isFavorite ? "Remove from wishlist" : "Add to wishlist"
             }

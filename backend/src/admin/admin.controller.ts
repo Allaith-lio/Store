@@ -1,8 +1,13 @@
-import { Controller, Get ,Body, Param ,Patch, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles, RolesGuard } from '../auth/current-user.decorator';
 import { AdminService } from './admin.service';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { UserRole } from '../users/schemas/user.schema';
 
 @Controller('admin')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(UserRole.Admin)
 export class AdminController {
     constructor(private readonly adminService: AdminService) {}
     @Get('orders')

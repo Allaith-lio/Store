@@ -1,6 +1,8 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './current-user.decorator';
+import type { AuthenticatedUser } from './current-user.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -22,7 +24,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
-  logout() {
-    return { message: 'Logged out successfully' };
+  logout(@CurrentUser() user: AuthenticatedUser) {
+    return this.authService.logout(user);
   }
 }

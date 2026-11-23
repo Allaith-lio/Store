@@ -3,11 +3,14 @@ import { Heart, HeartIcon, ShoppingBag, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import ProductCard from "../components/Product/ProductCard";
-import { products } from "../data/products";
 import { useWishlist } from "../context/WishlistContext";
+import { useShoppingCart } from "../context/useShoppingCart";
+import { useToast } from "../context/useToast";
 
 const Wishlist = () => {
-  const { wishlistIds, wishlistCount, clearWishlist } = useWishlist();
+  const { wishlistIds, wishlistCount, clearWishlist, wishlistError } = useWishlist();
+  const { products } = useShoppingCart();
+  const { showToast } = useToast();
 
   const wishlistProducts = products.filter((product) =>
     wishlistIds.includes(product.id)
@@ -19,7 +22,9 @@ const Wishlist = () => {
     );
 
     if (confirmed) {
-      clearWishlist();
+      clearWishlist().catch((error) =>
+        showToast(error instanceof Error ? error.message : "Unable to clear wishlist."),
+      );
     }
   };
 
@@ -70,6 +75,11 @@ const Wishlist = () => {
         )}
 
       </div>
+      {wishlistError && (
+        <p role="alert" className="mt-4 text-sm text-red-500">
+          {wishlistError}
+        </p>
+      )}
 
       {/* Wishlist Products */}
       {wishlistProducts.length > 0 ? (

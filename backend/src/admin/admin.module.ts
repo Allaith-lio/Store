@@ -4,6 +4,7 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { Order, OrderSchema } from '../orders/schemas/order.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
+import { RolesGuard } from '../auth/current-user.decorator';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { User, UserSchema } from '../users/schemas/user.schema';
     ])
   ],
   controllers: [AdminController],
-  providers: [AdminService]
+  providers: [AdminService, RolesGuard]
 })
 export class AdminModule {}

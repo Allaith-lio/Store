@@ -34,6 +34,7 @@ export class AuthService {
       sub: user._id.toString(),
       email: user.email,
       role: user.role,
+      tokenVersion: user.tokenVersion ?? 0,
     });
   }
 
@@ -65,7 +66,7 @@ export class AuthService {
     const email = dto.email.trim().toLowerCase();
     const user = await this.userModel
       .findOne({ email })
-      .select('+passwordHash')
+      .select('+passwordHash +tokenVersion')
       .exec();
 
     if (!user || !(await bcrypt.compare(dto.password, user.passwordHash))) {
@@ -76,5 +77,18 @@ export class AuthService {
       accessToken: await this.signToken(user),
       user: this.toPublicUser(user),
     };
+  }
+
+  async logout(authUser: { sub: string }) {
+    const user = await this.userModel
+      .findByIdAndUpdate(
+        authUser.sub,
+        { $inc: { tokenVersion: 1 } },
+        { new: true },
+      )
+      .exec();
+    if (!user) throw new UnauthorizedException();
+
+    return { message: 'Logged out successfully' };
   }
 }

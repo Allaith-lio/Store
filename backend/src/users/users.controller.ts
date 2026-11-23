@@ -9,8 +9,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from '../auth/current-user.decorator';
+import { CurrentUser, Roles, RolesGuard } from '../auth/current-user.decorator';
 import type { AuthenticatedUser } from '../auth/current-user.decorator';
+import { UserRole } from './schemas/user.schema';
 import { SavedAddressDto } from './dto/saved-address.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UsersService } from './users.service';
@@ -19,6 +20,13 @@ import { UsersService } from './users.service';
 @UseGuards(AuthGuard('jwt'))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.Admin)
+  getUsers() {
+    return this.usersService.findAll();
+  }
 
   @Get('me')
   getMe(@CurrentUser() user: AuthenticatedUser) {
