@@ -22,8 +22,10 @@ class UserProfile {
 
 const UserProfileSchema = SchemaFactory.createForClass(UserProfile);
 
-@Schema({ _id: false })
-class SavedAddress {
+@Schema({ timestamps: false })
+export class SavedAddress {
+  _id?: Types.ObjectId;
+
   @Prop({ trim: true })
   label?: string;
 
