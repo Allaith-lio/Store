@@ -1,14 +1,15 @@
 
-import { Heart, HeartIcon, ShoppingBag, Trash2 } from "lucide-react";
+import { ArrowUp, Heart, HeartIcon, ShoppingBag, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import ProductCard from "../components/Product/ProductCard";
 import { products } from "../data/products";
 import { useWishlist } from "../context/WishlistContext";
+import { useEffect, useState } from "react";
 
 const Wishlist = () => {
   const { wishlistIds, wishlistCount, clearWishlist } = useWishlist();
-
+  const [showTop, setShowTop] = useState(false);
   const wishlistProducts = products.filter((product) =>
     wishlistIds.includes(product.id)
   );
@@ -22,7 +23,12 @@ const Wishlist = () => {
       clearWishlist();
     }
   };
+  useEffect(() => {
+    const handleScroll = () => setShowTop(window.scrollY > 400);
 
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
 
@@ -87,7 +93,6 @@ const Wishlist = () => {
 
       ) : (
 
-        /* Empty Wishlist */
         <div className="mt-6 rounded-card border border-line bg-surface px-4 py-16 text-center shadow-card">
 
           <span className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -114,7 +119,22 @@ const Wishlist = () => {
         </div>
 
       )}
-
+      {
+        showTop && (
+          <button
+            type="button"
+            aria-label="Back to top"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+              document.body.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="fixed bottom-6 right-6 z-50 grid size-12 cursor-pointer place-items-center rounded-full bg-primary text-white shadow-raised outline-none transition-transform duration-200 hover:scale-110 hover:bg-primary-hover focus-visible:ring-4 focus-visible:ring-primary/30"
+          >
+            <ArrowUp size={20} />
+          </button>
+        )
+      }
     </main>
   );
 };

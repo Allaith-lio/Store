@@ -12,8 +12,10 @@ import {
   Star,
   Truck,
   Watch,
+  ArrowUp,
 } from 'lucide-react'
 import Banner from '../components/common/Banner'
+import { useEffect, useState } from 'react';
 
 const tiles = [
   {
@@ -81,6 +83,14 @@ const values = [
 ]
 
 export default function AboutUs() {
+const [showTop, setShowTop] = useState(false);
+  useEffect(() => {
+      const handleScroll = () => setShowTop(window.scrollY > 400);
+  
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <section className="grid items-center gap-12 py-12 md:py-8 lg:grid-cols-2">
@@ -225,6 +235,22 @@ export default function AboutUs() {
         to={"/products"}
         linkText={"Browse Products"}
       />
+      {
+        showTop && (
+          <button
+            type="button"
+            aria-label="Back to top"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+              document.body.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="fixed bottom-6 right-6 z-50 grid size-12 cursor-pointer place-items-center rounded-full bg-primary text-white shadow-raised outline-none transition-transform duration-200 hover:scale-110 hover:bg-primary-hover focus-visible:ring-4 focus-visible:ring-primary/30"
+          >
+            <ArrowUp size={20} />
+          </button>
+        )
+      }
     </div>
   )
 }

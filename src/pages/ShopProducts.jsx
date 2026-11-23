@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  ArrowUp,
   ChevronLeft,
   ChevronRight,
   Search,
@@ -7,7 +8,7 @@ import {
   SparklesIcon,
 } from "lucide-react";
 import ProductCard from "../components/product/ProductCard";
-import { getCatalogProducts , getProductStock} from "../services/branchService";
+import { getCatalogProducts, getProductStock } from "../services/branchService";
 import { useBranch } from "../context/useBranch";
 
 const categories = ["All", "Electronics", "Accessories", "Home", "Clothing"];
@@ -18,9 +19,10 @@ const ShopProducts = () => {
   const [sort, setSort] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
   const { selectedBranch } = useBranch();
-const [inStockOnly, setInStockOnly] = useState(false);
+  const [inStockOnly, setInStockOnly] = useState(false);
   const productsInPage = 8;
   const products = useMemo(() => getCatalogProducts(), []);
+  const [showTop, setShowTop] = useState(false);
 
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -43,6 +45,13 @@ const [inStockOnly, setInStockOnly] = useState(false);
     });
   }, [products, search, category, sort, inStockOnly, selectedBranch.id]);
 
+  useEffect(() => {
+    const handleScroll = () => setShowTop(window.scrollY > 400);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const indexOfLastItem = currentPage * productsInPage;
   const indexOfFirstItem = indexOfLastItem - productsInPage;
   const currentProducts = filteredProducts.slice(
@@ -57,7 +66,7 @@ const [inStockOnly, setInStockOnly] = useState(false);
     setSort("default");
     setCurrentPage(1);
     setInStockOnly(false);
-    
+
   };
 
   const getPageNumbers = () => {
@@ -87,106 +96,106 @@ const [inStockOnly, setInStockOnly] = useState(false);
       </section>
 
       <div className="rounded-card border border-line bg-surface p-5 shadow-card sm:p-6">
-  <div className="flex flex-col gap-3.5 lg:flex-row lg:items-center">
-    
-
-    <div className="relative flex-1">
-      <Search
-        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted transition-colors"
-        size={18}
-      />
-      <input
-        type="search"
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setCurrentPage(1);
-        }}
-        placeholder="Search products..."
-        className="h-12 w-full rounded-control border border-line bg-page pl-11 pr-4 text-sm text-ink placeholder:text-muted/70 transition-all focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
-      />
-    </div>
+        <div className="flex flex-col gap-3.5 lg:flex-row lg:items-center">
 
 
-    <div className="relative lg:w-56">
-      <SlidersHorizontal
-        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
-        size={17}
-      />
-      <select
-        value={category}
-        onChange={(e) => {
-          setCategory(e.target.value);
-          setCurrentPage(1);
-        }}
-        className="h-12 w-full cursor-pointer appearance-none rounded-control border border-line bg-page pl-11 pr-10 text-sm text-ink transition-all focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
-      >
-        {categories.map((item) => (
-          <option key={item} value={item} className="bg-surface text-ink">
-            {item === "All" ? "All categories" : item}
-          </option>
-        ))}
-      </select>
-  
-      <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted">
-        <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </svg>
+          <div className="relative flex-1">
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted transition-colors"
+              size={18}
+            />
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search products..."
+              className="h-12 w-full rounded-control border border-line bg-page pl-11 pr-4 text-sm text-ink placeholder:text-muted/70 transition-all focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+
+
+          <div className="relative lg:w-56">
+            <SlidersHorizontal
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
+              size={17}
+            />
+            <select
+              value={category}
+              onChange={(e) => {
+                setCategory(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-12 w-full cursor-pointer appearance-none rounded-control border border-line bg-page pl-11 pr-10 text-sm text-ink transition-all focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              {categories.map((item) => (
+                <option key={item} value={item} className="bg-surface text-ink">
+                  {item === "All" ? "All categories" : item}
+                </option>
+              ))}
+            </select>
+
+            <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted">
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="relative lg:w-48">
+            <select
+              value={sort}
+              onChange={(e) => {
+                setSort(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-12 w-full cursor-pointer appearance-none rounded-control border border-line bg-page pl-4 pr-10 text-sm text-ink transition-all focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              <option value="default" className="bg-surface text-ink">Sort by default</option>
+              <option value="price-low" className="bg-surface text-ink">Price: Low to high</option>
+              <option value="price-high" className="bg-surface text-ink">Price: High to low</option>
+              <option value="rating" className="bg-surface text-ink">Highest rated</option>
+            </select>
+
+            <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted">
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          <label className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-control border border-line bg-page px-4 text-sm text-ink">
+            <input
+              type="checkbox"
+              checked={inStockOnly}
+              onChange={(e) => {
+                setInStockOnly(e.target.checked);
+                setCurrentPage(1);
+              }}
+              className="size-4 accent-primary"
+            />
+            In stock here
+          </label>
+        </div>
       </div>
-    </div>
+      <div className="mt-5 flex items-center justify-between px-1">
+        <p className="text-sm text-muted">
+          Showing{" "}
+          <span className="font-semibold text-ink">{filteredProducts.length}</span>{" "}
+          {filteredProducts.length === 1 ? "product" : "products"} · {selectedBranch.name}
+        </p>
 
-    <div className="relative lg:w-48">
-      <select
-        value={sort}
-        onChange={(e) => {
-          setSort(e.target.value);
-          setCurrentPage(1);
-        }}
-        className="h-12 w-full cursor-pointer appearance-none rounded-control border border-line bg-page pl-4 pr-10 text-sm text-ink transition-all focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
-      >
-        <option value="default" className="bg-surface text-ink">Sort by default</option>
-        <option value="price-low" className="bg-surface text-ink">Price: Low to high</option>
-        <option value="price-high" className="bg-surface text-ink">Price: High to low</option>
-        <option value="rating" className="bg-surface text-ink">Highest rated</option>
-      </select>
-
-      <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted">
-        <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </svg>
+        {(search || category !== "All" || sort !== "default" || inStockOnly) && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="group inline-flex items-center gap-1.5 cursor-pointer text-sm font-medium text-primary hover:text-primary-hover transition-colors"
+          >
+            <span>Clear filters</span>
+          </button>
+        )}
       </div>
-    </div>
-    <label className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-control border border-line bg-page px-4 text-sm text-ink">
-  <input
-    type="checkbox"
-    checked={inStockOnly}
-    onChange={(e) => {
-      setInStockOnly(e.target.checked);
-      setCurrentPage(1);
-    }}
-    className="size-4 accent-primary"
-  />
-  In stock here
-</label>
-  </div>
-</div>
-<div className="mt-5 flex items-center justify-between px-1">
-  <p className="text-sm text-muted">
-    Showing{" "}
-    <span className="font-semibold text-ink">{filteredProducts.length}</span>{" "}
-   {filteredProducts.length === 1 ? "product" : "products"} · {selectedBranch.name}
-  </p>
-  
- {(search || category !== "All" || sort !== "default" || inStockOnly) && (
-    <button
-      type="button"
-      onClick={clearFilters}
-      className="group inline-flex items-center gap-1.5 cursor-pointer text-sm font-medium text-primary hover:text-primary-hover transition-colors"
-    >
-      <span>Clear filters</span>
-    </button>
-  )}
-</div>
 
       {filteredProducts.length > 0 ? (
         <>
@@ -213,11 +222,10 @@ const [inStockOnly, setInStockOnly] = useState(false);
                   key={page}
                   type="button"
                   onClick={() => setCurrentPage(page)}
-                  className={`h-11 min-w-11 cursor-pointer rounded-control px-3 text-sm font-semibold transition ${
-                    currentPage === page
-                      ? "bg-primary text-white shadow-md"
-                      : "border border-line bg-surface text-ink hover:border-primary hover:text-primary"
-                  }`}
+                  className={`h-11 min-w-11 cursor-pointer rounded-control px-3 text-sm font-semibold transition ${currentPage === page
+                    ? "bg-primary text-white shadow-md"
+                    : "border border-line bg-surface text-ink hover:border-primary hover:text-primary"
+                    }`}
                 >
                   {page}
                 </button>
@@ -251,8 +259,24 @@ const [inStockOnly, setInStockOnly] = useState(false);
           </button>
         </div>
       )}
-      
+      {
+        showTop && (
+          <button
+            type="button"
+            aria-label="Back to top"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+              document.body.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="fixed bottom-6 right-6 z-50 grid size-12 cursor-pointer place-items-center rounded-full bg-primary text-white shadow-raised outline-none transition-transform duration-200 hover:scale-110 hover:bg-primary-hover focus-visible:ring-4 focus-visible:ring-primary/30"
+          >
+            <ArrowUp size={20} />
+          </button>
+        )
+      }
     </div>
+
   );
 };
 
