@@ -7,7 +7,7 @@
 ![NestJS](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose%209-47A248?logo=mongodb&logoColor=white)
 
-Omni Store is a full-stack, multi-branch e-commerce demo. It combines a React storefront with a NestJS API backed by MongoDB, including product catalog management, branch inventory, authenticated carts and wishlists, and an admin dashboard.
+Omni Store is a full-stack, multi-branch e-commerce. It combines a React storefront with a NestJS API backed by MongoDB, including product catalog management, branch inventory, authenticated carts and wishlists, and an admin dashboard.
 
 **Status:** Functional development demo; not ready for production transactions. Checkout does not create orders or process payments.
 
