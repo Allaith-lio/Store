@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
+  Camera,
   Heart,
   Sparkles,
   Sun,
@@ -34,7 +35,24 @@ function LoginPage() {
     email: "",
     password: "",
   });
+  const [avatar, setAvatar] = useState("");
   const isSigningUp = mode === "signup";
+
+  function handleAvatarChange(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setNotice("Choose an image file for your profile photo.");
+      return;
+    }
+    if (file.size > 1024 * 1024) {
+      setNotice("Choose an image smaller than 1 MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setAvatar(String(reader.result || ""));
+    reader.readAsDataURL(file);
+  }
   const fields = {
     username: {
       label: "Your name",
@@ -104,6 +122,7 @@ function LoginPage() {
           name: formData.username,
           email: formData.email,
           password: formData.password,
+          avatar,
         });
       } else {
         await loginUser(formData);
@@ -216,6 +235,44 @@ function LoginPage() {
             </p>
 
             <form className="mt-8 grid gap-5" onSubmit={handleSubmit}>
+              {isSigningUp && (
+                <div className="flex flex-col items-center gap-3">
+                  <p className="font-heading text-lg font-semibold text-ink">
+                    Make it yours
+                  </p>
+                  <label
+                    htmlFor="signup-avatar"
+                    className="group relative inline-flex cursor-pointer"
+                  > 
+                    <span className="relative block size-24 overflow-hidden rounded-full border-2 border-dashed border-line bg-page transition group-hover:border-primary">
+                      {avatar ? (
+                        <img
+                          src={avatar}
+                          alt="Profile preview"
+                          className="size-full object-cover"
+                        />
+                      ) : (
+                        <span className="flex size-full items-center justify-center text-muted">
+                          <Camera size={26} aria-hidden="true" />
+                        </span>
+                      )}
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 transition group-hover:opacity-100">
+                        <Camera size={20} aria-hidden="true" />
+                      </span>
+                    </span>
+                    <input
+                      id="signup-avatar"
+                      type="file"
+                      accept="image/*"
+                      className="sr-only"
+                      onChange={handleAvatarChange}
+                    />
+                  </label>
+                  <p className="text-center text-xs leading-5 text-muted">
+                    Optional — but it makes your profile feel like home.
+                  </p>
+                </div>
+              )}
               {Object.keys(fields)
               .filter((name) => name !== "username" || isSigningUp)
               .map((fieldName)=>(
