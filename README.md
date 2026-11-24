@@ -7,7 +7,7 @@
 ![NestJS](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose%209-47A248?logo=mongodb&logoColor=white)
 
-Omni Store is a full-stack, multi-branch e-commerce demo. It combines a React storefront with a NestJS API backed by MongoDB, including product catalog management, branch inventory, authenticated carts and wishlists, and an admin dashboard.
+Omni Store is a full-stack, multi-branch e-commerce. It combines a React storefront with a NestJS API backed by MongoDB, including product catalog management, branch inventory, authenticated carts and wishlists, and an admin dashboard.
 
 **Status:** Functional development demo; not ready for production transactions. Checkout does not create orders or process payments.
 
@@ -40,15 +40,15 @@ Omni Store is a full-stack, multi-branch e-commerce demo. It combines a React st
 
 ## Tech stack
 
-| Area | Libraries and versions |
-| --- | --- |
-| Frontend | React `^19.3.1`, React Router `^7.18.5`, Vite `^8.3.4`, Tailwind CSS `^4.3.3`, Lucide React `^1.65.0` |
-| Backend | NestJS `^12.0.1`, TypeScript `^6.0.2`, Express platform adapter |
-| Database | MongoDB through Mongoose `^9.12.2` and `@nestjs/mongoose` |
-| Authentication | Passport, `passport-jwt`, `@nestjs/jwt`, and `bcryptjs` |
-| Validation and uploads | `class-validator`, `class-transformer`, NestJS `FileInterceptor`/Multer |
-| Tests and lint | Jest, Supertest, ESLint, Oxlint |
-| Observability | `@nestjs/observe` (optional credentials) |
+| Area                   | Libraries and versions                                                                                |
+| ---------------------- | ----------------------------------------------------------------------------------------------------- |
+| Frontend               | React `^19.3.1`, React Router `^7.18.5`, Vite `^8.3.4`, Tailwind CSS `^4.3.3`, Lucide React `^1.65.0` |
+| Backend                | NestJS `^12.0.1`, TypeScript `^6.0.2`, Express platform adapter                                       |
+| Database               | MongoDB through Mongoose `^9.12.2` and `@nestjs/mongoose`                                             |
+| Authentication         | Passport, `passport-jwt`, `@nestjs/jwt`, and `bcryptjs`                                               |
+| Validation and uploads | `class-validator`, `class-transformer`, NestJS `FileInterceptor`/Multer                               |
+| Tests and lint         | Jest, Supertest, ESLint, Oxlint                                                                       |
+| Observability          | `@nestjs/observe` (optional credentials)                                                              |
 
 ## Architecture
 
@@ -89,15 +89,15 @@ Omni Store is a full-stack, multi-branch e-commerce demo. It combines a React st
 
 The API has no global prefix; routes are relative to the backend origin.
 
-| Area | Routes | Access |
-| --- | --- | --- |
-| Auth | `POST /auth/register`, `POST /auth/login`, `POST /auth/logout` | Register/login are public; logout requires a JWT |
-| Products | `GET /products`, `GET /products/:id` | Public |
-| Product administration | `POST /products`, `PATCH /products/:id`, `DELETE /products/:id`, `POST /products/images` | Admin JWT |
-| Users | `GET /users`, `GET /users/me`, `PATCH /users/me`, `/users/me/addresses` | User JWT; listing users requires admin |
-| Cart | `GET /cart`, `POST /cart/items`, `PATCH /cart/items/:productId`, `DELETE /cart/items/:productId`, `DELETE /cart` | User JWT |
-| Wishlist | `GET /users/me/wishlist`, `POST /users/me/wishlist/items`, `DELETE /users/me/wishlist/items/:productId` | User JWT |
-| Admin | `GET /admin/orders`, `PATCH /admin/orders/:id/status`, `GET /admin/dashboard/summary`, `GET /admin/dashboard/sales` | Admin JWT |
+| Area                   | Routes                                                                                                              | Access                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Auth                   | `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`                                                      | Register/login are public; logout requires a JWT |
+| Products               | `GET /products`, `GET /products/:id`                                                                                | Public                                           |
+| Product administration | `POST /products`, `PATCH /products/:id`, `DELETE /products/:id`, `POST /products/images`                            | Admin JWT                                        |
+| Users                  | `GET /users`, `GET /users/me`, `PATCH /users/me`, `/users/me/addresses`                                             | User JWT; listing users requires admin           |
+| Cart                   | `GET /cart`, `POST /cart/items`, `PATCH /cart/items/:productId`, `DELETE /cart/items/:productId`, `DELETE /cart`    | User JWT                                         |
+| Wishlist               | `GET /users/me/wishlist`, `POST /users/me/wishlist/items`, `DELETE /users/me/wishlist/items/:productId`             | User JWT                                         |
+| Admin                  | `GET /admin/orders`, `PATCH /admin/orders/:id/status`, `GET /admin/dashboard/summary`, `GET /admin/dashboard/sales` | Admin JWT                                        |
 
 ## Getting started
 
@@ -158,14 +158,14 @@ The backend e2e suite is in `backend/test/`. The repository does not define a ro
 
 ## Environment variables
 
-| Variable | Required | Purpose | Safe example |
-| --- | --- | --- | --- |
-| `MONGODB_URI` | Yes | MongoDB connection used by Mongoose | `mongodb://127.0.0.1:27017/store` |
-| `JWT_SECRET` | Yes | Signs and verifies access tokens | `replace-with-a-long-random-secret` |
-| `PORT` | No | Backend listen port; defaults to `3000` | `3000` |
-| `VITE_API_URL` | No | Frontend API origin; defaults to `http://localhost:3000` | `http://localhost:3000` |
-| `OBSERVE_APP_KEY` | No | Nest Observe telemetry key | `your-observe-app-key` |
-| `OBSERVE_APP_SECRET` | No | Nest Observe telemetry secret | `your-observe-app-secret` |
+| Variable             | Required | Purpose                                                  | Safe example                        |
+| -------------------- | -------- | -------------------------------------------------------- | ----------------------------------- |
+| `MONGODB_URI`        | Yes      | MongoDB connection used by Mongoose                      | `mongodb://127.0.0.1:27017/store`   |
+| `JWT_SECRET`         | Yes      | Signs and verifies access tokens                         | `replace-with-a-long-random-secret` |
+| `PORT`               | No       | Backend listen port; defaults to `3000`                  | `3000`                              |
+| `VITE_API_URL`       | No       | Frontend API origin; defaults to `http://localhost:3000` | `http://localhost:3000`             |
+| `OBSERVE_APP_KEY`    | No       | Nest Observe telemetry key                               | `your-observe-app-key`              |
+| `OBSERVE_APP_SECRET` | No       | Nest Observe telemetry secret                            | `your-observe-app-secret`           |
 
 `MONGODB_URI`, `JWT_SECRET`, `PORT`, and the Observe variables belong in `backend/.env`. Put `VITE_API_URL` in a root `.env.local` if the API is not at the default URL. Keep real secrets in ignored local environment files or a deployment secret manager; never commit them.
 
@@ -205,9 +205,9 @@ mongosh "mongodb://127.0.0.1:27017/store" --eval 'db.users.updateOne({ email: "a
 
 ## Team and contributors
 
-| Name | Role |
-| --- | --- |
-| **Allaith** | Technical Team Lead |
-| **Ziena** | Team Member / Developer |
-| **Jawa** | Team Member / Developer |
-| **Zaid** | Team Member / Developer |
+| Name        | Role                    |
+| ----------- | ----------------------- |
+| **Allaith** | Technical Team Lead     |
+| **Ziena**   | Team Member / Developer |
+| **Jawa**    | Team Member / Developer |
+| **Zaid**    | Team Member / Developer |
