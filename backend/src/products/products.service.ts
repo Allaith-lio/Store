@@ -111,7 +111,7 @@ export class ProductsService {
 
     const updatedProduct = await this.productModel
       .findByIdAndUpdate(id, updateProductDto, {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       })
       .exec();

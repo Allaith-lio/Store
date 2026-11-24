@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Navigate, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   LogOut,
@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import { Logo } from "../components/common/Logo"
-import { getCurrentUser, logoutUser } from "../services/dashboardService"
+import { getAccessToken, getCurrentUser, logoutUser } from "../services/dashboardService"
 const navItems = [
   { to: '/dashboard', label: 'Overview', Icon: LayoutDashboard, end: true },
   { to: '/dashboard/products', label: 'Products & Branch Stock', Icon: Package },
@@ -33,6 +33,15 @@ export const DashboardLayout = () => {
   const [user, setUser] = useState(() => getCurrentUser())
   const navigate = useNavigate()
   const { isDarkMode, toggleTheme } = useTheme()
+
+  if (!getAccessToken() || !user) {
+    return <Navigate to="/login?mode=login" replace />
+  }
+
+  if (user.role !== 'admin') {
+    return <Navigate to="/" replace />
+  }
+
   return (
     <div className="min-h-screen bg-page text-ink lg:flex">
       <aside className={`fixed inset-y-0 left-0 z-45 flex w-64 flex-col border-r border-line bg-surface p-4 transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${

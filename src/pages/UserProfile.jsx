@@ -480,6 +480,7 @@ const UserProfile = () => {
 					<div className="min-h-0 overflow-hidden lg:overflow-visible">
 						<ProfileMenu
 							activeSection={activeSection}
+							onDashboard={() => navigate('/dashboard')}
 							onLogout={async () => {
 								try {
 									await logoutUser();

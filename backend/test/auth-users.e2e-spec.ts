@@ -467,7 +467,7 @@ describe('JWT revocation', () => {
     expect(findByIdAndUpdate.mock.calls[0]).toEqual([
       userId,
       { $inc: { tokenVersion: 1 } },
-      { new: true },
+      { returnDocument: 'after' },
     ]);
   });
 });

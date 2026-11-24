@@ -24,7 +24,7 @@ export class AdminService {
             throw new BadRequestException('Invalid order ID');
         }
         const order = await this.orderModel.findByIdAndUpdate(orderId,
-             { status }, { new: true, runValidators: true });
+             { status }, { returnDocument: 'after', runValidators: true });
              if(!order){
                 throw new NotFoundException(`Order with ID ${orderId} not found`);
              }

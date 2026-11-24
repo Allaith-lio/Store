@@ -31,7 +31,7 @@ export async function apiRequest(path, { method = 'GET', body, authenticated = t
       }),
     })
   } catch {
-    throw new Error('Cannot reach the backend. Check that it is running on localhost:3000.')
+    throw new Error('The service is temporarily unavailable. Please try again shortly.')
   }
 
   const responseBody = await response.json().catch(() => null)

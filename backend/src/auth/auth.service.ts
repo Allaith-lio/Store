@@ -84,7 +84,7 @@ export class AuthService {
       .findByIdAndUpdate(
         authUser.sub,
         { $inc: { tokenVersion: 1 } },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .exec();
     if (!user) throw new UnauthorizedException();

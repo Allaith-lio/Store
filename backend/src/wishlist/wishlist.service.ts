@@ -41,7 +41,7 @@ export class WishlistService {
       .findByIdAndUpdate(
         userId,
         { $addToSet: { wishlist: new Types.ObjectId(productId) } },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .populate('wishlist')
       .lean();
@@ -58,7 +58,7 @@ export class WishlistService {
       .findByIdAndUpdate(
         userId,
         { $pull: { wishlist: new Types.ObjectId(productId) } },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .populate('wishlist')
       .lean();

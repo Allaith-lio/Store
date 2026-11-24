@@ -4,8 +4,10 @@ import {
   MapPin,
   CreditCard,
   LogOut,
+  LayoutDashboard,
 } from "lucide-react";
 import ProfileMenuItem from "./ProfileMenuItem";
+import { getCurrentUser } from "../../services/dashboardService";
 
 const sections = [
   {
@@ -39,11 +41,29 @@ const sections = [
   },
 ];
 
-const ProfileMenu = ({ onSelect, onLogout, activeSection }) => {
+const ProfileMenu = ({ onSelect, onLogout, onDashboard, activeSection }) => {
+  const currentUser = getCurrentUser();
+  const isAdmin = currentUser?.role === "admin";
+  const visibleSections = isAdmin
+    ? [
+        {
+          ...sections[0],
+          items: [
+            ...sections[0].items,
+            {
+              icon: LayoutDashboard,
+              title: "Dashboard",
+              color: "bg-violet-400/15 text-violet-500",
+              onClick: onDashboard,
+            },
+          ],
+        },
+      ]
+    : sections;
 
   return (
     <div className="mt-6 space-y-6">
-      {sections.map((section) => (
+      {visibleSections.map((section) => (
         <div key={section.title}>
           <p className="mb-2 px-1 text-xs font-bold uppercase tracking-widest text-muted">
             {section.title}
@@ -58,6 +78,8 @@ const ProfileMenu = ({ onSelect, onLogout, activeSection }) => {
                 onClick={() => {
                   if (item.title === "Edit Profile") {
                     onSelect("Verify Password");
+                  } else if (item.title === "Dashboard") {
+                    onDashboard();
                   } else {
                     onSelect(item.title);
                   }
